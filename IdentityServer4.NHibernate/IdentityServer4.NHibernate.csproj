@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Options\" />
     <Folder Include="Stores\" />
   </ItemGroup>
 
