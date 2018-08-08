@@ -1,4 +1,4 @@
-﻿namespace IdentityServer4.NHibernate
+﻿namespace IdentityServer4.NHibernate.TokenCleanup
 {
     using System;
     using System.Threading;

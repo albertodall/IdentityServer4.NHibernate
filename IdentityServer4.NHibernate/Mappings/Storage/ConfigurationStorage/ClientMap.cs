@@ -1,15 +1,16 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage
+﻿namespace IdentityServer4.NHibernate.Mappings.Storage.ConfigurationStorage
 {
     using IdentityServer4.NHibernate.Entities;
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Mapping.ByCode.Conformist;
+    using IdentityServer4.NHibernate.Options;
 
     internal class ClientMap : ClassMapping<Client>
     {
-        public ClientMap()
+        public ClientMap(TableConfiguration tableConfig)
         {
-            Schema("dbo");
-            Table("Clients");
+            Schema(tableConfig.Schema);
+            Table(tableConfig.Name);
 
             Id(p => p.ID, map => map.Generator(Generators.Native));
 
@@ -37,8 +38,6 @@
 
             Set(p => p.AllowedGrantTypes, map => 
             {
-                map.Schema("dbo");
-                map.Table("AllowedGrantTypes");
                 map.Access(Accessor.Field | Accessor.NoSetter | Accessor.ReadOnly);
                 map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));

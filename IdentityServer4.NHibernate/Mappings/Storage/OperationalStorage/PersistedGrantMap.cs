@@ -1,15 +1,16 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage
+﻿namespace IdentityServer4.NHibernate.Mappings.Storage.OperationalStorage
 {
     using IdentityServer4.NHibernate.Entities;
+    using IdentityServer4.NHibernate.Options;
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Mapping.ByCode.Conformist;
 
     internal class PersistedGrantMap : ClassMapping<PersistedGrant>
     {
-        public PersistedGrantMap()
+        public PersistedGrantMap(TableConfiguration tableConfig)
         {
-            Schema("dbo");
-            Table("PersistedGrant");
+            Schema(tableConfig.Schema);
+            Table(tableConfig.Name);
 
             Id(p => p.ID, map => 
             {

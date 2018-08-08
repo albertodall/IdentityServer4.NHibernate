@@ -1,7 +1,10 @@
 ﻿namespace IdentityServer4.NHibernate.Options
 {
+    using System;
+    using global::NHibernate.Cfg;
+
     /// <summary>
-    /// Options for configuring the configuration context.
+    /// Options for configuring the confioguration store.
     /// </summary>
     public class ConfigurationStoreOptions
     {
