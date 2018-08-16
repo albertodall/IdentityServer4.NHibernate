@@ -18,22 +18,28 @@
         private void ConfigurationStoreModelMapper_BeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             var tableDef = GetTableDefinition(type.Name);
-            classCustomizer.Table(tableDef.Name);
-            if (string.IsNullOrEmpty(tableDef.Schema))
+            if (tableDef != null)
             {
-                classCustomizer.Schema(_options.DefaultSchema);
-            }
-            else
-            {
-                classCustomizer.Schema(tableDef.Schema);
+                classCustomizer.Table(tableDef.Name);
+                if (string.IsNullOrEmpty(tableDef.Schema))
+                {
+                    classCustomizer.Schema(_options.DefaultSchema);
+                }
+                else
+                {
+                    classCustomizer.Schema(tableDef.Schema);
+                }
             }
         }
 
         private TableDefinition GetTableDefinition(string tableObjectName)
         {
-            return typeof(ConfigurationStoreOptions)
-                .GetProperty(tableObjectName, BindingFlags.Public)
-                .GetValue(_options, null) as TableDefinition;
+            var prop = typeof(ConfigurationStoreOptions).GetProperty(tableObjectName, BindingFlags.Public);
+            if (prop != null)
+            {
+                return prop.GetValue(_options, null) as TableDefinition;
+            }
+            return null;
         }
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate", "IdentityServer4.NHibernate\IdentityServer4.NHibernate.csproj", "{52B3B045-FE74-4CD1-B65E-DB964845F712}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer4.NHibernate.IntegrationTests", "IdentityServer4.NHibernate.IntegrationTests\IdentityServer4.NHibernate.IntegrationTests.csproj", "{773CE57E-6088-46B8-B8AF-9E47CFE66015}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{52B3B045-FE74-4CD1-B65E-DB964845F712}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52B3B045-FE74-4CD1-B65E-DB964845F712}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52B3B045-FE74-4CD1-B65E-DB964845F712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{773CE57E-6088-46B8-B8AF-9E47CFE66015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{773CE57E-6088-46B8-B8AF-9E47CFE66015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{773CE57E-6088-46B8-B8AF-9E47CFE66015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{773CE57E-6088-46B8-B8AF-9E47CFE66015}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

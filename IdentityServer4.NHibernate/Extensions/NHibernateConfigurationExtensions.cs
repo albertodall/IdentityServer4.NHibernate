@@ -1,10 +1,10 @@
 ﻿namespace IdentityServer4.NHibernate.Extensions
 {
+    using Mappings.Storage;
+    using Mappings.Storage.Configuration;
+    using Mappings.Storage.Operational;
     using Options;
     using global::NHibernate.Cfg;
-    using IdentityServer4.NHibernate.Mappings.Storage;
-    using IdentityServer4.NHibernate.Mappings.Storage.ConfigurationStorage;
-    using IdentityServer4.NHibernate.Mappings.Storage.OperationalStorage;
 
     public static class NHibernateConfigurationExtensions
     {
@@ -32,14 +32,25 @@
             return configuration;
         }
 
+        /// <summary>
+        /// Loads all mappings related to IdentityServer configuration into the NHibernate configuration.
+        /// </summary>
+        /// <param name="configuration">The NHibernate configuration.</param>
+        /// <param name="options">The configuration store options.</param>
         internal static Configuration AddConfigurationStoreMappings(this Configuration configuration, ConfigurationStoreOptions options)
         {
             var mapper = new ConfigurationStoreModelMapper(options);
             mapper.AddMapping<ClientMap>();
+            mapper.AddMapping<ClientGrantTypeMap>();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }
 
+        /// <summary>
+        /// Loads all mappings related to IdentityServer operational store into the NHibernate configuration.
+        /// </summary>
+        /// <param name="configuration">The NHibernate configuration.</param>
+        /// <param name="options">The operational store options.</param>
         internal static Configuration AddOperationalStoreMappings(this Configuration configuration, OperationalStoreOptions options)
         {
             var mapper = new OperationalStoreModelMapper(options);

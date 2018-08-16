@@ -1,4 +1,8 @@
-﻿namespace IdentityServer4.NHibernate.Database
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("IdentityServer4.NHibernate.IntegrationTests")]
+
+namespace IdentityServer4.NHibernate.Database
 {
     using global::NHibernate.Bytecode;
     using global::NHibernate.Cfg;
@@ -18,6 +22,7 @@
                 db.BatchSize = 100;
                 db.LogFormattedSql = true;
                 db.PrepareCommands = true;
+                db.SchemaAction = SchemaAutoAction.Update;
             });
             return cfg;
         }
@@ -33,6 +38,23 @@
                 db.BatchSize = 100;
                 db.LogFormattedSql = true;
                 db.PrepareCommands = true;
+                db.SchemaAction = SchemaAutoAction.Update;
+            });
+            return cfg;
+        }
+
+        public static Configuration SQLite()
+        {
+            var cfg = new Configuration();
+            cfg.Proxy(p => p.ProxyFactoryFactory<DefaultProxyFactoryFactory>());
+            cfg.DataBaseIntegration(db =>
+            {
+                db.Dialect<SQLiteDialect>();
+                db.Driver<SQLite20Driver>();
+                db.BatchSize = 100;
+                db.LogFormattedSql = true;
+                db.PrepareCommands = true;
+                db.SchemaAction = SchemaAutoAction.Update;
             });
             return cfg;
         }

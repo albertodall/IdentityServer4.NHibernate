@@ -1,4 +1,4 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage.ConfigurationStorage
+﻿namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
 {
     using Entities;
     using global::NHibernate.Mapping.ByCode;
@@ -25,8 +25,8 @@
 
             Property(p => p.ClientName, map => map.Length(200));
             Property(p => p.ClientUri, map => map.Length(200));         
-            Property(p => p.LogoUri, map =>map.Length(2000));
-            Property(p => p.Description, map=> map.Length(1000));           
+            Property(p => p.LogoUri, map => map.Length(2000));
+            Property(p => p.Description, map => map.Length(1000));           
             Property(p => p.FrontChannelLogoutUri, map => map.Length(2000));
             Property(p => p.BackChannelLogoutUri, map => map.Length(2000));
             Property(p => p.ClientClaimsPrefix, map => map.Length(200));
@@ -40,7 +40,7 @@
                 map.Lazy(CollectionLazy.NoLazy);
             }, r => 
             {
-                r.OneToMany(m => m.Class(typeof(Client)));
+                r.OneToMany(m => m.Class(typeof(ClientGrantType)));
             });
         }
     }

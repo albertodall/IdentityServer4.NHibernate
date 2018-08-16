@@ -2,8 +2,8 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using IdentityServer4.NHibernate.Options;
     using Microsoft.Extensions.Hosting;
+    using Options;
 
     internal class TokenCleanupHost : IHostedService
     {
