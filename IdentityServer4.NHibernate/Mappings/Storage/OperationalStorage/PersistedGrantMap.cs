@@ -7,10 +7,9 @@
 
     internal class PersistedGrantMap : ClassMapping<PersistedGrant>
     {
-        public PersistedGrantMap(TableConfiguration tableConfig)
+        public PersistedGrantMap()
         {
-            Schema(tableConfig.Schema);
-            Table(tableConfig.Name);
+            Table("PersistedGrants");
 
             Id(p => p.ID, map => 
             {

@@ -1,15 +1,12 @@
 ﻿namespace IdentityServer4.NHibernate.Options
 {
-    using System;
-    using global::NHibernate.Cfg;
-
     /// <summary>
-    /// Options for configuring the confioguration store.
+    /// Options for configuring the configuration store.
     /// </summary>
     public class ConfigurationStoreOptions
     {
         /// <summary>
-        /// Gets or sets the default schema.
+        /// Gets or sets the default schema for Confoguration store's objects.
         /// </summary>
         /// <value>
         /// The default schema.
@@ -22,7 +19,7 @@
         /// <value>
         /// The identity resource.
         /// </value>
-        public TableConfiguration IdentityResource { get; set; } = new TableConfiguration("IdentityResources");
+        public TableDefinition IdentityResource { get; set; } = new TableDefinition("IdentityResources");
 
         /// <summary>
         /// Gets or sets the identity claim table configuration.
@@ -30,7 +27,7 @@
         /// <value>
         /// The identity claim.
         /// </value>
-        public TableConfiguration IdentityClaim { get; set; } = new TableConfiguration("IdentityClaims");
+        public TableDefinition IdentityClaim { get; set; } = new TableDefinition("IdentityClaims");
 
 
         /// <summary>
@@ -39,7 +36,7 @@
         /// <value>
         /// The API resource.
         /// </value>
-        public TableConfiguration ApiResource { get; set; } = new TableConfiguration("ApiResources");
+        public TableDefinition ApiResource { get; set; } = new TableDefinition("ApiResources");
 
         /// <summary>
         /// Gets or sets the API secret table configuration.
@@ -47,7 +44,7 @@
         /// <value>
         /// The API secret.
         /// </value>
-        public TableConfiguration ApiSecret { get; set; } = new TableConfiguration("ApiSecrets");
+        public TableDefinition ApiSecret { get; set; } = new TableDefinition("ApiSecrets");
 
         /// <summary>
         /// Gets or sets the API scope table configuration.
@@ -55,7 +52,7 @@
         /// <value>
         /// The API scope.
         /// </value>
-        public TableConfiguration ApiScope { get; set; } = new TableConfiguration("ApiScopes");
+        public TableDefinition ApiScope { get; set; } = new TableDefinition("ApiScopes");
 
         /// <summary>
         /// Gets or sets the API claim table configuration.
@@ -63,7 +60,7 @@
         /// <value>
         /// The API claim.
         /// </value>
-        public TableConfiguration ApiClaim { get; set; } = new TableConfiguration("ApiClaims");
+        public TableDefinition ApiClaim { get; set; } = new TableDefinition("ApiClaims");
 
         /// <summary>
         /// Gets or sets the API scope claim table configuration.
@@ -71,7 +68,7 @@
         /// <value>
         /// The API scope claim.
         /// </value>
-        public TableConfiguration ApiScopeClaim { get; set; } = new TableConfiguration("ApiScopeClaims");
+        public TableDefinition ApiScopeClaim { get; set; } = new TableDefinition("ApiScopeClaims");
 
         /// <summary>
         /// Gets or sets the client table configuration.
@@ -79,7 +76,7 @@
         /// <value>
         /// The client.
         /// </value>
-        public TableConfiguration Client { get; set; } = new TableConfiguration("Clients");
+        public TableDefinition Client { get; set; } = new TableDefinition("Clients");
 
         /// <summary>
         /// Gets or sets the type of the client grant table configuration.
@@ -87,7 +84,7 @@
         /// <value>
         /// The type of the client grant.
         /// </value>
-        public TableConfiguration ClientGrantType { get; set; } = new TableConfiguration("ClientGrantTypes");
+        public TableDefinition ClientGrantType { get; set; } = new TableDefinition("ClientGrantTypes");
 
         /// <summary>
         /// Gets or sets the client redirect URI table configuration.
@@ -95,7 +92,7 @@
         /// <value>
         /// The client redirect URI.
         /// </value>
-        public TableConfiguration ClientRedirectUri { get; set; } = new TableConfiguration("ClientRedirectUris");
+        public TableDefinition ClientRedirectUri { get; set; } = new TableDefinition("ClientRedirectUris");
 
         /// <summary>
         /// Gets or sets the client post logout redirect URI table configuration.
@@ -103,7 +100,7 @@
         /// <value>
         /// The client post logout redirect URI.
         /// </value>
-        public TableConfiguration ClientPostLogoutRedirectUri { get; set; } = new TableConfiguration("ClientPostLogoutRedirectUris");
+        public TableDefinition ClientPostLogoutRedirectUri { get; set; } = new TableDefinition("ClientPostLogoutRedirectUris");
 
         /// <summary>
         /// Gets or sets the client scopes table configuration.
@@ -111,7 +108,7 @@
         /// <value>
         /// The client scopes.
         /// </value>
-        public TableConfiguration ClientScopes { get; set; } = new TableConfiguration("ClientScopes");
+        public TableDefinition ClientScopes { get; set; } = new TableDefinition("ClientScopes");
 
         /// <summary>
         /// Gets or sets the client secret table configuration.
@@ -119,7 +116,7 @@
         /// <value>
         /// The client secret.
         /// </value>
-        public TableConfiguration ClientSecret { get; set; } = new TableConfiguration("ClientSecrets");
+        public TableDefinition ClientSecret { get; set; } = new TableDefinition("ClientSecrets");
 
         /// <summary>
         /// Gets or sets the client claim table configuration.
@@ -127,7 +124,7 @@
         /// <value>
         /// The client claim.
         /// </value>
-        public TableConfiguration ClientClaim { get; set; } = new TableConfiguration("ClientClaims");
+        public TableDefinition ClientClaim { get; set; } = new TableDefinition("ClientClaims");
 
         /// <summary>
         /// Gets or sets the client IdP restriction table configuration.
@@ -135,7 +132,7 @@
         /// <value>
         /// The client IdP restriction.
         /// </value>
-        public TableConfiguration ClientIdPRestriction { get; set; } = new TableConfiguration("ClientIdPRestrictions");
+        public TableDefinition ClientIdPRestriction { get; set; } = new TableDefinition("ClientIdPRestrictions");
 
         /// <summary>
         /// Gets or sets the client cors origin table configuration.
@@ -143,7 +140,7 @@
         /// <value>
         /// The client cors origin.
         /// </value>
-        public TableConfiguration ClientCorsOrigin { get; set; } = new TableConfiguration("ClientCorsOrigins");
+        public TableDefinition ClientCorsOrigin { get; set; } = new TableDefinition("ClientCorsOrigins");
 
         /// <summary>
         /// Gets or sets the client property table configuration.
@@ -151,6 +148,6 @@
         /// <value>
         /// The client property.
         /// </value>
-        public TableConfiguration ClientProperty { get; set; } = new TableConfiguration("ClientProperties");
+        public TableDefinition ClientProperty { get; set; } = new TableDefinition("ClientProperties");
     }
 }

@@ -1,17 +1,13 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Storage.ConfigurationStorage
 {
-    using IdentityServer4.NHibernate.Entities;
+    using Entities;
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Mapping.ByCode.Conformist;
-    using IdentityServer4.NHibernate.Options;
 
     internal class ClientMap : ClassMapping<Client>
     {
-        public ClientMap(TableConfiguration tableConfig)
+        public ClientMap()
         {
-            Schema(tableConfig.Schema);
-            Table(tableConfig.Name);
-
             Id(p => p.ID, map => map.Generator(Generators.Native));
 
             Property(p => p.ClientId, map => 
@@ -46,8 +42,6 @@
             {
                 r.OneToMany(m => m.Class(typeof(Client)));
             });
-
-
         }
     }
 }

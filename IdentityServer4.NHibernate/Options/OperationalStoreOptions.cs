@@ -6,14 +6,6 @@
     public class OperationalStoreOptions
     {
         /// <summary>
-        /// Callback to configure the SessionFactory.
-        /// </summary>
-        /// <value>
-        /// Session factory for the operational store.
-        /// </value>
-        public Func<Configuration> Database { get; set; }
-
-        /// <summary>
         /// Gets or sets the default schema for database objects.
         /// </summary>
         /// <value>

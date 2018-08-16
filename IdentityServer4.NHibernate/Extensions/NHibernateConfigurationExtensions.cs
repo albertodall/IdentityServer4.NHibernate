@@ -1,6 +1,10 @@
 ﻿namespace IdentityServer4.NHibernate.Extensions
 {
+    using Options;
     using global::NHibernate.Cfg;
+    using IdentityServer4.NHibernate.Mappings.Storage;
+    using IdentityServer4.NHibernate.Mappings.Storage.ConfigurationStorage;
+    using IdentityServer4.NHibernate.Mappings.Storage.OperationalStorage;
 
     public static class NHibernateConfigurationExtensions
     {
@@ -25,6 +29,22 @@
         public static Configuration UsingConnectionStringName(this Configuration configuration, string connectionStringName)
         {
             configuration.SetProperty(Environment.ConnectionStringName, connectionStringName);
+            return configuration;
+        }
+
+        internal static Configuration AddConfigurationStoreMappings(this Configuration configuration, ConfigurationStoreOptions options)
+        {
+            var mapper = new ConfigurationStoreModelMapper(options);
+            mapper.AddMapping<ClientMap>();
+            configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
+            return configuration;
+        }
+
+        internal static Configuration AddOperationalStoreMappings(this Configuration configuration, OperationalStoreOptions options)
+        {
+            var mapper = new OperationalStoreModelMapper(options);
+            mapper.AddMapping<PersistedGrantMap>();
+            configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }
     }

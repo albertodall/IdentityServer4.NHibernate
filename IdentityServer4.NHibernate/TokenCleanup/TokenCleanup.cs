@@ -53,7 +53,6 @@
         {
             if (_source == null) throw new InvalidOperationException("TokenCleanup task not started. Call Start() first.");
 
-
             _logger.LogDebug("TokenCleanup - Stopping token cleanup.");
 
             _source.Cancel();
