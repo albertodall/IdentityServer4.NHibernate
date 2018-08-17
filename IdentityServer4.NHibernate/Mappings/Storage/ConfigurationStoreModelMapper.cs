@@ -1,7 +1,6 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Storage
 {
     using System;
-    using System.Reflection;
     using Options;
     using global::NHibernate.Mapping.ByCode;
 
@@ -16,7 +15,7 @@
         }
 
         private void ConfigurationStoreModelMapper_BeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
-        {
+        {   
             var tableDef = GetTableDefinition(type.Name);
             if (tableDef != null)
             {
@@ -34,7 +33,7 @@
 
         private TableDefinition GetTableDefinition(string tableObjectName)
         {
-            var prop = typeof(ConfigurationStoreOptions).GetProperty(tableObjectName, BindingFlags.Public);
+            var prop = typeof(ConfigurationStoreOptions).GetProperty(tableObjectName);
             if (prop != null)
             {
                 return prop.GetValue(_options, null) as TableDefinition;

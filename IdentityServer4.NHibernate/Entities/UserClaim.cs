@@ -2,6 +2,6 @@
 {
     public abstract class UserClaim : EntityBase<int>
     {
-        public string Type { get; set; }
+        public virtual string Type { get; set; }
     }
 }

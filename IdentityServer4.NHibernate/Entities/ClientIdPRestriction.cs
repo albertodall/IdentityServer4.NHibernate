@@ -2,7 +2,7 @@
 {
     public class ClientIdPRestriction : EntityBase<int>
     {
-        public string Provider { get; set; }
+        public virtual string Provider { get; set; }
         public virtual Client Client { get; set; }
     }
 }

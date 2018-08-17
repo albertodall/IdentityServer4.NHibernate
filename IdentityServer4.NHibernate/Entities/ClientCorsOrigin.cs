@@ -2,7 +2,7 @@
 {
     public class ClientCorsOrigin : EntityBase<int>
     {
-        public string Origin { get; set; }
+        public virtual string Origin { get; set; }
         public virtual Client Client { get; set; }
     }
 }

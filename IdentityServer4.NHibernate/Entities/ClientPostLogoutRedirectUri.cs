@@ -2,7 +2,7 @@
 {
     public class ClientPostLogoutRedirectUri : EntityBase<int>
     {
-        public string PostLogoutRedirectUri { get; set; }
+        public virtual string PostLogoutRedirectUri { get; set; }
         public virtual Client Client { get; set; }
     }
 }

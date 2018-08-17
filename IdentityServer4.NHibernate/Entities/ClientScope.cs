@@ -2,7 +2,7 @@
 {
     public class ClientScope : EntityBase<int>
     {
-        public string Scope { get; set; }
+        public virtual string Scope { get; set; }
         public virtual Client Client { get; set; }
     }
 }

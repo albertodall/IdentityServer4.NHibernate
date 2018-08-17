@@ -8,9 +8,14 @@
     {
         public ClientGrantTypeMap()
         {
-            Id(p => p.ID, map => map.Generator(Generators.Native));
+            Id(p => p.ID, map => 
+            {
+                map.Generator(Generators.Native);
+                map.Column("Id");
+            });
 
-            Property(p => p.GrantType, map => {
+            Property(p => p.GrantType, map => 
+            {
                 map.Length(250);
                 map.NotNullable(true);
             });

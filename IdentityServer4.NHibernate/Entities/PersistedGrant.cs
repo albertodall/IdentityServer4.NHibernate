@@ -4,11 +4,11 @@
 
     public class PersistedGrant : EntityBase<string>
     {
-        public string Type { get; set; }
-        public string SubjectId { get; set; }
-        public string ClientId { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime? Expiration { get; set; }
-        public string Data { get; set; }
+        public virtual string Type { get; set; }
+        public virtual string SubjectId { get; set; }
+        public virtual string ClientId { get; set; }
+        public virtual DateTime CreationTime { get; set; }
+        public virtual DateTime? Expiration { get; set; }
+        public virtual string Data { get; set; }
     }
 }

@@ -22,7 +22,6 @@ namespace IdentityServer4.NHibernate.Database
                 db.BatchSize = 100;
                 db.LogFormattedSql = true;
                 db.PrepareCommands = true;
-                db.SchemaAction = SchemaAutoAction.Update;
             });
             return cfg;
         }
@@ -38,7 +37,6 @@ namespace IdentityServer4.NHibernate.Database
                 db.BatchSize = 100;
                 db.LogFormattedSql = true;
                 db.PrepareCommands = true;
-                db.SchemaAction = SchemaAutoAction.Update;
             });
             return cfg;
         }
@@ -54,7 +52,6 @@ namespace IdentityServer4.NHibernate.Database
                 db.BatchSize = 100;
                 db.LogFormattedSql = true;
                 db.PrepareCommands = true;
-                db.SchemaAction = SchemaAutoAction.Update;
             });
             return cfg;
         }

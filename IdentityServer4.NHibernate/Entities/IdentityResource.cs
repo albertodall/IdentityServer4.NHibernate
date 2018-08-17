@@ -6,13 +6,13 @@
     {
         private readonly List<IdentityClaim> _userClaims = new List<IdentityClaim>();
 
-        public bool Enabled { get; set; } = true;
-        public string Name { get; set; }
-        public string DisplayName { get; set; }
-        public string Description { get; set; }
-        public bool Required { get; set; }
-        public bool Emphasize { get; set; }
-        public bool ShowInDiscoveryDocument { get; set; } = true;
+        public virtual bool Enabled { get; set; } = true;
+        public virtual string Name { get; set; }
+        public virtual string DisplayName { get; set; }
+        public virtual string Description { get; set; }
+        public virtual bool Required { get; set; }
+        public virtual bool Emphasize { get; set; }
+        public virtual bool ShowInDiscoveryDocument { get; set; } = true;
         public virtual IEnumerable<IdentityClaim> UserClaims { get; }
     }
 }

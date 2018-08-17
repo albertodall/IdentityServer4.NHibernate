@@ -4,9 +4,9 @@
 
     public abstract class Secret : EntityBase<int>
     {
-        public string Description { get; set; }
-        public string Value { get; set; }
-        public DateTime? Expiration { get; set; }
-        public string Type { get; set; } = IdentityServerConstants.SecretTypes.SharedSecret;
+        public virtual string Description { get; set; }
+        public virtual string Value { get; set; }
+        public virtual DateTime? Expiration { get; set; }
+        public virtual string Type { get; set; } = IdentityServerConstants.SecretTypes.SharedSecret;
     }
 }

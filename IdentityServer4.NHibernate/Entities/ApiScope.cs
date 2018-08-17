@@ -6,12 +6,12 @@
     {
         private readonly List<ApiScopeClaim> _userClaims = new List<ApiScopeClaim>();
 
-        public string Name { get; set; }
-        public string DisplayName { get; set; }
-        public string Description { get; set; }
-        public bool Required { get; set; }
-        public bool Emphasize { get; set; }
-        public bool ShowInDiscoveryDocument { get; set; } = true;
+        public virtual string Name { get; set; }
+        public virtual string DisplayName { get; set; }
+        public virtual string Description { get; set; }
+        public virtual bool Required { get; set; }
+        public virtual bool Emphasize { get; set; }
+        public virtual bool ShowInDiscoveryDocument { get; set; } = true;
         public virtual IEnumerable<ApiScopeClaim> UserClaims { get; }
 
         public virtual ApiResource ApiResource { get; set; }
