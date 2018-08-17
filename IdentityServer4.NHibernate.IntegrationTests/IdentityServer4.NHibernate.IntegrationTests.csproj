@@ -20,4 +20,9 @@
     <ProjectReference Include="..\IdentityServer4.NHibernate\IdentityServer4.NHibernate.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ConfigurationStore\" />
+    <Folder Include="OperationalStore\" />
+  </ItemGroup>
+
 </Project>

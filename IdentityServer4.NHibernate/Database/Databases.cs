@@ -4,6 +4,7 @@
 
 namespace IdentityServer4.NHibernate.Database
 {
+    using Extensions;
     using global::NHibernate.Bytecode;
     using global::NHibernate.Cfg;
     using global::NHibernate.Dialect;
@@ -54,6 +55,12 @@ namespace IdentityServer4.NHibernate.Database
                 db.PrepareCommands = true;
             });
             return cfg;
+        }
+
+        public static Configuration SQLiteInMemory()
+        {
+            return SQLite()
+                .UsingConnectionString("Data Source=:memory:; Version=3; New=True;");
         }
     }
 }
