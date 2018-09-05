@@ -11,10 +11,10 @@
         public ConfigurationStoreModelMapper(ConfigurationStoreOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            BeforeMapClass += ConfigurationStoreModelMapper_BeforeMapClass;
+            BeforeMapClass += BeforeMapConfigurationStoreClass;
         }
 
-        private void ConfigurationStoreModelMapper_BeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        private void BeforeMapConfigurationStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {   
             var tableDef = GetTableDefinition(type.Name);
             if (tableDef != null)

@@ -1,32 +1,28 @@
 namespace IdentityServer4.NHibernate.IntegrationTests
 {
     using System;
-    using Database;
-    using Extensions;
+    using System.Collections.Generic;
     using Options;
-    using global::NHibernate.Tool.hbm2ddl;
-    using Xunit;
+    using global::NHibernate;
 
-    public class DatabaseFixture
+
+    public class DatabaseFixture : IDisposable
     {
-        private static readonly ConfigurationStoreOptions StoreOptions = new ConfigurationStoreOptions();
+        protected static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
+        protected static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
 
-        [Fact]
-        public void Should_Create_Database()
+        protected static List<ISessionFactory> SessionFactories = new List<ISessionFactory>()
         {
-            var dbConfig = Databases.SqlServer2012()
-                .UsingConnectionString("Data Source=localhost; Initial Catalog=IdentityServer_NH_Test; Integrated Security=SSPI")
-                .AddConfigurationStoreMappings(StoreOptions)
-                .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
+            TestDatabaseBuilder.SQLServer2012TestDatabase("ids_nh_test", ConfigurationStoreOptions, OperationalStoreOptions)
+        };
 
-            var schemaExporter = new SchemaExport(dbConfig);
-            schemaExporter.Create(true, true);
-
-            var sessionFactory = dbConfig.BuildSessionFactory();
-
-            Assert.True(true);
-
-            sessionFactory.Dispose();
+        public void Dispose()
+        {
+            foreach (var sf in SessionFactories)
+            {
+                // Database is dropped after dispose of the Session Factory
+                sf?.Dispose();
+            }
         }
     }
 }

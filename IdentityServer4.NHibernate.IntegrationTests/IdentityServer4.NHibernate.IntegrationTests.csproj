@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ConfigurationStore\" />
     <Folder Include="OperationalStore\" />
   </ItemGroup>
 

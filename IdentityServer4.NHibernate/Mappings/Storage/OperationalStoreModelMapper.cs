@@ -11,10 +11,10 @@
         public OperationalStoreModelMapper(OperationalStoreOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            BeforeMapClass += ConfigurationStoreModelMapper_BeforeMapClass;
+            BeforeMapClass += BeforeMapOperationalStoreClass;
         }
 
-        private void ConfigurationStoreModelMapper_BeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        private void BeforeMapOperationalStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             classCustomizer.Table(_options.DefaultSchema);
         }
