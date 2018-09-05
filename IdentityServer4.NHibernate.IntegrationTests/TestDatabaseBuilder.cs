@@ -15,15 +15,24 @@
         public static ISessionFactory SQLServer2012TestDatabase(string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
             var dbConfig = Databases.SqlServer2012()
-                .UsingConnectionString($"Data Source=localhost; Initial Catalog={databaseName}; Integrated Security=SSPI")
+                .UsingConnectionString($"Data Source=(local); Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.Test")
                 .AddConfigurationStoreMappings(configurationStoreOptions)
                 .AddOperationalStoreMappings(operationalStoreOptions)
                 .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
-            var schemaExporter = new SchemaExport(dbConfig);
-            schemaExporter.Create(true, true);
+            ISessionFactory sf = null;
 
-            return dbConfig.BuildSessionFactory();
+            try
+            {
+                new SchemaExport(dbConfig).Create(false, true);
+                sf = dbConfig.BuildSessionFactory();
+            }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            return sf;
         }
     }
 }

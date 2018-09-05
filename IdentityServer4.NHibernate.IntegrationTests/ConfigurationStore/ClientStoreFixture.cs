@@ -1,19 +1,28 @@
 ﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
+    using System.Linq;
+    using Options;
     using global::NHibernate;
     using Xunit;
 
-    public class ClientStoreFixture : DatabaseFixture
+    public class ClientStoreFixture : IClassFixture<DatabaseFixture>
     {
-        public static readonly TheoryData<ISessionFactory> TestDatabases = new TheoryData<ISessionFactory>();
+        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
+        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
 
-        static ClientStoreFixture()
+        public static readonly TheoryData<ISessionFactory> TestDatabases = new TheoryData<ISessionFactory>()
         {
-            SessionFactories.ForEach(sf => TestDatabases.Add(sf));
+            TestDatabaseBuilder.SQLServer2012TestDatabase("IdentityServer_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+        };
+
+        public ClientStoreFixture(DatabaseFixture fixture)
+        {
+            var sfs = TestDatabases.SelectMany(t => t.Select(db => (ISessionFactory)db)).ToList();
+            fixture.SessionFactories = sfs;
         }
 
         [Theory, MemberData(nameof(TestDatabases))]
-        public void FindClientByIdAsync_WhenClientExists_ExpectClientRetured(ISessionFactory sessionFactory)
+        public void Should_Return_Client_If_Exists(ISessionFactory sessionFactory)
         {
             using (var session = sessionFactory.OpenSession())
             {
