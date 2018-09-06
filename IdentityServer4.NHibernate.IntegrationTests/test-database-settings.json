@@ -1,0 +1,6 @@
+{
+  "SQLServer": {
+    "ServerName": "(local)",
+    "DatabaseName":  "IdentityServer_NH_Test"
+  }
+}

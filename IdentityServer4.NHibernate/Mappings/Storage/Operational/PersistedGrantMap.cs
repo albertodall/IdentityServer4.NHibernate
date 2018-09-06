@@ -1,8 +1,8 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Storage.Operational
 {
+    using IdentityServer4.NHibernate.Entities;
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Mapping.ByCode.Conformist;
-    using Entities;
 
     internal class PersistedGrantMap : ClassMapping<PersistedGrant>
     {
@@ -12,7 +12,7 @@
 
             Id(p => p.ID, map => 
             {
-                map.Column("Key");
+                map.Column("[Key]");
                 map.Generator(Generators.Assigned);
                 map.Length(200);
             });

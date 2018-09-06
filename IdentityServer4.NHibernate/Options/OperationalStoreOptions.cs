@@ -1,8 +1,5 @@
 ﻿namespace IdentityServer4.NHibernate.Options
 {
-    using System;
-    using global::NHibernate.Cfg;
-
     public class OperationalStoreOptions
     {
         /// <summary>

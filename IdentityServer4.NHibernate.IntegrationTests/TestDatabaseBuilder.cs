@@ -1,10 +1,10 @@
 ﻿namespace IdentityServer4.NHibernate.IntegrationTests
 {
+    using System.Diagnostics;
     using Database;
     using Extensions;
     using Options;
     using global::NHibernate;
-    using global::NHibernate.Cfg;
     using global::NHibernate.Tool.hbm2ddl;
 
     /// <summary>
@@ -12,27 +12,32 @@
     /// </summary>
     internal static class TestDatabaseBuilder
     {
-        public static ISessionFactory SQLServer2012TestDatabase(string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        public static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
+            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.Test";
+
+            var testDb = new SQLServerTestDatabase(serverName, databaseName);
+            testDb.Create();
+
             var dbConfig = Databases.SqlServer2012()
-                .UsingConnectionString($"Data Source=(local); Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.Test")
+                .UsingConnectionString(connString)
                 .AddConfigurationStoreMappings(configurationStoreOptions)
                 .AddOperationalStoreMappings(operationalStoreOptions)
-                .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+                .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
 
-            ISessionFactory sf = null;
-
+            ISessionFactory sessionFactory = null;
             try
             {
                 new SchemaExport(dbConfig).Create(false, true);
-                sf = dbConfig.BuildSessionFactory();
+                sessionFactory = dbConfig.BuildSessionFactory();
             }
             catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
 
-            return sf;
+            testDb.SetSessionFactory(sessionFactory);
+            return testDb;
         }
     }
 }

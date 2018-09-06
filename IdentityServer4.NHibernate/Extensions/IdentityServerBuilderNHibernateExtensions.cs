@@ -8,7 +8,7 @@
     using IdentityServer4.NHibernate.TokenCleanup;
     using IdentityServer4.Services;
     using IdentityServer4.Stores;
-    using Microsoft.Extensions.Hosting;
+    using Hosting;
     using NHibernate;
     using NHibernate.Cfg;
 
@@ -41,7 +41,7 @@
             databaseConfiguration.AddConfigurationStoreMappings(configStoreOptions);
             databaseConfiguration.AddOperationalStoreMappings(operationalStoreOptions);
 
-            // Adds NHibernate objects to DI system
+            // Adds NHibernate objects to the DI system
             builder.Services.AddSingleton(databaseConfiguration.BuildSessionFactory());
             builder.Services.AddScoped(provider => 
             {
