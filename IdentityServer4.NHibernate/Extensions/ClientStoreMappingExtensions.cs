@@ -9,11 +9,12 @@
 
         static ClientStoreMappingExtensions()
         {
-            Mapper = new MapperConfiguration(cfg => cfg.AddProfile<ClientStoreMappingProfile>()).CreateMapper();
+            Mapper = new MapperConfiguration(cfg => cfg.AddProfile<ClientStoreMappingProfile>())
+                .CreateMapper();
         }
 
         /// <summary>
-        /// Maps an entity to a model.
+        /// Maps an "Client" entity to a "Client" model.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public static Models.Client ToModel(this Entities.Client entity)
@@ -22,7 +23,7 @@
         }
 
         /// <summary>
-        /// Maps a model to an entity.
+        /// Maps a "Client" model to a "Client" entity.
         /// </summary>
         /// <param name="model">The model.</param>
         public static Entities.Client ToEntity(this Models.Client model)

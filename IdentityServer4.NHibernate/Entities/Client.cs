@@ -1,24 +1,25 @@
 ﻿namespace IdentityServer4.NHibernate.Entities
 {
-    using IdentityServer4.Models;
     using System.Collections.Generic;
+    using System.Linq;
+    using IdentityServer4.Models;
 
     public class Client : EntityBase<int>
     {
-        private readonly List<ClientSecret> _clientSecrets = new List<ClientSecret>();
-        private readonly List<ClientGrantType> _clientGrantTypes = new List<ClientGrantType>();
-        private readonly List<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
-        private readonly List<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
-        private readonly List<ClientScope> _clientScopes = new List<ClientScope>();
-        private readonly List<ClientIdPRestriction> _clientIdPRestrictions = new List<ClientIdPRestriction>();
-        private readonly List<ClientClaim> _clientClaims = new List<ClientClaim>();
-        private readonly List<ClientCorsOrigin> _clientCorsOrigins = new List<ClientCorsOrigin>();
-        private readonly List<ClientProperty> _clientProperties = new List<ClientProperty>();
+        private readonly IList<ClientSecret> _clientSecrets = new List<ClientSecret>();
+        private readonly IList<ClientGrantType> _allowedGrantTypes = new List<ClientGrantType>();
+        private readonly IList<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
+        private readonly IList<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
+        private readonly IList<ClientScope> _clientScopes = new List<ClientScope>();
+        private readonly IList<ClientIdPRestriction> _clientIdPRestrictions = new List<ClientIdPRestriction>();
+        private readonly IList<ClientClaim> _clientClaims = new List<ClientClaim>();
+        private readonly IList<ClientCorsOrigin> _clientCorsOrigins = new List<ClientCorsOrigin>();
+        private readonly IList<ClientProperty> _clientProperties = new List<ClientProperty>();
 
         public virtual bool Enabled { get; set; } = true;
         public virtual string ClientId { get; set; }
         public virtual string ProtocolType { get; set; } = IdentityServerConstants.ProtocolTypes.OpenIdConnect;
-        public virtual IEnumerable<ClientSecret> ClientSecrets { get; }
+        public virtual IEnumerable<Secret> ClientSecrets { get { return _clientSecrets; } }
         public virtual bool RequireClientSecret { get; set; } = true;
         public virtual string ClientName { get; set; }
         public virtual string Description { get; set; }
@@ -27,7 +28,7 @@
         public virtual bool RequireConsent { get; set; } = true;
         public virtual bool AllowRememberConsent { get; set; } = true;
         public virtual bool AlwaysIncludeUserClaimsInIdToken { get; set; }
-        public virtual IEnumerable<ClientGrantType> AllowedGrantTypes { get; }
+        public virtual IEnumerable<ClientGrantType> AllowedGrantTypes { get { return _allowedGrantTypes; } }
         public virtual bool RequirePkce { get; set; }
         public virtual bool AllowPlainTextPkce { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }

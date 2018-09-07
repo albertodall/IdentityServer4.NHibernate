@@ -62,15 +62,20 @@
             Property(p => p.RefreshTokenExpiration);
             Property(p => p.AccessTokenType);
 
-            Set(p => p.AllowedGrantTypes, map => 
+            Bag<ClientGrantType>("_allowedGrantTypes", map =>
             {
-                map.Access(Accessor.Field | Accessor.NoSetter | Accessor.ReadOnly);
+                map.Key(fk => 
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientGrantTypes_Client");
+                });
+                map.Access(Accessor.Field);
                 map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
-            }, r => 
-            {
-                r.OneToMany(m => m.Class(typeof(ClientGrantType)));
-            });
+            }, 
+                r => r.OneToMany(m => m.Class(typeof(ClientGrantType)))
+            );
 
             // ClientSecrets
             // RedirectUris

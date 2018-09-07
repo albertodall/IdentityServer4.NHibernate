@@ -1,7 +1,6 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Entities
 {
     using AutoMapper;
-    using IdentityServer4.NHibernate.Entities;
 
     /// <summary>
     /// Entity/model mapping for clients.
@@ -10,14 +9,19 @@
     {
         public ClientStoreMappingProfile()
         {
-            CreateMap<Client, Models.Client>()
+            CreateMap<NHibernate.Entities.Client, Models.Client>()
                 .ForMember(dest => dest.ProtocolType, opt => opt.Condition(srs => srs != null))
-                .ReverseMap();
+                .ReverseMap()
+                    .ForMember(dest => dest.AllowedGrantTypes, opt => 
+                    {
+                        opt.MapFrom(src => src.AllowedGrantTypes);
+                        opt.UseDestinationValue();
+                    });
 
-            CreateMap<ClientGrantType, string>()
+            CreateMap<NHibernate.Entities.ClientGrantType, string>()
                 .ConstructUsing(src => src.GrantType)
                 .ReverseMap()
-                .ForMember(dest => dest.GrantType, opt => opt.MapFrom(src => src));
+                    .ForMember(dest => dest.GrantType, opt => opt.MapFrom(src => src));
         }
     }
 }

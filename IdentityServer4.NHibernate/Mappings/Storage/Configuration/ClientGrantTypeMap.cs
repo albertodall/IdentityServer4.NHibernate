@@ -19,8 +19,6 @@
                 map.Length(250);
                 map.NotNullable(true);
             });
-
-            ManyToOne(p => p.Client);
         }
     }
 }

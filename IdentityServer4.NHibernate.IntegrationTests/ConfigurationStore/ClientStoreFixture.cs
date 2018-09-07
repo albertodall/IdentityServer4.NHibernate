@@ -7,6 +7,7 @@
     using IdentityServer4.Models;
     using Xunit;
     using Moq;
+    using FluentAssertions;
     using Microsoft.Extensions.Logging;
 
     public class ClientStoreFixture : IClassFixture<DatabaseFixture>
@@ -27,7 +28,7 @@
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Return_Client_If_It_Exists(TestDatabase testDb)
+        public void Should_Retrieve_Client_If_It_Exists(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -40,15 +41,64 @@
                 session.Save(testClient.ToEntity());
             }
 
-            Client wantedClient = null;
+            Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.SessionFactory.OpenStatelessSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                wantedClient = store.FindClientByIdAsync("test_client").Result;
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
             }
 
-            Assert.NotNull(wantedClient);
+            requestedClient.Should().NotBeNull();
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Not_Retrieve_Non_Existing_Client(TestDatabase testDb)
+        {
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync("not_existing_client").Result;
+            }
+
+            requestedClient.Should().BeNull();
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Grant_Types(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_grant_types",
+                ClientName = "Test Client with Grant Types",
+                AllowedGrantTypes =
+                {
+                    "grant_1",
+                    "grant_2",
+                    "grant_3",
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.AllowedGrantTypes.Count.Should().Be(3);
         }
     }
 }
