@@ -19,15 +19,15 @@
             var testDb = new SQLServerTestDatabase(serverName, databaseName);
             testDb.Create();
 
-            var dbConfig = Databases.SqlServer2012()
-                .UsingConnectionString(connString)
-                .AddConfigurationStoreMappings(configurationStoreOptions)
-                .AddOperationalStoreMappings(operationalStoreOptions)
-                .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
-
             ISessionFactory sessionFactory = null;
             try
             {
+                var dbConfig = Databases.SqlServer2012()
+                    .UsingConnectionString(connString)
+                    .AddConfigurationStoreMappings(configurationStoreOptions)
+                    .AddOperationalStoreMappings(operationalStoreOptions)
+                    .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
+
                 new SchemaExport(dbConfig).Create(false, true);
                 sessionFactory = dbConfig.BuildSessionFactory();
             }

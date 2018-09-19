@@ -44,6 +44,7 @@ namespace IdentityServer4.NHibernate.Extensions
             var mapper = new ConfigurationStoreModelMapper(options);
             mapper.AddMapping<ClientMap>();
             mapper.AddMapping<ClientGrantTypeMap>();
+            mapper.AddMapping<ClientSecretMap>();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }

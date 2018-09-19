@@ -2,6 +2,5 @@
 {
     public class ClientSecret : Secret
     {
-        public virtual Client Client { get; set; }
     }
 }

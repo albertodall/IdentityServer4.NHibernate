@@ -1,13 +1,12 @@
 ﻿namespace IdentityServer4.NHibernate.Entities
 {
     using System.Collections.Generic;
-    using System.Linq;
     using IdentityServer4.Models;
 
     public class Client : EntityBase<int>
     {
-        private readonly IList<ClientSecret> _clientSecrets = new List<ClientSecret>();
-        private readonly IList<ClientGrantType> _allowedGrantTypes = new List<ClientGrantType>();
+        private readonly ICollection<ClientSecret> _clientSecrets = new List<ClientSecret>();
+        private readonly ICollection<ClientGrantType> _allowedGrantTypes = new List<ClientGrantType>();
         private readonly IList<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
         private readonly IList<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
         private readonly IList<ClientScope> _clientScopes = new List<ClientScope>();
@@ -19,7 +18,7 @@
         public virtual bool Enabled { get; set; } = true;
         public virtual string ClientId { get; set; }
         public virtual string ProtocolType { get; set; } = IdentityServerConstants.ProtocolTypes.OpenIdConnect;
-        public virtual IEnumerable<Secret> ClientSecrets { get { return _clientSecrets; } }
+        public virtual IEnumerable<ClientSecret> ClientSecrets { get { return _clientSecrets; } }
         public virtual bool RequireClientSecret { get; set; } = true;
         public virtual string ClientName { get; set; }
         public virtual string Description { get; set; }

@@ -16,12 +16,21 @@
                     {
                         opt.MapFrom(src => src.AllowedGrantTypes);
                         opt.UseDestinationValue();
+                    })
+                    .ForMember(dest => dest.ClientSecrets, opt =>
+                    {
+                        opt.MapFrom(src => src.ClientSecrets);
+                        opt.UseDestinationValue();
                     });
 
             CreateMap<NHibernate.Entities.ClientGrantType, string>()
                 .ConstructUsing(src => src.GrantType)
                 .ReverseMap()
                     .ForMember(dest => dest.GrantType, opt => opt.MapFrom(src => src));
+
+            CreateMap<NHibernate.Entities.ClientSecret, Models.Secret>(MemberList.Destination)
+                .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
+                .ReverseMap();
         }
     }
 }

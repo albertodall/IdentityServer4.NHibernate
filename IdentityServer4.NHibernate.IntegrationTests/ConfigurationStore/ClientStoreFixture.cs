@@ -1,5 +1,6 @@
 ﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Extensions;
     using Options;
@@ -99,6 +100,40 @@
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedGrantTypes.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Client_Secrets(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_client_secrets",
+                ClientName = "Test Client with Client Secrets",
+                ClientSecrets = new List<Secret>()
+                {
+                    new Secret("secret1", "secret 1"),
+                    new Secret("secret2", "secret 2"),
+                    new Secret("secret3", "secret 3"),
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.ClientSecrets.Count.Should().Be(3);
         }
     }
 }

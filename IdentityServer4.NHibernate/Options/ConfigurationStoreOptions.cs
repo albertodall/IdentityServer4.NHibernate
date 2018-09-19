@@ -6,7 +6,7 @@
     public class ConfigurationStoreOptions
     {
         /// <summary>
-        /// Gets or sets the default schema for Confoguration store's objects.
+        /// Gets or sets the default schema for Configuration store's objects.
         /// </summary>
         /// <value>
         /// The default schema.
