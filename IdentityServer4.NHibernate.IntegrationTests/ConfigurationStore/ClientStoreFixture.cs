@@ -44,7 +44,7 @@
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -59,7 +59,7 @@
         {
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync("not_existing_client").Result;
@@ -92,7 +92,7 @@
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -126,7 +126,7 @@
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenStatelessSession())
+            using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -134,6 +134,74 @@
 
             requestedClient.Should().NotBeNull();
             requestedClient.ClientSecrets.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Redirect_Uris(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_redirect_uris",
+                ClientName = "Test Client with Redirect Uris",
+                RedirectUris =
+                {
+                    @"http://redirect/uri/1",
+                    @"http://redirect/uri/2",
+                    @"http://redirect/uri/3"
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.RedirectUris.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_PostLogout_Redirect_Uris(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_postlogout_redirect_uris",
+                ClientName = "Test Client with PostLogout Redirect Uris",
+                PostLogoutRedirectUris =
+                {
+                    @"http://postlogout/redirect/uri/1",
+                    @"http://postlogout/redirect/uri/2",
+                    @"http://postlogout/redirect/uri/3"
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.PostLogoutRedirectUris.Count.Should().Be(3);
         }
     }
 }

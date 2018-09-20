@@ -45,6 +45,8 @@ namespace IdentityServer4.NHibernate.Extensions
             mapper.AddMapping<ClientMap>();
             mapper.AddMapping<ClientGrantTypeMap>();
             mapper.AddMapping<ClientSecretMap>();
+            mapper.AddMapping<ClientRedirectUriMap>();
+            mapper.AddMapping<ClientPostLogoutRedirectUriMap>();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }

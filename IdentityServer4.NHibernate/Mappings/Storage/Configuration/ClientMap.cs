@@ -71,7 +71,6 @@
                     fk.ForeignKey("FK_ClientGrantType_Client");
                 });
                 map.Access(Accessor.Field);
-                map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             }, 
                 r => r.OneToMany(m => m.Class(typeof(ClientGrantType)))
@@ -85,16 +84,40 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientSecret_Client");
                 });
-                map.Lazy(CollectionLazy.Lazy);
                 map.Access(Accessor.Field);
-                map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientSecret)))
             );
 
-            // RedirectUris
-            // PostLogoutRedirectUris
+            Set<ClientRedirectUri>("_clientRedirectUris", map =>
+            {
+                map.Key(fk => 
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientRedirectUri_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientRedirectUri)))
+            );
+
+            Set<ClientPostLogoutRedirectUri>("_clientPostLogoutRedirectUris", map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientPostLogoutRedirectUri_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientPostLogoutRedirectUri)))
+            );
+
             // AllowedScopes
             // IdentityProviderRestrictions
             // Claims

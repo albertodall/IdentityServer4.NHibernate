@@ -10,7 +10,7 @@
 
     public class ClientStore : IClientStore
     {
-        private readonly IStatelessSession _session;
+        private readonly ISession _session;
         private readonly ILogger<ClientStore> _logger;
 
         /// <summary>
@@ -19,7 +19,7 @@
         /// <param name="session">The NHibernate session used to retrieve the data.</param>
         /// <param name="logger">The logger.</param>
         /// <exception cref="ArgumentNullException">session</exception>
-        public ClientStore(IStatelessSession session, ILogger<ClientStore> logger)
+        public ClientStore(ISession session, ILogger<ClientStore> logger)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _logger = logger;
@@ -37,9 +37,28 @@
             Entities.Client client = null;
             using (var tx = _session.BeginTransaction())
             {
-                client = await _session.QueryOver<Entities.Client>()
+                var clientQuery = _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.AllowedGrantTypes).Eager
                     .Where(c => c.ClientId == clientId)
-                    .SingleOrDefaultAsync();
+                    .FutureValue<Entities.Client>();
+
+                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.ClientSecrets).Eager
+                    .Where(c => c.ClientId == clientId)
+                    .FutureValue<Entities.Client>();
+
+                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.RedirectUris).Eager
+                    .Where(c => c.ClientId == clientId)
+                    .FutureValue<Entities.Client>();
+
+                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.PostLogoutRedirectUris).Eager
+                    .Where(c => c.ClientId == clientId)
+                    .FutureValue<Entities.Client>();
+
+                client = await clientQuery.GetValueAsync();
+
                 await tx.CommitAsync();
             }
 

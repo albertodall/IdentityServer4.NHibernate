@@ -7,13 +7,13 @@
     {
         private readonly ICollection<ClientSecret> _clientSecrets = new List<ClientSecret>();
         private readonly ICollection<ClientGrantType> _allowedGrantTypes = new List<ClientGrantType>();
-        private readonly IList<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
-        private readonly IList<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
-        private readonly IList<ClientScope> _clientScopes = new List<ClientScope>();
-        private readonly IList<ClientIdPRestriction> _clientIdPRestrictions = new List<ClientIdPRestriction>();
-        private readonly IList<ClientClaim> _clientClaims = new List<ClientClaim>();
-        private readonly IList<ClientCorsOrigin> _clientCorsOrigins = new List<ClientCorsOrigin>();
-        private readonly IList<ClientProperty> _clientProperties = new List<ClientProperty>();
+        private readonly ICollection<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
+        private readonly ICollection<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
+        private readonly ICollection<ClientScope> _clientScopes = new List<ClientScope>();
+        private readonly ICollection<ClientIdPRestriction> _clientIdPRestrictions = new List<ClientIdPRestriction>();
+        private readonly ICollection<ClientClaim> _clientClaims = new List<ClientClaim>();
+        private readonly ICollection<ClientCorsOrigin> _clientCorsOrigins = new List<ClientCorsOrigin>();
+        private readonly ICollection<ClientProperty> _clientProperties = new List<ClientProperty>();
 
         public virtual bool Enabled { get; set; } = true;
         public virtual string ClientId { get; set; }
@@ -31,8 +31,8 @@
         public virtual bool RequirePkce { get; set; }
         public virtual bool AllowPlainTextPkce { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }
-        public virtual IEnumerable<ClientRedirectUri> RedirectUris { get; }
-        public virtual IEnumerable<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; }
+        public virtual IEnumerable<ClientRedirectUri> RedirectUris { get { return _clientRedirectUris; } }
+        public virtual IEnumerable<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get { return _clientPostLogoutRedirectUris; } }
         public virtual string FrontChannelLogoutUri { get; set; }
         public virtual bool FrontChannelLogoutSessionRequired { get; set; } = true;
         public virtual string BackChannelLogoutUri { get; set; }
