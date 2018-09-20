@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using Extensions;
     using Options;
     using Stores;
@@ -202,6 +203,108 @@
 
             requestedClient.Should().NotBeNull();
             requestedClient.PostLogoutRedirectUris.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Allowed_Scopes(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_allowed_scopes",
+                ClientName = "Test Client with Allowed Scopes",
+                AllowedScopes =
+                {
+                    "scope1",
+                    "scope2",
+                    "scope3"
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.AllowedScopes.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Provider_Restrictions(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_provider_restrictions",
+                ClientName = "Test Client with Provider Restrictions",
+                IdentityProviderRestrictions =
+                {
+                    "restriction_1",
+                    "restriction_2",
+                    "restriction_3"
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.IdentityProviderRestrictions.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Claims(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_claims",
+                ClientName = "Test Client with Claims",
+                Claims =
+                {
+                    new Claim("type1", "value1"),
+                    new Claim("type2", "value2"),
+                    new Claim("type3", "value3")
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.Claims.Count.Should().Be(3);
         }
     }
 }

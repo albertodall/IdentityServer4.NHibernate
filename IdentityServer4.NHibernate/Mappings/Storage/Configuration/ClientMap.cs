@@ -118,9 +118,48 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientPostLogoutRedirectUri)))
             );
 
-            // AllowedScopes
-            // IdentityProviderRestrictions
-            // Claims
+            Set<ClientScope>("_allowedScopes", map => 
+            {
+                map.Key(fk => 
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientScope_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientScope)))
+            );
+
+            Set<ClientIdPRestriction>("_identityProviderRestrictions", map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientProviderRestriction_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientIdPRestriction)))
+            );
+
+            Set<ClientClaim>("_clientClaims", map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientClaims_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientClaim)))
+            );
+
             // AllowedCorsOrigins
             // Properties
         }
