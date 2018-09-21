@@ -1,6 +1,7 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Storage
 {
     using System;
+    using IdentityServer4.NHibernate.Entities;
     using Options;
     using global::NHibernate.Mapping.ByCode;
 
@@ -14,9 +15,22 @@
             BeforeMapClass += BeforeMapConfigurationStoreClass;
         }
 
+        /// <summary>
+        /// Sets table name and table's schema based on the rule that a the table's name is the same as the type's name.
+        /// The only exception to the rule is the "ApiResourceClaim" class, that has to be mapped to the "ApiClaims" table.
+        /// </summary>
         private void BeforeMapConfigurationStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
-        {   
-            var tableDef = GetTableDefinition(type.Name);
+        {
+            TableDefinition tableDef = null;
+            if (type == typeof(ApiResourceClaim))
+            {
+                tableDef = GetTableDefinition(nameof(_options.ApiClaim));
+            }
+            else
+            {
+                tableDef = GetTableDefinition(type.Name);
+            }
+
             if (tableDef != null)
             {
                 classCustomizer.Table(tableDef.Name);
@@ -29,6 +43,8 @@
                     classCustomizer.Schema(tableDef.Schema);
                 }
             }
+
+            // TODO: All Id's are mapped in the same way, so we can put the mapping rule here...
         }
 
         private TableDefinition GetTableDefinition(string tableObjectName)
