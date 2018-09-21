@@ -42,16 +42,8 @@ namespace IdentityServer4.NHibernate.Extensions
         internal static Configuration AddConfigurationStoreMappings(this Configuration configuration, ConfigurationStoreOptions options)
         {
             var mapper = new ConfigurationStoreModelMapper(options);
-            mapper.AddMapping<ClientMap>();
-            mapper.AddMapping<ClientGrantTypeMap>();
-            mapper.AddMapping<ClientSecretMap>();
-            mapper.AddMapping<ClientRedirectUriMap>();
-            mapper.AddMapping<ClientPostLogoutRedirectUriMap>();
-            mapper.AddMapping<ClientScopeMap>();
-            mapper.AddMapping<ClientIdPRestrictionMap>();
-            mapper.AddMapping<ClientClaimMap>();
-            mapper.AddMapping<ClientCorsOriginMap>();
-            mapper.AddMapping<ClientPropertyMap>();
+            mapper.AddClientContextMappings();
+            mapper.AddResourceContextMappings();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }

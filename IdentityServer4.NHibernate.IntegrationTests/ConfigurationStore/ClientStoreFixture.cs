@@ -19,7 +19,7 @@
 
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "IdentityServer_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ClientStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public ClientStoreFixture(DatabaseFixture fixture)
