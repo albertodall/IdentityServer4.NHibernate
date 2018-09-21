@@ -34,6 +34,7 @@
             catch (System.Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                testDb.Drop();
             }
 
             testDb.SetSessionFactory(sessionFactory);

@@ -50,6 +50,8 @@ namespace IdentityServer4.NHibernate.Extensions
             mapper.AddMapping<ClientScopeMap>();
             mapper.AddMapping<ClientIdPRestrictionMap>();
             mapper.AddMapping<ClientClaimMap>();
+            mapper.AddMapping<ClientCorsOriginMap>();
+            mapper.AddMapping<ClientPropertyMap>();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }

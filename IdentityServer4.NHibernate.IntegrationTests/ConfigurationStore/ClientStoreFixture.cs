@@ -306,5 +306,73 @@
             requestedClient.Should().NotBeNull();
             requestedClient.Claims.Count.Should().Be(3);
         }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Allowed_Cors_Origins(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_cors_ordigins",
+                ClientName = "Test Client with CORS Origins",
+                AllowedCorsOrigins =
+                {
+                    "*.tld1",
+                    "*.tld2",
+                    "*.tld3"
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.AllowedCorsOrigins.Count.Should().Be(3);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Client_With_Properties(TestDatabase testDb)
+        {
+            var testClient = new Client()
+            {
+                ClientId = "test_client_with_properties",
+                ClientName = "Test Client with Properties",
+                Properties =
+                {
+                    {"prop1", "val1" },
+                    {"prop2", "val2" },
+                    {"prop3", "val3" }
+                }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var entityToSave = testClient.ToEntity();
+                session.Save(entityToSave);
+            }
+
+            Client requestedClient = null;
+            var loggerMock = new Mock<ILogger<ClientStore>>();
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ClientStore(session, loggerMock.Object);
+                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+            }
+
+            requestedClient.Should().NotBeNull();
+            requestedClient.Properties.Count.Should().Be(3);
+        }
     }
 }

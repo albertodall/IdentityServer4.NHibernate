@@ -67,6 +67,16 @@
                     .Where(c => c.ClientId == clientId)
                     .FutureValue<Entities.Client>();
 
+                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.AllowedCorsOrigins).Eager
+                    .Where(c => c.ClientId == clientId)
+                    .FutureValue<Entities.Client>();
+
+                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.Properties).Eager
+                    .Where(c => c.ClientId == clientId)
+                    .FutureValue<Entities.Client>();
+
                 client = await clientQuery.GetValueAsync();
 
                 await tx.CommitAsync();

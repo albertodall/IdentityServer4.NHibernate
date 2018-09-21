@@ -5,20 +5,20 @@
 
     public class Client : EntityBase<int>
     {
-        private readonly ICollection<ClientSecret> _clientSecrets = new List<ClientSecret>();
+        private readonly ICollection<ClientSecret> _secrets = new List<ClientSecret>();
         private readonly ICollection<ClientGrantType> _allowedGrantTypes = new List<ClientGrantType>();
-        private readonly ICollection<ClientRedirectUri> _clientRedirectUris = new List<ClientRedirectUri>();
-        private readonly ICollection<ClientPostLogoutRedirectUri> _clientPostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
+        private readonly ICollection<ClientRedirectUri> _redirectUris = new List<ClientRedirectUri>();
+        private readonly ICollection<ClientPostLogoutRedirectUri> _postLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>();
         private readonly ICollection<ClientScope> _allowedScopes = new List<ClientScope>();
         private readonly ICollection<ClientIdPRestriction> _identityProviderRestrictions = new List<ClientIdPRestriction>();
-        private readonly ICollection<ClientClaim> _clientClaims = new List<ClientClaim>();
-        private readonly ICollection<ClientCorsOrigin> _clientCorsOrigins = new List<ClientCorsOrigin>();
-        private readonly ICollection<ClientProperty> _clientProperties = new List<ClientProperty>();
+        private readonly ICollection<ClientClaim> _claims = new List<ClientClaim>();
+        private readonly ICollection<ClientCorsOrigin> _allowedCorsOrigins = new List<ClientCorsOrigin>();
+        private readonly ICollection<ClientProperty> _properties = new List<ClientProperty>();
 
         public virtual bool Enabled { get; set; } = true;
         public virtual string ClientId { get; set; }
         public virtual string ProtocolType { get; set; } = IdentityServerConstants.ProtocolTypes.OpenIdConnect;
-        public virtual IEnumerable<ClientSecret> ClientSecrets { get { return _clientSecrets; } }
+        public virtual IEnumerable<ClientSecret> ClientSecrets { get { return _secrets; } }
         public virtual bool RequireClientSecret { get; set; } = true;
         public virtual string ClientName { get; set; }
         public virtual string Description { get; set; }
@@ -31,8 +31,8 @@
         public virtual bool RequirePkce { get; set; }
         public virtual bool AllowPlainTextPkce { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }
-        public virtual IEnumerable<ClientRedirectUri> RedirectUris { get { return _clientRedirectUris; } }
-        public virtual IEnumerable<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get { return _clientPostLogoutRedirectUris; } }
+        public virtual IEnumerable<ClientRedirectUri> RedirectUris { get { return _redirectUris; } }
+        public virtual IEnumerable<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get { return _postLogoutRedirectUris; } }
         public virtual string FrontChannelLogoutUri { get; set; }
         public virtual bool FrontChannelLogoutSessionRequired { get; set; } = true;
         public virtual string BackChannelLogoutUri { get; set; }
@@ -52,11 +52,11 @@
         public virtual bool EnableLocalLogin { get; set; } = true;
         public virtual IEnumerable<ClientIdPRestriction> IdentityProviderRestrictions { get { return _identityProviderRestrictions; } }
         public virtual bool IncludeJwtId { get; set; }
-        public virtual IEnumerable<ClientClaim> Claims { get { return _clientClaims; } }
+        public virtual IEnumerable<ClientClaim> Claims { get { return _claims; } }
         public virtual bool AlwaysSendClientClaims { get; set; }
         public virtual string ClientClaimsPrefix { get; set; } = "client_";
         public virtual string PairWiseSubjectSalt { get; set; }
-        public virtual IEnumerable<ClientCorsOrigin> AllowedCorsOrigins { get; }
-        public virtual IEnumerable<ClientProperty> Properties { get; }
+        public virtual IEnumerable<ClientCorsOrigin> AllowedCorsOrigins { get { return _allowedCorsOrigins; } }
+        public virtual IEnumerable<ClientProperty> Properties { get { return _properties; } }
     }
 }

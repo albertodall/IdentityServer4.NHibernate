@@ -1,5 +1,6 @@
 ﻿namespace IdentityServer4.NHibernate.Mappings.Entities
 {
+    using System.Collections.Generic;
     using System.Security.Claims;
     using AutoMapper;
 
@@ -47,6 +48,16 @@
                     {
                         opt.MapFrom(src => src.Claims);
                         opt.UseDestinationValue();
+                    })
+                    .ForMember(dest => dest.AllowedCorsOrigins, opt => 
+                    {
+                        opt.MapFrom(src => src.AllowedCorsOrigins);
+                        opt.UseDestinationValue();
+                    })
+                    .ForMember(dest => dest.Properties, opt =>
+                    {
+                        opt.MapFrom(src => src.Properties);
+                        opt.UseDestinationValue();
                     });
 
             CreateMap<NHibernate.Entities.ClientGrantType, string>()
@@ -80,6 +91,14 @@
 
             CreateMap<NHibernate.Entities.ClientClaim, Claim>(MemberList.None)
                 .ConstructUsing(src => new Claim(src.Type, src.Value))
+                .ReverseMap();
+
+            CreateMap<NHibernate.Entities.ClientCorsOrigin, string>()
+                .ConstructUsing(src => src.Origin)
+                .ReverseMap()
+                    .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src));
+
+            CreateMap<NHibernate.Entities.ClientProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
         }
     }

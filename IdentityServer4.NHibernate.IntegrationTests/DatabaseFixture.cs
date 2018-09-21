@@ -9,12 +9,15 @@ namespace IdentityServer4.NHibernate.IntegrationTests
 
         public void Dispose()
         {
-            foreach (var db in TestDatabases)
+            if (TestDatabases != null)
             {
-                // Database objects are dropped after dispose of the Session Factory
-                db.SessionFactory.Dispose();
-                // Drops the physical database
-                db.Drop();
+                foreach (var db in TestDatabases)
+                {
+                    // Database objects are dropped after dispose of the Session Factory
+                    db.SessionFactory.Dispose();
+                    // Drops the physical database
+                    db.Drop();
+                }
             }
         }
     }

@@ -68,7 +68,7 @@
                 {
                     fk.Column("ClientId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ClientGrantType_Client");
+                    fk.ForeignKey("FK_ClientGrantTypes_Client");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
@@ -76,13 +76,13 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientGrantType)))
             );
 
-            Set<ClientSecret>("_clientSecrets", map =>
+            Set<ClientSecret>("_secrets", map =>
             {
                 map.Key(fk =>
                 {
                     fk.Column("ClientId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ClientSecret_Client");
+                    fk.ForeignKey("FK_ClientSecrets_Client");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
@@ -90,13 +90,13 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientSecret)))
             );
 
-            Set<ClientRedirectUri>("_clientRedirectUris", map =>
+            Set<ClientRedirectUri>("_redirectUris", map =>
             {
                 map.Key(fk => 
                 {
                     fk.Column("ClientId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ClientRedirectUri_Client");
+                    fk.ForeignKey("FK_ClientRedirectUris_Client");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
@@ -104,13 +104,13 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientRedirectUri)))
             );
 
-            Set<ClientPostLogoutRedirectUri>("_clientPostLogoutRedirectUris", map =>
+            Set<ClientPostLogoutRedirectUri>("_postLogoutRedirectUris", map =>
             {
                 map.Key(fk =>
                 {
                     fk.Column("ClientId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ClientPostLogoutRedirectUri_Client");
+                    fk.ForeignKey("FK_ClientPostLogoutRedirectUris_Client");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
@@ -138,7 +138,7 @@
                 {
                     fk.Column("ClientId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ClientProviderRestriction_Client");
+                    fk.ForeignKey("FK_ClientProviderRestrictions_Client");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
@@ -146,7 +146,7 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientIdPRestriction)))
             );
 
-            Set<ClientClaim>("_clientClaims", map =>
+            Set<ClientClaim>("_claims", map =>
             {
                 map.Key(fk =>
                 {
@@ -160,8 +160,33 @@
                 r => r.OneToMany(m => m.Class(typeof(ClientClaim)))
             );
 
-            // AllowedCorsOrigins
-            // Properties
+            Set<ClientCorsOrigin>("_allowedCorsOrigins", map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientCorsOrigin_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientCorsOrigin)))
+            );
+
+            Set<ClientProperty>("_properties", map => 
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ClientId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ClientProperties_Client");
+                });
+                map.Access(Accessor.Field);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(ClientProperty)))
+            );
         }
     }
 }
