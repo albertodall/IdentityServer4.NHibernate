@@ -1,7 +1,6 @@
 ﻿namespace IdentityServer4.NHibernate.Entities
 {
-    public class ApiResourceClaim
+    public class ApiResourceClaim : UserClaim
     {
-        public virtual ApiResource ApiResource { get; set; }
     }
 }

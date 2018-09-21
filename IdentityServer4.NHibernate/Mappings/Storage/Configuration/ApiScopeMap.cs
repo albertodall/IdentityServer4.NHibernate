@@ -4,11 +4,11 @@
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Mapping.ByCode.Conformist;
 
-    internal class IdentityResourceMap : ClassMapping<IdentityResource>
+    internal class ApiScopeMap : ClassMapping<ApiScope>
     {
-        public IdentityResourceMap()
+        public ApiScopeMap()
         {
-            Id(p => p.ID, map => 
+            Id(p => p.ID, map =>
             {
                 map.Generator(Generators.Native);
                 map.Column("Id");
@@ -18,24 +18,26 @@
             {
                 map.Length(200);
                 map.NotNullable(true);
-                map.UniqueKey("UK_IdentityResourceName");
+                map.UniqueKey("UK_ApiScopes_Name");
             });
 
             Property(p => p.DisplayName, map => map.Length(200));
             Property(p => p.Description, map => map.Length(1000));
+            Property(p => p.Emphasize);
+            Property(p => p.ShowInDiscoveryDocument);
 
-            Set<IdentityClaim>("_userClaims", map => 
+            Set<ApiScopeClaim>("_userClaims", map => 
             {
                 map.Key(fk =>
                 {
-                    fk.Column("IdentityResourceId");
+                    fk.Column("ApiResourceId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_IdentityClaims_IdentityResource");
+                    fk.ForeignKey("FK_ApiScopeClaims_ApiResource");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
-            },
-                r => r.OneToMany(m => m.Class(typeof(IdentityClaim)))
+            },   
+                r => r.OneToMany(m => m.Class(typeof(ApiScopeClaim)))
             );
         }
     }

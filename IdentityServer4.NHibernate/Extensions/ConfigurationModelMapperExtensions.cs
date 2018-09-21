@@ -25,6 +25,11 @@
         {
             mapper.AddMapping<IdentityResourceMap>();
             mapper.AddMapping<IdentityClaimMap>();
+            mapper.AddMapping<ApiResourceMap>();
+            mapper.AddMapping<ApiSecretMap>();
+            mapper.AddMapping<ApiResourceClaimMap>();
+            mapper.AddMapping<ApiScopeMap>();
+            mapper.AddMapping<ApiScopeClaimMap>();
 
             return mapper;
         }

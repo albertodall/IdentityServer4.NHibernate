@@ -2,6 +2,5 @@
 {
     public class ApiSecret : Secret
     {
-        public virtual ApiResource ApiResource { get; set; }
     }
 }
