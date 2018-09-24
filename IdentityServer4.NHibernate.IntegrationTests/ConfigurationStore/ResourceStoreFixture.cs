@@ -10,6 +10,7 @@
     using IdentityServer4.NHibernate.Stores;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using FluentAssertions;
 
     public class ResourceStoreFixture : IClassFixture<DatabaseFixture>
     {
@@ -29,7 +30,7 @@
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Existing_Resources(TestDatabase testDb)
+        public void Should_Retrieve_Existing_Api_Resources_By_Scope_Names(TestDatabase testDb)
         {
             var testIdentityResource = CreateTestIdentityResource();
             var testApiResource = CreateTestApiResource();
@@ -44,13 +45,15 @@
                 }
             }
 
-            var loggerMock = new Mock<ILogger<ClientStore>>();
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
             using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindApiResourcesByScopeAsync(new string[] { testIdentityResource.Name, testApiResource.Scopes.First().Name }).Result;
             }
+
+            resources.Should().NotBeNull();
         }
 
         private static IdentityResource CreateTestIdentityResource()
@@ -78,7 +81,7 @@
                 Scopes =
                     new List<Scope>
                     {
-                        new Scope
+                        new Scope()
                         {
                             Name = "test_scope",
                             UserClaims = { "test_claim" } 

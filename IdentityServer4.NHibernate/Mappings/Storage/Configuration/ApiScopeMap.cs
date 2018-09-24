@@ -18,7 +18,7 @@
             {
                 map.Length(200);
                 map.NotNullable(true);
-                map.UniqueKey("UK_ApiScopes_Name");
+                map.UniqueKey("UK_ApiScope_Name");
             });
 
             Property(p => p.DisplayName, map => map.Length(200));
@@ -30,9 +30,9 @@
             {
                 map.Key(fk =>
                 {
-                    fk.Column("ApiResourceId");
+                    fk.Column("ApiScopeId");
                     fk.NotNullable(true);
-                    fk.ForeignKey("FK_ApiScopeClaims_ApiResource");
+                    fk.ForeignKey("FK_ApiScopeClaims_ApiScope");
                 });
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
