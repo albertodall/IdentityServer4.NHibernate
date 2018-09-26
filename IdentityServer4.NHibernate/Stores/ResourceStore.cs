@@ -63,7 +63,7 @@
         public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             Entities.ApiResource apiResourceAlias = null;
-            var resourcesQuery = await _session.QueryOver(() => apiResourceAlias)
+            var resourcesQuery = _session.QueryOver(() => apiResourceAlias)
                 .WithSubquery.WhereExists(
                     QueryOver.Of<ApiScope>()
                         .WhereRestrictionOn(s => s.Name).IsInG(scopeNames)
@@ -72,10 +72,9 @@
                 )
                 .Fetch(ar => ar.Scopes).Eager
                 .Fetch(ar => ar.Secrets).Eager
-                .Fetch(ar => ar.UserClaims).Eager
-                .ListAsync(); ;
+                .Fetch(ar => ar.UserClaims).Eager;
 
-            var results = resourcesQuery.ToArray();
+            var results = await resourcesQuery.ListAsync();
 
             var models = results.Select(x => x.ToModel()).ToArray();
 
@@ -90,12 +89,11 @@
         /// <param name="scopeNames">Scope name/names.</param>
         public async Task<IEnumerable<Models.IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            var resourcesQuery = await _session.QueryOver<Entities.IdentityResource>()
+            var resourcesQuery = _session.QueryOver<Entities.IdentityResource>()
                 .Where(r => r.Name.IsIn(scopeNames.ToArray()))
-                .Fetch(r => r.UserClaims).Eager
-                .ListAsync();
+                .Fetch(r => r.UserClaims).Eager;
 
-            var results = resourcesQuery.ToArray();
+            var results = await resourcesQuery.ListAsync();
 
             _logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
