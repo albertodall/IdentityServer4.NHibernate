@@ -40,12 +40,7 @@
 
             Set<ApiScope>("_scopes", map =>
             {
-                map.Key(fk =>
-                {
-                    fk.Column("ApiResourceId");
-                    fk.NotNullable(true);
-                    fk.ForeignKey("FK_ApiScopes_ApiResource");
-                });
+                map.Key(fk => fk.Column("ApiResourceId"));
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },

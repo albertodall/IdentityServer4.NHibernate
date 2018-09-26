@@ -13,5 +13,6 @@
         public virtual bool Emphasize { get; set; }
         public virtual bool ShowInDiscoveryDocument { get; set; } = true;
         public virtual IEnumerable<ApiScopeClaim> UserClaims { get { return _userClaims; } }
+        public virtual ApiResource ApiResource { get; set; }
     }
 }
