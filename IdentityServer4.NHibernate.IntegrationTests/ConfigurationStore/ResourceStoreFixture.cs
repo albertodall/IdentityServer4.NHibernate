@@ -170,11 +170,56 @@
             resource.Should().BeNull();
         }
 
-        private static IdentityResource CreateTestIdentityResource()
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_All_Resources_Included_Hidden_Ones(TestDatabase testDb)
+        {
+            var visibleIdentityResource = CreateTestIdentityResource("identity_visible");
+            var visibleApiResource = CreateTestApiResource("api_visible", new[] { "api_visible_scope1", "api_visible_scope_2" });
+            var hiddenIdentityResource = new IdentityResource()
+            {
+                Name = "identity_hidden",
+                ShowInDiscoveryDocument = false
+            };
+            var hiddenApiResource = new ApiResource()
+            {
+                Name = "api_hidden",
+                Scopes = { new Scope("scope_hidden_1") { ShowInDiscoveryDocument = false } }
+            };
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Save(visibleIdentityResource.ToEntity());
+                    session.Save(visibleApiResource.ToEntity());
+                    session.Save(hiddenIdentityResource.ToEntity());
+                    session.Save(hiddenApiResource.ToEntity());
+                    tx.Commit();
+                }
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            Resources resources;
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = store.GetAllResourcesAsync().Result;
+            }
+
+            resources.Should().NotBeNull();
+            resources.IdentityResources.Should().NotBeEmpty();
+            resources.ApiResources.Should().NotBeEmpty();
+
+            Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
+            Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+        }
+
+        private static IdentityResource CreateTestIdentityResource(string name)
         {
             return new IdentityResource()
             {
-                Name = "test_identity_resource",
+                Name = name,
                 DisplayName = "Test Identity Resource",
                 Description = "Identity Resource used for testing",
                 ShowInDiscoveryDocument = true,

@@ -3,7 +3,7 @@
     using Mappings.Entities;
     using AutoMapper;
 
-    internal static class ResourceStoreMappingExtensions
+    public static class ResourceStoreMappingExtensions
     {
         private static IMapper Mapper;
 

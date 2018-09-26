@@ -18,11 +18,18 @@
             {
                 map.Length(200);
                 map.NotNullable(true);
-                map.UniqueKey("UK_IdentityResourceName");
+                map.UniqueKey("UK_IdentityResource_Name");
             });
 
             Property(p => p.DisplayName, map => map.Length(200));
             Property(p => p.Description, map => map.Length(1000));
+            Property(p => p.Required);
+            Property(p => p.ShowInDiscoveryDocument, map => 
+            {
+                map.NotNullable(true);
+            });
+            Property(p => p.Emphasize);
+            Property(p => p.Enabled);
 
             Set<IdentityClaim>("_userClaims", map => 
             {
