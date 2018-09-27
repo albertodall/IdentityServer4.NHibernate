@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Logging;
     using Moq;
     using FluentAssertions;
+    using System;
 
     public class ResourceStoreFixture : IClassFixture<DatabaseFixture>
     {
@@ -213,6 +214,68 @@
 
             Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
             Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Identity_Resource_And_Its_Claims_By_Scope(TestDatabase testDb)
+        {
+            var testIdentityResourceName = "idres1";
+            var testIdentityResource = CreateTestIdentityResource(testIdentityResourceName);
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Save(testIdentityResource.ToEntity());
+                    tx.Commit();
+                }
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            IEnumerable<IdentityResource> resources;
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = store.FindIdentityResourcesByScopeAsync(
+                    new[] { testIdentityResourceName})
+                    .Result;
+            }
+
+            resources.Should().NotBeEmpty();
+            resources.First().Name.Should().Be(testIdentityResourceName);
+            resources.First().UserClaims.Count().Should().Be(2);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_Only_Requested_Identity_Resources(TestDatabase testDb)
+        {
+            var testIdentityResource1 = CreateTestIdentityResource(Guid.NewGuid().ToString());
+            var testIdentityResource2 = CreateTestIdentityResource(Guid.NewGuid().ToString());
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Save(testIdentityResource1.ToEntity());
+                    session.Save(testIdentityResource2.ToEntity());
+                    tx.Commit();
+                }
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            IEnumerable<IdentityResource> resources;
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = store.FindIdentityResourcesByScopeAsync(
+                    new[] { testIdentityResource1.Name })
+                    .Result;
+            }
+
+            resources.Should().NotBeEmpty();
+            resources.Count().Should().Be(1);
         }
 
         private static IdentityResource CreateTestIdentityResource(string name)

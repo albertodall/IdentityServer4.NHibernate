@@ -39,6 +39,7 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_IdentityClaims_IdentityResource");
                 });
+                map.Fetch(CollectionFetchMode.Join);
                 map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },

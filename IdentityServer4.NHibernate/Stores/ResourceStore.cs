@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Logging;
     using global::NHibernate;
     using global::NHibernate.Criterion;
+    using global::NHibernate.Transform;
 
     /// <summary>
     /// Implementation of the NHibernate-based IResourceStore.
@@ -90,8 +91,8 @@
         public async Task<IEnumerable<Models.IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var resourcesQuery = _session.QueryOver<Entities.IdentityResource>()
-                .Where(r => r.Name.IsIn(scopeNames.ToArray()))
-                .Fetch(r => r.UserClaims).Eager;
+                .WhereRestrictionOn(r => r.Name).IsInG(scopeNames)
+                .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
 
