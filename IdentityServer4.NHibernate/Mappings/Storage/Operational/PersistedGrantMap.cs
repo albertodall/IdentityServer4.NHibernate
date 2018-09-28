@@ -1,9 +1,9 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage.Operational
-{
-    using IdentityServer4.NHibernate.Entities;
-    using global::NHibernate.Mapping.ByCode;
-    using global::NHibernate.Mapping.ByCode.Conformist;
+﻿using IdentityServer4.NHibernate.Entities;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 
+namespace IdentityServer4.NHibernate.Mappings.Storage.Operational
+{
     internal class PersistedGrantMap : ClassMapping<PersistedGrant>
     {
         public PersistedGrantMap()
@@ -39,7 +39,6 @@
 
             Property(p => p.CreationTime, map => map.NotNullable(true));
             Property(p => p.Expiration);
-
             Property(p => p.Data, map => map.NotNullable(true));
         }
     }

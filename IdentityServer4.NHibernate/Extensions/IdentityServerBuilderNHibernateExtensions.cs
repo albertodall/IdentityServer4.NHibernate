@@ -1,17 +1,16 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
-{
-    using System;
-    using IdentityServer4.NHibernate.Extensions;
-    using IdentityServer4.NHibernate.Options;
-    using IdentityServer4.NHibernate.Services;
-    using IdentityServer4.NHibernate.Stores;
-    using IdentityServer4.NHibernate.TokenCleanup;
-    using IdentityServer4.Services;
-    using IdentityServer4.Stores;
-    using Hosting;
-    using NHibernate;
-    using NHibernate.Cfg;
+﻿using System;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Services;
+using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.NHibernate.TokenCleanup;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using Microsoft.Extensions.Hosting;
+using NHibernate;
 
+namespace Microsoft.Extensions.DependencyInjection
+{
     public static class IdentityServerBuilderNHibernateExtensions
     {
         /// <summary>
@@ -25,7 +24,7 @@
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
         public static IIdentityServerBuilder AddDatabaseSupport(
             this IIdentityServerBuilder builder,
-            Configuration databaseConfiguration,
+            NHibernate.Cfg.Configuration databaseConfiguration,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
             Action<OperationalStoreOptions> operationalStoreOptionsAction)
         {
@@ -79,7 +78,7 @@
         /// <returns></returns>
         public static IIdentityServerBuilder AddDatabaseSupport(
             this IIdentityServerBuilder builder,
-            Func<Configuration> databaseConfigurationFunction,
+            Func<NHibernate.Cfg.Configuration> databaseConfigurationFunction,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
             Action<OperationalStoreOptions> operationalStoreOptionsAction)
         {

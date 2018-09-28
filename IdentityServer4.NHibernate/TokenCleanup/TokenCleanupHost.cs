@@ -1,10 +1,10 @@
-﻿namespace IdentityServer4.NHibernate.TokenCleanup
-{
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Hosting;
-    using Options;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using IdentityServer4.NHibernate.Options;
+using Microsoft.Extensions.Hosting;
 
+namespace IdentityServer4.NHibernate.TokenCleanup
+{
     internal class TokenCleanupHost : IHostedService
     {
         private readonly TokenCleanup _tokenCleanup;

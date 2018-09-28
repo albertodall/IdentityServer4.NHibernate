@@ -1,13 +1,17 @@
-﻿namespace IdentityServer4.NHibernate.Stores
-{
-    using System;
-    using System.Threading.Tasks;
-    using Extensions;
-    using IdentityServer4.Models;
-    using IdentityServer4.Stores;
-    using Microsoft.Extensions.Logging;
-    using global::NHibernate;
+﻿using System;
+using System.Threading.Tasks;
+using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.Stores;
+using NHibernate;
+using NHibernate.Transform;
+using Microsoft.Extensions.Logging;
 
+namespace IdentityServer4.NHibernate.Stores
+{
+    /// <summary>
+    /// Implementation of the NHibernate-based client store.
+    /// </summary>
     public class ClientStore : IClientStore
     {
         private readonly ISession _session;
@@ -32,57 +36,41 @@
         /// <returns>
         /// The client
         /// </returns>
-        public async Task<Client> FindClientByIdAsync(string clientId)
+        public async Task<Models.Client> FindClientByIdAsync(string clientId)
         {
-            Entities.Client client = null;
+            Client client = null;
             using (var tx = _session.BeginTransaction())
             {
-                var clientQuery = _session.QueryOver<Entities.Client>()
+                var clientQuery = _session.QueryOver<Client>()
+                    .Where(c => c.ClientId == clientId)
                     .Fetch(c => c.AllowedGrantTypes).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
-
-                _session.QueryOver<Entities.Client>()
                     .Fetch(c => c.ClientSecrets).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
-
-                _session.QueryOver<Entities.Client>()
-                    .Fetch(c => c.RedirectUris).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
-
-                _session.QueryOver<Entities.Client>()
-                    .Fetch(c => c.PostLogoutRedirectUris).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
-
-                _session.QueryOver<Entities.Client>()
                     .Fetch(c => c.AllowedScopes).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
+                    .Fetch(c => c.Claims).Eager
+                    .TransformUsing(Transformers.DistinctRootEntity)
+                    .FutureValue<Client>();
 
-                _session.QueryOver<Entities.Client>()
-                    .Fetch(c => c.IdentityProviderRestrictions).Eager
+                _session.QueryOver<Client>()
                     .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
-
-                _session.QueryOver<Entities.Client>()
+                    .Fetch(c => c.RedirectUris).Eager
+                    .Fetch(c => c.PostLogoutRedirectUris).Eager
                     .Fetch(c => c.AllowedCorsOrigins).Eager
-                    .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
+                    .TransformUsing(Transformers.DistinctRootEntity)
+                    .FutureValue<Client>();
 
-                _session.QueryOver<Entities.Client>()
-                    .Fetch(c => c.Properties).Eager
+                _session.QueryOver<Client>()
                     .Where(c => c.ClientId == clientId)
-                    .FutureValue<Entities.Client>();
+                    .Fetch(c => c.IdentityProviderRestrictions).Eager
+                    .Fetch(c => c.Properties).Eager
+                    .TransformUsing(Transformers.DistinctRootEntity)
+                    .FutureValue<Client>();
 
                 client = await clientQuery.GetValueAsync();
 
                 await tx.CommitAsync();
             }
 
-            Client clientModel = client.ToModel();
+            Models.Client clientModel = client.ToModel();
 
             _logger.LogDebug("{clientId} found in database: {clientIdFound}", clientId, clientModel != null);
 

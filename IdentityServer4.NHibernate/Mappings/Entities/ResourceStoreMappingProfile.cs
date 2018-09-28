@@ -1,9 +1,9 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Entities
-{
-    using AutoMapper;
-    using IdentityServer4.Models;
-    using IdentityServer4.NHibernate.Entities;
+﻿using AutoMapper;
+using IdentityServer4.Models;
+using IdentityServer4.NHibernate.Entities;
 
+namespace IdentityServer4.NHibernate.Mappings.Entities
+{
     /// <summary>
     /// Defines entity/model mapping for API resources and Identity resources.
     /// </summary>

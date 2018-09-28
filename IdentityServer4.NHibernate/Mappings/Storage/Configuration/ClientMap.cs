@@ -1,9 +1,9 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
-{
-    using IdentityServer4.NHibernate.Entities;
-    using global::NHibernate.Mapping.ByCode;
-    using global::NHibernate.Mapping.ByCode.Conformist;
+﻿using IdentityServer4.NHibernate.Entities;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 
+namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
+{
     internal class ClientMap : ClassMapping<Client>
     {
         public ClientMap()
@@ -58,7 +58,7 @@
             Property(p => p.RefreshTokenExpiration);
             Property(p => p.AccessTokenType);
 
-            Set<ClientGrantType>("_allowedGrantTypes", map =>
+            Set(p => p.AllowedGrantTypes, map =>
             {
                 map.Key(fk => 
                 {
@@ -66,13 +66,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientGrantTypes_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             }, 
                 r => r.OneToMany(m => m.Class(typeof(ClientGrantType)))
             );
 
-            Set<ClientSecret>("_secrets", map =>
+            Set(p => p.ClientSecrets, map =>
             {
                 map.Key(fk =>
                 {
@@ -80,13 +79,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientSecrets_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientSecret)))
             );
 
-            Set<ClientRedirectUri>("_redirectUris", map =>
+            Set(p => p.RedirectUris, map =>
             {
                 map.Key(fk => 
                 {
@@ -94,13 +92,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientRedirectUris_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientRedirectUri)))
             );
 
-            Set<ClientPostLogoutRedirectUri>("_postLogoutRedirectUris", map =>
+            Set(p => p.PostLogoutRedirectUris, map =>
             {
                 map.Key(fk =>
                 {
@@ -108,13 +105,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientPostLogoutRedirectUris_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientPostLogoutRedirectUri)))
             );
 
-            Set<ClientScope>("_allowedScopes", map => 
+            Set(p => p.AllowedScopes, map => 
             {
                 map.Key(fk => 
                 {
@@ -122,13 +118,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientScope_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientScope)))
             );
 
-            Set<ClientIdPRestriction>("_identityProviderRestrictions", map =>
+            Set(p => p.IdentityProviderRestrictions, map =>
             {
                 map.Key(fk =>
                 {
@@ -136,13 +131,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientProviderRestrictions_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientIdPRestriction)))
             );
 
-            Set<ClientClaim>("_claims", map =>
+            Set(p => p.Claims, map =>
             {
                 map.Key(fk =>
                 {
@@ -150,13 +144,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientClaims_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientClaim)))
             );
 
-            Set<ClientCorsOrigin>("_allowedCorsOrigins", map =>
+            Set(p => p.AllowedCorsOrigins, map =>
             {
                 map.Key(fk =>
                 {
@@ -164,13 +157,12 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientCorsOrigin_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientCorsOrigin)))
             );
 
-            Set<ClientProperty>("_properties", map => 
+            Set(p => p.Properties, map => 
             {
                 map.Key(fk =>
                 {
@@ -178,7 +170,6 @@
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ClientProperties_Client");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ClientProperty)))

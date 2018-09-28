@@ -1,9 +1,9 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
-{
-    using IdentityServer4.NHibernate.Entities;
-    using global::NHibernate.Mapping.ByCode;
-    using global::NHibernate.Mapping.ByCode.Conformist;
+﻿using IdentityServer4.NHibernate.Entities;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 
+namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
+{
     internal class IdentityResourceMap : ClassMapping<IdentityResource>
     {
         public IdentityResourceMap()

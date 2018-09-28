@@ -1,15 +1,15 @@
-﻿namespace IdentityServer4.NHibernate.Stores
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Extensions;
-    using IdentityServer4.Models;
-    using IdentityServer4.Stores;
-    using global::NHibernate;
-    using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.Stores;
+using NHibernate;
+using Microsoft.Extensions.Logging;
 
+namespace IdentityServer4.NHibernate.Stores
+{
     /// <summary>
     /// Implementation of the NHibernate-based persisted grant store.
     /// </summary>
@@ -142,10 +142,9 @@
         /// <param name="key">The key.</param>
         public async Task RemoveAsync(string key)
         {
-            Entities.PersistedGrant persistentGrantToDelete = null;
             using (var tx = _session.BeginTransaction())
             {
-                persistentGrantToDelete = _session.Get<Entities.PersistedGrant>(key);
+                var persistentGrantToDelete = _session.Get<Entities.PersistedGrant>(key);
                 if (persistentGrantToDelete != null)
                 {
                     _logger.LogDebug("removing {persistedGrantKey} persisted grant from database", key);

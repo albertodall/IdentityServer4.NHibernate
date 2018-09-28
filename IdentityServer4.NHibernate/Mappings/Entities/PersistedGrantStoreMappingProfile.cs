@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Entities
-{
-    using AutoMapper;
+﻿using AutoMapper;
 
+namespace IdentityServer4.NHibernate.Mappings.Entities
+{
     /// <summary>
     /// Entity to model mapping (and vice-versa) for persisted grants.
     /// </summary>

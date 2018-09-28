@@ -1,12 +1,13 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("IdentityServer4.NHibernate.IntegrationTests")]
+﻿using IdentityServer4.NHibernate.Mappings.Storage;
+using IdentityServer4.NHibernate.Mappings.Storage.Operational;
+using IdentityServer4.NHibernate.Options;
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("IdentityServer4.NHibernate.IntegrationTests")]
 
 namespace IdentityServer4.NHibernate.Extensions
 {
-    using Mappings.Storage;
-    using Mappings.Storage.Operational;
-    using Options;
     using global::NHibernate.Cfg;
-
+    
     public static class NHibernateConfigurationExtensions
     {
         /// <summary>

@@ -1,9 +1,9 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Entities
-{
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using AutoMapper;
 
+namespace IdentityServer4.NHibernate.Mappings.Entities
+{
     /// <summary>
     /// Entity to model mapping (and vice-versa) for clients.
     /// </summary>

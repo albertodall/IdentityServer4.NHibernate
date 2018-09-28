@@ -41,6 +41,7 @@
             using (var session = testDb.SessionFactory.OpenSession())
             {
                 session.Save(testClient.ToEntity());
+                session.Flush();
             }
 
             Client requestedClient = null;

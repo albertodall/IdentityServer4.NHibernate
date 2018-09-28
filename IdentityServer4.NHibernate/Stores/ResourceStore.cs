@@ -1,18 +1,18 @@
-﻿namespace IdentityServer4.NHibernate.Stores
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using IdentityServer4.Stores;
-    using IdentityServer4.Models;
-    using IdentityServer4.NHibernate.Entities;
-    using IdentityServer4.NHibernate.Extensions;
-    using Microsoft.Extensions.Logging;
-    using global::NHibernate;
-    using global::NHibernate.Criterion;
-    using global::NHibernate.Transform;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using IdentityServer4.Models;
+using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.Stores;
+using Microsoft.Extensions.Logging;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Transform;
 
+namespace IdentityServer4.NHibernate.Stores
+{
     /// <summary>
     /// Implementation of the NHibernate-based IResourceStore.
     /// </summary>
@@ -53,7 +53,7 @@
                 _logger.LogDebug("Did not find {api} API resource in database", name);
             }
 
-            return await Task.FromResult(apiResource.ToModel());
+            return apiResource.ToModel();
         }
 
         /// <summary>
@@ -80,7 +80,7 @@
 
             _logger.LogDebug("Found {scopes} API scopes in database", models.SelectMany(x => x.Scopes).Select(x => x.Name));
 
-            return await Task.FromResult(models);
+            return models;
         }
 
         /// <summary>
@@ -97,7 +97,7 @@
 
             _logger.LogDebug("Found {scopes} identity scopes in database", results.Select(x => x.Name));
 
-            return await Task.FromResult(results.Select(x => x.ToModel()).ToArray());
+            return results.Select(x => x.ToModel()).ToArray();
         }
 
         /// <summary>

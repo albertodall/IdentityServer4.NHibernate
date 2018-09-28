@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Options
-{
-    using System;
+﻿using System;
 
+namespace IdentityServer4.NHibernate.Options
+{  
     /// <summary>
     /// Class to control a table definition (name and schema).
     /// </summary>

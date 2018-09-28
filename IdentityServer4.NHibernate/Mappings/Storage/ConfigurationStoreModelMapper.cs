@@ -1,10 +1,10 @@
-﻿namespace IdentityServer4.NHibernate.Mappings.Storage
-{
-    using System;
-    using IdentityServer4.NHibernate.Entities;
-    using Options;
-    using global::NHibernate.Mapping.ByCode;
+﻿using System;
+using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Options;
+using NHibernate.Mapping.ByCode;
 
+namespace IdentityServer4.NHibernate.Mappings.Storage
+{
     internal class ConfigurationStoreModelMapper : ModelMapper
     {
         private readonly ConfigurationStoreOptions _options;

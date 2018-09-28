@@ -1,8 +1,8 @@
-﻿namespace IdentityServer4.NHibernate.Extensions
-{
-    using Mappings.Entities;
-    using AutoMapper;
+﻿using IdentityServer4.NHibernate.Mappings.Entities;
+using AutoMapper;
 
+namespace IdentityServer4.NHibernate.Extensions
+{
     public static class PersistedGrantStoreMappingExtensions
     {
         private static IMapper Mapper;
