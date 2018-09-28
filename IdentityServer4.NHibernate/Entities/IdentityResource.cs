@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Entities
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace IdentityServer4.NHibernate.Entities
+{
     public class IdentityResource : EntityBase<int>
     {
         private readonly ICollection<IdentityClaim> _userClaims = new List<IdentityClaim>();

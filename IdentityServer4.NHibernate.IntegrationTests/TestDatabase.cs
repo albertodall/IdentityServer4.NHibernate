@@ -1,7 +1,8 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests
+﻿using System;
+using NHibernate;
+
+namespace IdentityServer4.NHibernate.IntegrationTests
 {
-    using System;
-    using global::NHibernate;
     using Microsoft.SqlServer.Management.Smo;
 
     /// <summary>

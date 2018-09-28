@@ -1,10 +1,12 @@
-﻿namespace IdentityServer4.NHibernate.Database
+﻿using IdentityServer4.NHibernate.Extensions;
+using NHibernate.Bytecode;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+
+namespace IdentityServer4.NHibernate.Database
 {
-    using Extensions;
-    using global::NHibernate.Bytecode;
     using global::NHibernate.Cfg;
-    using global::NHibernate.Dialect;
-    using global::NHibernate.Driver;
+    
 
     public static class Databases
     {

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.Stores;
-using NHibernate;
 using Microsoft.Extensions.Logging;
+using NHibernate;
 
 namespace IdentityServer4.NHibernate.Stores
 {

@@ -1,17 +1,17 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
-    using Extensions;
-    using Options;
-    using Stores;
-    using IdentityServer4.Models;
-    using Xunit;
-    using Moq;
-    using FluentAssertions;
-    using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.Models;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
+namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
+{  
     public class ClientStoreFixture : IClassFixture<DatabaseFixture>
     {
         private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
@@ -90,6 +90,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -124,6 +125,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -158,6 +160,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -192,6 +195,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -226,6 +230,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -260,6 +265,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -294,6 +300,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -328,6 +335,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;
@@ -352,9 +360,9 @@
                 ClientName = "Test Client with Properties",
                 Properties =
                 {
-                    {"prop1", "val1" },
-                    {"prop2", "val2" },
-                    {"prop3", "val3" }
+                    { "prop1", "val1" },
+                    { "prop2", "val2" },
+                    { "prop3", "val3" }
                 }
             };
 
@@ -362,6 +370,7 @@
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
+                session.Flush();
             }
 
             Client requestedClient = null;

@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Entities
-{
-    using System;
+﻿using System;
 
+namespace IdentityServer4.NHibernate.Entities
+{
     public class PersistedGrant : EntityBase<string>
     {
         public virtual string Type { get; set; }

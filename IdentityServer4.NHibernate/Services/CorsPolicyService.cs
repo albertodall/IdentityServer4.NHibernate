@@ -1,14 +1,57 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NHibernate;
+using NHibernate.Criterion;
 
 namespace IdentityServer4.NHibernate.Services
 {
+    /// <summary>
+    /// Implementation of NHibernate-based CorsPolicyService.
+    /// Checks the client configuration on the database for allowed CORS origins.
+    /// </summary>
     public class CorsPolicyService : ICorsPolicyService
     {
-        public Task<bool> IsOriginAllowedAsync(string origin)
+        private readonly IHttpContextAccessor _context;
+        private readonly ILogger<CorsPolicyService> _logger;
+
+        public CorsPolicyService(IHttpContextAccessor context, ILogger<CorsPolicyService> logger)
         {
-            throw new NotImplementedException();
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Determines whether origin is allowed or not.
+        /// </summary>
+        /// <param name="origin">The origin.</param>
+        public async Task<bool> IsOriginAllowedAsync(string origin)
+        {
+            bool isAllowed = false;
+
+            using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
+            {
+                ClientCorsOrigin corsOriginAlias = null;
+                var corsOriginsQuery = session.QueryOver<Client>()
+                    .JoinQueryOver(c => c.AllowedCorsOrigins, () => corsOriginAlias)
+                    .Select(Projections.Distinct(
+                        Projections.ProjectionList()
+                            .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))
+                    ));
+
+                var origins = await corsOriginsQuery.ListAsync<string>();
+
+                isAllowed = origins.Any(o => o == origin);
+            }
+
+            _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);
+
+            return isAllowed;
         }
     }
 }

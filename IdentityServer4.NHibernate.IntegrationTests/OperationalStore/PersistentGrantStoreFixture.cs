@@ -1,17 +1,17 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Extensions;
-    using Options;
-    using Stores;
-    using IdentityServer4.Models;
-    using FluentAssertions;
-    using Moq;
-    using Microsoft.Extensions.Logging;
-    using Xunit;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.Models;
+using FluentAssertions;
+using Moq;
+using Microsoft.Extensions.Logging;
+using Xunit;
 
+namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
+{
     public class PersistentGrantStoreFixture : IClassFixture<DatabaseFixture>
     {
         private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();

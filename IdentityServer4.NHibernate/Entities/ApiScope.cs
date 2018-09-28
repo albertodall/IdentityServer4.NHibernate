@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Entities
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace IdentityServer4.NHibernate.Entities
+{
     public class ApiScope : EntityBase<int>
     {
         private readonly ICollection<ApiScopeClaim> _userClaims = new List<ApiScopeClaim>();

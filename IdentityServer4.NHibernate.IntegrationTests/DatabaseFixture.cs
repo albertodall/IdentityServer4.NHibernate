@@ -1,8 +1,8 @@
-namespace IdentityServer4.NHibernate.IntegrationTests
-{
-    using System;
-    using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
+namespace IdentityServer4.NHibernate.IntegrationTests
+{  
     public class DatabaseFixture : IDisposable
     {
         public List<TestDatabase> TestDatabases;

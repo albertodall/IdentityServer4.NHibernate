@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.Stores;
+using Microsoft.Extensions.Logging;
 using NHibernate;
 using NHibernate.Transform;
-using Microsoft.Extensions.Logging;
 
 namespace IdentityServer4.NHibernate.Stores
 {

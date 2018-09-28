@@ -1,18 +1,18 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using Extensions;
-    using Options;
-    using IdentityModel;
-    using IdentityServer4.Models;
-    using Xunit;
-    using IdentityServer4.NHibernate.Stores;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using FluentAssertions;
-    using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using IdentityModel;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.Models;
+using IdentityServer4.NHibernate.Stores;
+using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using Moq;
+using Xunit;
 
+namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
+{
     public class ResourceStoreFixture : IClassFixture<DatabaseFixture>
     {
         private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
@@ -40,11 +40,8 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testApiResource1.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testApiResource1.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -74,12 +71,9 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testApiResource1.ToEntity());
-                    session.Save(testApiResource2.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testApiResource1.ToEntity());
+                session.Save(testApiResource2.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -108,11 +102,8 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testApiResource.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testApiResource.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -135,11 +126,8 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testApiResource.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testApiResource.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -193,14 +181,11 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(visibleIdentityResource.ToEntity());
-                    session.Save(visibleApiResource.ToEntity());
-                    session.Save(hiddenIdentityResource.ToEntity());
-                    session.Save(hiddenApiResource.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(visibleIdentityResource.ToEntity());
+                session.Save(visibleApiResource.ToEntity());
+                session.Save(hiddenIdentityResource.ToEntity());
+                session.Save(hiddenApiResource.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -228,11 +213,8 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testIdentityResource.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testIdentityResource.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
@@ -259,12 +241,9 @@
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                using (var tx = session.BeginTransaction())
-                {
-                    session.Save(testIdentityResource1.ToEntity());
-                    session.Save(testIdentityResource2.ToEntity());
-                    tx.Commit();
-                }
+                session.Save(testIdentityResource1.ToEntity());
+                session.Save(testIdentityResource2.ToEntity());
+                session.Flush();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();

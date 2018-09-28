@@ -1,12 +1,12 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests
-{
-    using System.Diagnostics;
-    using Database;
-    using Extensions;
-    using Options;
-    using global::NHibernate;
-    using global::NHibernate.Tool.hbm2ddl;
+﻿using System.Diagnostics;
+using IdentityServer4.NHibernate.Database;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using NHibernate;
+using NHibernate.Tool.hbm2ddl;
 
+namespace IdentityServer4.NHibernate.IntegrationTests
+{
     /// <summary>
     /// Methods for creating test databases and related session factories.
     /// </summary>

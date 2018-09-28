@@ -1,7 +1,7 @@
-﻿namespace IdentityServer4.NHibernate.Entities
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace IdentityServer4.NHibernate.Entities
+{
     public class ApiResource : EntityBase<int>
     {
         private readonly ICollection<ApiSecret> _secrets = new List<ApiSecret>();
