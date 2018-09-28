@@ -151,7 +151,10 @@
             }
 
             resource.Should().NotBeNull();
+            resource.ApiSecrets.Should().NotBeEmpty();
+            resource.Scopes.Should().NotBeEmpty();
             resource.Scopes.Count().Should().Be(1);
+            resource.Scopes.First().UserClaims.Should().NotBeEmpty();
             resource.Scopes.First().UserClaims.Count().Should().Be(1);
             resource.UserClaims.Count().Should().Be(2);
         }
@@ -277,6 +280,7 @@
             resources.Should().NotBeEmpty();
             resources.Count().Should().Be(1);
         }
+
 
         private static IdentityResource CreateTestIdentityResource(string name)
         {

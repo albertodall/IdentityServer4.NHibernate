@@ -26,7 +26,6 @@
         /// </summary>
         /// <param name="session">The NHibernate session used to retrieve the data.</param>
         /// <param name="logger">The logger.</param>
-        /// <exception cref="ArgumentNullException">session</exception>
         public ResourceStore(ISession session, ILogger<ResourceStore> logger)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));

@@ -3,7 +3,6 @@
 namespace IdentityServer4.NHibernate.Extensions
 {
     using Mappings.Storage;
-    using Mappings.Storage.Configuration;
     using Mappings.Storage.Operational;
     using Options;
     using global::NHibernate.Cfg;
