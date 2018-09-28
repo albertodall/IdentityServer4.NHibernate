@@ -1,4 +1,4 @@
-﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
+﻿namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 {
     using System;
     using System.Collections.Generic;
