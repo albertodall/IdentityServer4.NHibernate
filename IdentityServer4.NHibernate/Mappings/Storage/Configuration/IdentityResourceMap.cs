@@ -8,11 +8,7 @@
     {
         public IdentityResourceMap()
         {
-            Id(p => p.ID, map => 
-            {
-                map.Generator(Generators.Native);
-                map.Column("Id");
-            });
+            Id(p => p.ID);
 
             Property(p => p.Name, map => 
             {
@@ -24,10 +20,7 @@
             Property(p => p.DisplayName, map => map.Length(200));
             Property(p => p.Description, map => map.Length(1000));
             Property(p => p.Required);
-            Property(p => p.ShowInDiscoveryDocument, map => 
-            {
-                map.NotNullable(true);
-            });
+            Property(p => p.ShowInDiscoveryDocument, map => map.NotNullable(true));
             Property(p => p.Emphasize);
             Property(p => p.Enabled);
 

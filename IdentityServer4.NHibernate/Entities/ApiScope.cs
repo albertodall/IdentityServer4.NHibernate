@@ -13,6 +13,9 @@
         public virtual bool Emphasize { get; set; }
         public virtual bool ShowInDiscoveryDocument { get; set; } = true;
         public virtual IEnumerable<ApiScopeClaim> UserClaims { get { return _userClaims; } }
+
+        // This property is not strictly necessary from NHibernate's standpoint, 
+        // but allows us to write better queries.
         public virtual ApiResource ApiResource { get; set; }
     }
 }

@@ -8,11 +8,7 @@
     {
         public ClientIdPRestrictionMap()
         {
-            Id(p => p.ID, map =>
-            {
-                map.Generator(Generators.Native);
-                map.Column("Id");
-            });
+            Id(p => p.ID);
 
             Property(p => p.Provider, map =>
             {

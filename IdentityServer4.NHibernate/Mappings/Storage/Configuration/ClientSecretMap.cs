@@ -9,11 +9,7 @@
     {
         public ClientSecretMap()
         {
-            Id(p => p.ID, map =>
-            {
-                map.Generator(Generators.Native);
-                map.Column("Id");
-            });
+            Id(p => p.ID);
 
             Property(p => p.Description, map => map.Length(2000));
 
@@ -23,7 +19,7 @@
                 map.NotNullable(true);
             });
 
-            Property(p => p.Expiration, map => map.Type<DateTimeType>());
+            Property(p => p.Expiration);
         }
     }
 }

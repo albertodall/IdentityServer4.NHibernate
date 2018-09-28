@@ -1,6 +1,7 @@
 ﻿namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Extensions;
     using Options;
@@ -10,7 +11,6 @@
     using Moq;
     using Microsoft.Extensions.Logging;
     using Xunit;
-    using System.Collections.Generic;
 
     public class PersistentGrantStoreFixture : IClassFixture<DatabaseFixture>
     {

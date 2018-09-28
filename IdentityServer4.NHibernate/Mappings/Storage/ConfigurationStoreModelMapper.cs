@@ -44,7 +44,11 @@
                 }
             }
 
-            // TODO: All Id's are mapped in the same way, so we can put the mapping rule here...
+            classCustomizer.Id(map => 
+            {
+                map.Column("Id");
+                map.Generator(Generators.Native);
+            });
         }
 
         private TableDefinition GetTableDefinition(string tableObjectName)

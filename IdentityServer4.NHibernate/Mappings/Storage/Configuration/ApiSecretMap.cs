@@ -8,11 +8,7 @@
     {
         public ApiSecretMap()
         {
-            Id(p => p.ID, map =>
-            {
-                map.Generator(Generators.Native);
-                map.Column("Id");
-            });
+            Id(p => p.ID);
 
             Property(p => p.Description, map => map.Length(1000));
             Property(p => p.Value, map => map.Length(2000));
