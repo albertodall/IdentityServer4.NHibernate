@@ -17,6 +17,7 @@
         private void BeforeMapOperationalStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             classCustomizer.Table(_options.DefaultSchema);
+            classCustomizer.DynamicUpdate(true);
         }
     }
 }

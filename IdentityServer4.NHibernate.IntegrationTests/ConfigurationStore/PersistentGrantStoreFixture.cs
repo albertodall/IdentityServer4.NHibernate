@@ -94,6 +94,136 @@
             foundGrants.Should().NotBeEmpty();
         }
 
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Remove_Persisted_Grant_By_Key(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Save(testGrant.ToEntity());
+                session.Flush();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                store.RemoveAsync(testGrant.Key).Wait();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                foundGrant.Should().BeNull();
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Remove_All_Persisted_Grant_By_Subject_And_Client(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Save(testGrant.ToEntity());
+                session.Flush();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId).Wait();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                foundGrant.Should().BeNull();
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Remove_All_Persisted_Grant_By_Subject_Client_Type(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Save(testGrant.ToEntity());
+                session.Flush();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId, testGrant.Type).Wait();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                foundGrant.Should().BeNull();
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Create_New_Grant_If_Key_Does_Not_Exist(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().BeNull();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                store.StoreAsync(testGrant).Wait();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().NotBeNull();
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public void Should_Update_Grant_If_Key_Exists(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Save(testGrant.ToEntity());
+                session.Flush();
+            }
+
+            var newExpirationDate = testGrant.Expiration.Value.AddHours(1);
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                testGrant.Expiration = newExpirationDate;
+                store.StoreAsync(testGrant).Wait();
+            }
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                foundGrant.Expiration.Value.Should().Be(newExpirationDate);
+            }
+        }
+
         private static PersistedGrant CreateTestGrant()
         {
             return new PersistedGrant

@@ -10,20 +10,20 @@
         {
             Table("PersistedGrants");
 
-            Id(p => p.ID, map => 
+            Id(p => p.ID, map =>
             {
                 map.Column("[Key]");
                 map.Generator(Generators.Assigned);
                 map.Length(200);
             });
 
-            Property(p => p.SubjectId, map => 
+            Property(p => p.SubjectId, map =>
             {
                 map.Length(200);
                 map.Index("IX_Subject_Client_Type");
             });
 
-            Property(p => p.ClientId, map => 
+            Property(p => p.ClientId, map =>
             {
                 map.Length(200);
                 map.NotNullable(true);
@@ -38,6 +38,7 @@
             });
 
             Property(p => p.CreationTime, map => map.NotNullable(true));
+            Property(p => p.Expiration);
 
             Property(p => p.Data, map => map.NotNullable(true));
         }
