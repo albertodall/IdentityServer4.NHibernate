@@ -24,7 +24,7 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
             Property(p => p.Emphasize);
             Property(p => p.Enabled);
 
-            Set<IdentityClaim>("_userClaims", map => 
+            Set(p => p.UserClaims, map => 
             {
                 map.Key(fk =>
                 {
@@ -33,7 +33,6 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
                     fk.ForeignKey("FK_IdentityClaims_IdentityResource");
                 });
                 map.Fetch(CollectionFetchMode.Join);
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(IdentityClaim)))
