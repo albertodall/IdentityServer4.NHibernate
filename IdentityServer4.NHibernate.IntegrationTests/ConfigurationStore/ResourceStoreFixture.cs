@@ -93,6 +93,35 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_All_Api_Resources_By_Scope_Names(TestDatabase testDb)
+        {
+            string testScope1 = Guid.NewGuid().ToString();
+            string testScope2 = Guid.NewGuid().ToString();
+            string testScope3 = Guid.NewGuid().ToString();
+
+            var testApiResource1 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope1, testScope2 });
+            var testApiResource2 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope3 });
+
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                session.Save(testApiResource1.ToEntity());
+                session.Save(testApiResource2.ToEntity());
+                session.Flush();
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            IEnumerable<ApiResource> resources;
+            using (var session = testDb.SessionFactory.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2, testScope3 }).Result;
+            }
+
+            resources.Count().Should().Be(2);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
         public void Should_Not_Retrieve_Api_Resources_With_Unexisting_Scope_Name(TestDatabase testDb)
         {
             string testScope1 = "test_api_resource_scope1";

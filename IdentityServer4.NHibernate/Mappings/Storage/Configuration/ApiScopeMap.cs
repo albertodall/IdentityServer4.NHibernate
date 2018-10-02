@@ -22,7 +22,7 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
             Property(p => p.Emphasize);
             Property(p => p.ShowInDiscoveryDocument);
 
-            Set<ApiScopeClaim>("_userClaims", map => 
+            Set(p => p.UserClaims, map => 
             {
                 map.Key(fk =>
                 {
@@ -30,20 +30,11 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ApiScopeClaims_ApiScope");
                 });
-                map.Access(Accessor.Field);
                 map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },   
                 r => r.OneToMany(m => m.Class(typeof(ApiScopeClaim)))
             );
-
-            ManyToOne(p => p.ApiResource, map => 
-            {
-                map.Column("ApiResourceId");
-                map.ForeignKey("FK_ApiScopes_ApiResource");
-                map.NotNullable(true);
-                map.Cascade(Cascade.Persist);
-            });
         }
     }
 }

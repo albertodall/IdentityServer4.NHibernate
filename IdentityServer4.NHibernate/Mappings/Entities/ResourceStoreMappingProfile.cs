@@ -13,7 +13,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
         {
             CreateMap<NHibernate.Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
-                .ForMember(x => x.ApiSecrets, opts => opts.MapFrom(x => x.Secrets))
+                .ForMember(dest => dest.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
                 .ReverseMap()
                     .ForMember(dest => dest.Scopes, opt =>
                     {
@@ -29,14 +29,6 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                     {
                         opt.MapFrom(src => src.UserClaims);
                         opt.UseDestinationValue();
-                    })
-                    .AfterMap((model, entity) => 
-                    {
-                        // Set ApiResource parent property for each ApiScope
-                        foreach (var scope in entity.Scopes)
-                        {
-                            scope.ApiResource = entity;
-                        }
                     });
 
             CreateMap<ApiResourceClaim, string>()
@@ -49,7 +41,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ReverseMap();
 
             CreateMap<ApiScope, Scope>(MemberList.Destination)
-                .ConstructUsing(src => new Models.Scope())
+                .ConstructUsing(src => new Scope())
                 .ReverseMap()
                     .ForMember(dest => dest.UserClaims, opt =>
                     {
