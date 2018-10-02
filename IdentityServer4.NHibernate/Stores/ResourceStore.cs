@@ -62,17 +62,13 @@ namespace IdentityServer4.NHibernate.Stores
         /// <param name="scopeNames">Scope name/names.</param>
         public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
-            Entities.ApiResource apiResourceAlias = null;
-            var resourcesQuery = _session.QueryOver(() => apiResourceAlias)
-                .WithSubquery.WhereExists(
-                    QueryOver.Of<ApiScope>()
-                        .WhereRestrictionOn(s => s.Name).IsInG(scopeNames)
-                        .And(s => s.ApiResource.ID == apiResourceAlias.ID)
-                        .Select(s => s.ApiResource)
-                )
-                .Fetch(ar => ar.Scopes).Eager
-                .Fetch(ar => ar.Secrets).Eager
-                .Fetch(ar => ar.UserClaims).Eager;
+            var resourcesQuery = _session.QueryOver<Entities.ApiResource>()
+                .Fetch(api => api.Scopes).Eager
+                .Fetch(api => api.Secrets).Eager
+                .Fetch(api => api.UserClaims).Eager
+                .Inner.JoinQueryOver<ApiScope>(api => api.Scopes)
+                    .Where(x => x.Name.IsIn(scopeNames.ToArray()))
+                .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
 

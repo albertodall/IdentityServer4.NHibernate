@@ -20,7 +20,7 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
             Property(p => p.DisplayName, map => map.Length(200));
             Property(p => p.Description, map => map.Length(1000));
 
-            Set<ApiSecret>("_secrets", map =>
+            Set(p => p.Secrets, map =>
             {
                 map.Key(fk =>
                 {
@@ -28,22 +28,25 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ApiSecrets_ApiResource");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ApiSecret)))
             );
 
-            Set<ApiScope>("_scopes", map =>
+            Set(p => p.Scopes, map =>
             {
-                map.Key(fk => fk.Column("ApiResourceId"));
-                map.Access(Accessor.Field);
+                map.Key(fk => 
+                {
+                    fk.Column("ApiResourceId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ApiScopes_ApiResource");
+                });
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ApiScope)))
             );
 
-            Set<ApiResourceClaim>("_userClaims", map =>
+            Set(p => p.UserClaims, map =>
             {
                 map.Key(fk =>
                 {
@@ -51,7 +54,6 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ApiResourceClaims_ApiResource");
                 });
-                map.Access(Accessor.Field);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
                 r => r.OneToMany(m => m.Class(typeof(ApiResourceClaim)))
