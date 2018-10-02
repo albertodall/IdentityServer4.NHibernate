@@ -30,7 +30,6 @@ namespace IdentityServer4.NHibernate.Mappings.Storage.Configuration
                     fk.NotNullable(true);
                     fk.ForeignKey("FK_ApiScopeClaims_ApiScope");
                 });
-                map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },   
                 r => r.OneToMany(m => m.Class(typeof(ApiScopeClaim)))

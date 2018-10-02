@@ -62,12 +62,14 @@ namespace IdentityServer4.NHibernate.Stores
         /// <param name="scopeNames">Scope name/names.</param>
         public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
+            ApiScopeClaim apiScopeClaimAlias = null;
             var resourcesQuery = _session.QueryOver<Entities.ApiResource>()
-                .Fetch(api => api.Scopes).Eager
                 .Fetch(api => api.Secrets).Eager
                 .Fetch(api => api.UserClaims).Eager
-                .Inner.JoinQueryOver<ApiScope>(api => api.Scopes)
-                    .Where(x => x.Name.IsIn(scopeNames.ToArray()))
+                // Left specification is mandatory for NHibernate to eagerly fetch the associations
+                .Left.JoinQueryOver<ApiScope>(api => api.Scopes) 
+                    .Left.JoinAlias(scope => scope.UserClaims, () => apiScopeClaimAlias)
+                    .Where(scope => scope.Name.IsIn(scopeNames.ToArray()))
                 .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
@@ -86,7 +88,7 @@ namespace IdentityServer4.NHibernate.Stores
         public async Task<IEnumerable<Models.IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
         {
             var resourcesQuery = _session.QueryOver<Entities.IdentityResource>()
-                .WhereRestrictionOn(r => r.Name).IsInG(scopeNames)
+                .Where(r => r.Name.IsIn(scopeNames.ToArray()))
                 .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
@@ -101,25 +103,35 @@ namespace IdentityServer4.NHibernate.Stores
         /// </summary>
         public async Task<Resources> GetAllResourcesAsync()
         {
-            var identityResources = _session.QueryOver<Entities.IdentityResource>()
-                .Fetch(ir => ir.UserClaims).Eager
-                .Future();
+            Resources result = null;
+            using (var tx = _session.BeginTransaction())
+            {
+                var identityResources = _session.QueryOver<Entities.IdentityResource>()
+                    .Fetch(ir => ir.UserClaims).Eager
+                    .Future();
 
-            var apiResources = _session.QueryOver<Entities.ApiResource>()
-                .Fetch(ar => ar.Secrets).Eager
-                .Fetch(ar => ar.Scopes).Eager
-                .Fetch(ar => ar.UserClaims).Eager
-                .Future();
+                var apiResources = _session.QueryOver<Entities.ApiResource>()
+                    .Fetch(ar => ar.Secrets).Eager
+                    .Fetch(ar => ar.Scopes).Eager
+                    .Fetch(ar => ar.UserClaims).Eager
+                    .Future();
 
-            var result = new Resources(
-                identityResources.Select(ir => ir.ToModel()).ToArray(),
-                apiResources.Select(ar => ar.ToModel()).ToArray()
-            );
+                result = new Resources(
+                    (await identityResources.GetEnumerableAsync())
+                        .Select(identity => identity.ToModel())
+                        .ToArray(),
+                    (await apiResources.GetEnumerableAsync())
+                        .Select(api => api.ToModel())
+                        .ToArray()
+                );
+
+                await tx.CommitAsync();
+            }
 
             _logger.LogDebug("Found {scopes} as all scopes in database", 
-                result.IdentityResources.Select(x => x.Name)
-                    .Union(result.ApiResources.SelectMany(x => x.Scopes)
-                .Select(x => x.Name)));
+                result.IdentityResources.Select(identity => identity.Name)
+                    .Union(result.ApiResources.SelectMany(api => api.Scopes)
+                .Select(scope => scope.Name)));
 
             return await Task.FromResult(result);
         }

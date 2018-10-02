@@ -56,6 +56,7 @@ namespace IdentityServer4.NHibernate.Stores
             var persistedGrant = await _session.QueryOver<Entities.PersistedGrant>()
                 .Where(g => g.ID == key)
                 .SingleOrDefaultAsync();
+
             var model = persistedGrant?.ToModel();
 
             _logger.LogDebug("{persistedGrantKey} found in database: {persistedGrantKeyFound}", key, model != null);
