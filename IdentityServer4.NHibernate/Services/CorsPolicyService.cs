@@ -39,6 +39,7 @@ namespace IdentityServer4.NHibernate.Services
                 ClientCorsOrigin corsOriginAlias = null;
                 var corsOriginsQuery = session.QueryOver<Client>()
                     .JoinQueryOver(c => c.AllowedCorsOrigins, () => corsOriginAlias)
+                    .Where(() => corsOriginAlias.Origin == origin)
                     .Select(Projections.Distinct(
                         Projections.ProjectionList()
                             .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))
@@ -46,7 +47,7 @@ namespace IdentityServer4.NHibernate.Services
 
                 var origins = await corsOriginsQuery.ListAsync<string>();
 
-                isAllowed = origins.Any(o => o == origin);
+                isAllowed = origins.Any();
             }
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);
