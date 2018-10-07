@@ -56,7 +56,7 @@ namespace IdentityServer4.NHibernate.Extensions
         internal static Configuration AddOperationalStoreMappings(this Configuration configuration, OperationalStoreOptions options)
         {
             var mapper = new OperationalStoreModelMapper(options);
-            mapper.AddMapping<PersistedGrantMap>();
+            mapper.AddPersistedGrantContextMappings();
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
             return configuration;
         }
