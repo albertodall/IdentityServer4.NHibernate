@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.NHibernate.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NHibernate;
 
 namespace IdentityServer4.NHibernate.TokenCleanup
 {  
@@ -22,6 +26,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
             {
                 throw new ArgumentException("Token cleanup interval must be at least 1 second");
             }
+
             if (_options.TokenCleanupBatchSize < 1)
             {
                 throw new ArgumentException("Token cleanup batch size interval must be at least 1");
@@ -84,18 +89,46 @@ namespace IdentityServer4.NHibernate.TokenCleanup
                     break;
                 }
 
-                ClearTokens();
+                await ClearTokens();
             }
         }
 
         /// <summary>
         /// Performs the actual token cleanup.
         /// </summary>
-        public void ClearTokens()
+        private async Task ClearTokens()
         {
+            string deleteTokensHql = "delete from PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
+
             try
             {
                 _logger.LogTrace("TokenCleanup - Querying for tokens to clear");
+
+                using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                {
+                    using (var session = serviceScope.ServiceProvider.GetService<ISession>())
+                    {
+                        using (var tx = session.BeginTransaction())
+                        {
+                            var expiredTokensQuery = session.QueryOver<PersistedGrant>()
+                                .Where(g => g.CreationTime < DateTimeOffset.UtcNow)
+                                .Select(g => g.ID);
+
+                            var expiredTokensIDs = (await expiredTokensQuery.ListAsync()).ToArray();
+
+                            if (expiredTokensIDs.Any())
+                            {
+                                _logger.LogDebug($"Clearing {expiredTokensIDs.Length} tokens");
+
+                                await session.CreateQuery(deleteTokensHql)
+                                    .SetParameterList("expiredTokensIDs", expiredTokensIDs)
+                                    .ExecuteUpdateAsync();
+
+                                await tx.CommitAsync();
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
