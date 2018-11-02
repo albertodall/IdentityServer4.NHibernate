@@ -98,7 +98,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
         /// </summary>
         private async Task ClearTokens()
         {
-            string deleteTokensHql = "delete from PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
+            string deleteExpiredTokensHql = "delete PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
 
             try
             {
@@ -120,7 +120,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
                             {
                                 _logger.LogDebug($"Clearing {expiredTokensIDs.Length} tokens");
 
-                                await session.CreateQuery(deleteTokensHql)
+                                await session.CreateQuery(deleteExpiredTokensHql)
                                     .SetParameterList("expiredTokensIDs", expiredTokensIDs)
                                     .ExecuteUpdateAsync();
 
