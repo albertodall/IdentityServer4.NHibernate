@@ -2,8 +2,7 @@
 using IdentityServer4.NHibernate.Database;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
-using NHibernate;
-using NHibernate.Engine;
+using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.IntegrationTests
@@ -15,18 +14,16 @@ namespace IdentityServer4.NHibernate.IntegrationTests
     {
         public static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPi; Application Name=IdentityServer4.NHibernate.IntegrationTests";
+            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.IntegrationTests";
 
             SQLServerTestDatabase testDb = null;
-
-            //ISessionFactory sessionFactory = null;
             try
             {
                 var dbConfig = Databases.SqlServer2012()
                     .UsingConnectionString(connString)
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
+                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new SQLServerTestDatabase(serverName, databaseName, dbConfig);
                 testDb.Create();
@@ -46,14 +43,13 @@ namespace IdentityServer4.NHibernate.IntegrationTests
             var connString = $"Data Source={fileName};Version=3;Pooling=True;";
 
             SQLiteTestDatabase testDb = null;
-
             try
             {
                 var dbConfig = Databases.SQLite()
                     .UsingConnectionString(connString)
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
+                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new SQLiteTestDatabase(fileName, dbConfig);
                 testDb.Create();
@@ -71,7 +67,6 @@ namespace IdentityServer4.NHibernate.IntegrationTests
         internal static SQLiteInMemoryTestDatabase SQLiteInMemoryTestDatabase(ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
             SQLiteInMemoryTestDatabase testDb = null;
-
             try
             {
                 var dbConfig = Databases.SQLiteInMemory()
