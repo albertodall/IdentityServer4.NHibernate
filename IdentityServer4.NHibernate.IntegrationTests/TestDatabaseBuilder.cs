@@ -40,5 +40,34 @@ namespace IdentityServer4.NHibernate.IntegrationTests
             testDb.SetSessionFactory(sessionFactory);
             return testDb;
         }
+
+        internal static SQLiteTestDatabase SQLiteTestDatabase(string fileName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        {
+            var connString = $"Data Source={fileName};Version=3;Pooling=True;";
+
+            var testDb = new SQLiteTestDatabase(fileName);
+            testDb.Create();
+
+            ISessionFactory sessionFactory = null;
+            try
+            {
+                var dbConfig = Databases.SQLite()
+                    .UsingConnectionString(connString)
+                    .AddConfigurationStoreMappings(configurationStoreOptions)
+                    .AddOperationalStoreMappings(operationalStoreOptions)
+                    .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
+
+                new SchemaExport(dbConfig).Create(false, true);
+                sessionFactory = dbConfig.BuildSessionFactory();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                testDb.Drop();
+            }
+
+            testDb.SetSessionFactory(sessionFactory);
+            return testDb;
+        }
     }
 }

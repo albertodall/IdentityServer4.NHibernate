@@ -4,6 +4,7 @@ using NHibernate;
 namespace IdentityServer4.NHibernate.IntegrationTests
 {
     using Microsoft.SqlServer.Management.Smo;
+    using System.Data.SQLite;
 
     /// <summary>
     /// A database used for testing.
@@ -73,5 +74,21 @@ namespace IdentityServer4.NHibernate.IntegrationTests
         }
 
         public string ServerName { get; }
+    }
+
+    internal class SQLiteTestDatabase : TestDatabase
+    {
+        public SQLiteTestDatabase(string databaseFileName)
+            : base(databaseFileName)
+        { }
+
+        public override void Create()
+        {
+            SQLiteConnection.CreateFile(DatabaseName);
+        }
+
+        public override void Drop()
+        {
+        }
     }
 }

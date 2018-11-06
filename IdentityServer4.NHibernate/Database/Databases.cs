@@ -72,7 +72,8 @@ namespace IdentityServer4.NHibernate.Database
         public static Configuration SQLiteInMemory()
         {
             return SQLite()
-                .UsingConnectionString("Data Source=:memory:; Version=3; New=True;");
+                .UsingConnectionString("Data Source=:memory:; Version=3; New=True;")
+                .SetProperty("connection.release_mode", "on_close");
         }
     }
 }

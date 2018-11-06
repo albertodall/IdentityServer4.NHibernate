@@ -20,7 +20,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ResourceStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ResourceStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteTestDatabase("ResourceStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public ResourceStoreFixture(DatabaseFixture fixture)
