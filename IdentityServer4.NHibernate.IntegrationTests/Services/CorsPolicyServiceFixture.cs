@@ -20,7 +20,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
             TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "CorsPolicyService_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("CorsPolicyService_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLiteTestDatabase("CorsPolicyService_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public CorsPolicyServiceFixture(DatabaseFixture fixture)
@@ -62,7 +63,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
             var svcs = new ServiceCollection();
             svcs.AddScoped(provider =>
             {
-                return testDb.SessionFactory.OpenStatelessSession();
+                return testDb.OpenStatelessSession();
             });
             ctx.RequestServices = svcs.BuildServiceProvider();
 
@@ -82,7 +83,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
         [MemberData(nameof(TestDatabases))]
         public void Should_Check_For_Not_Allowed_Origin(TestDatabase testDb)
         {
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(
                     new Client()
@@ -100,7 +101,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
             var svcs = new ServiceCollection();
             svcs.AddScoped(provider =>
             {
-                return testDb.SessionFactory.OpenStatelessSession();
+                return testDb.OpenStatelessSession();
             });
             ctx.RequestServices = svcs.BuildServiceProvider();
 

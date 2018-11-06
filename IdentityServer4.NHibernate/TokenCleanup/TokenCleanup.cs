@@ -80,7 +80,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
                 }
                 catch (TaskCanceledException)
                 {
-                    _logger.LogDebug("TokenCleanup -TaskCanceledException. Exiting.");
+                    _logger.LogDebug("TokenCleanup - TaskCanceledException. Exiting.");
                     break;
                 }
                 catch (Exception ex)
