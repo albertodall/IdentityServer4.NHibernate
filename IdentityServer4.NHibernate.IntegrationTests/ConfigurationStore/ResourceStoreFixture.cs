@@ -21,7 +21,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
             TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ResourceStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("ResourceStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLiteTestDatabase("ResourceStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public ResourceStoreFixture(DatabaseFixture fixture)
@@ -39,7 +40,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var testApiResource1 = CreateTestApiResource("test_api_resource1", new[] { testScope1, testScope2 });
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testApiResource1.ToEntity());
                 session.Flush();
@@ -47,7 +48,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2 }).Result;
@@ -70,7 +71,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testApiResource1 = CreateTestApiResource("test_api_resource2", new[] { testScope1, testScope2 });
             var testApiResource2 = CreateTestApiResource("test_api_resource3", new[] { "ar3_scope3" });
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testApiResource1.ToEntity());
                 session.Save(testApiResource2.ToEntity());
@@ -79,7 +80,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2 }).Result;
@@ -103,7 +104,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testApiResource1 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope1, testScope2 });
             var testApiResource2 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope3 });
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testApiResource1.ToEntity());
                 session.Save(testApiResource2.ToEntity());
@@ -112,7 +113,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2, testScope3 }).Result;
@@ -130,7 +131,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var testApiResource = CreateTestApiResource("test_api_resource", new[] { testScope1, testScope2 });
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testApiResource.ToEntity());
                 session.Flush();
@@ -138,7 +139,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindApiResourcesByScopeAsync(new string[] { "non_existing_scope" }).Result;
@@ -154,7 +155,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             string testScope1 = "ar4_scope1";
             var testApiResource = CreateTestApiResource("test_api_resource4", new[] { testScope1 });
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testApiResource.ToEntity());
                 session.Flush();
@@ -162,7 +163,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             ApiResource resource;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resource = store.FindApiResourceAsync(testApiResource.Name).Result;
@@ -183,7 +184,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             ApiResource resource;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resource = store.FindApiResourceAsync("non_existing_api_resource").Result;
@@ -209,7 +210,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 Scopes = { new Scope("scope_hidden_1") { ShowInDiscoveryDocument = false } }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(visibleIdentityResource.ToEntity());
                 session.Save(visibleApiResource.ToEntity());
@@ -220,7 +221,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             Resources resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.GetAllResourcesAsync().Result;
@@ -241,7 +242,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testIdentityResourceName = "idres1";
             var testIdentityResource = CreateTestIdentityResource(testIdentityResourceName);
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testIdentityResource.ToEntity());
                 session.Flush();
@@ -249,7 +250,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<IdentityResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindIdentityResourcesByScopeAsync(
@@ -269,7 +270,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testIdentityResource1 = CreateTestIdentityResource(Guid.NewGuid().ToString());
             var testIdentityResource2 = CreateTestIdentityResource(Guid.NewGuid().ToString());
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testIdentityResource1.ToEntity());
                 session.Save(testIdentityResource2.ToEntity());
@@ -278,7 +279,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<IdentityResource> resources;
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
                 resources = store.FindIdentityResourcesByScopeAsync(

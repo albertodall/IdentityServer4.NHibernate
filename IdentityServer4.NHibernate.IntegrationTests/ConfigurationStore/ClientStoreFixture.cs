@@ -20,7 +20,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
             TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ClientStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("ClientStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLiteTestDatabase("ClientStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public ClientStoreFixture(DatabaseFixture fixture)
@@ -39,7 +40,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 ClientName = "Test Client"
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 session.Save(testClient.ToEntity());
                 session.Flush();
@@ -47,7 +48,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -62,7 +63,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync("not_existing_client").Result;
@@ -87,7 +88,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -96,7 +97,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -122,7 +123,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -131,7 +132,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -157,7 +158,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -166,7 +167,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -192,7 +193,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -201,7 +202,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -227,7 +228,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -236,7 +237,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -262,7 +263,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -271,7 +272,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -297,7 +298,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -306,7 +307,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -332,7 +333,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -341,7 +342,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
@@ -367,7 +368,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 }
             };
 
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
                 session.Save(entityToSave);
@@ -376,7 +377,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Client requestedClient = null;
             var loggerMock = new Mock<ILogger<ClientStore>>();
-            using (var session = testDb.SessionFactory.OpenSession())
+            using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
                 requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;

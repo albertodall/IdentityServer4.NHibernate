@@ -3,6 +3,7 @@ using IdentityServer4.NHibernate.Database;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
 using NHibernate;
+using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.IntegrationTests
@@ -14,12 +15,11 @@ namespace IdentityServer4.NHibernate.IntegrationTests
     {
         public static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.Test";
+            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPi; Application Name=IdentityServer4.NHibernate.IntegrationTests";
 
-            var testDb = new SQLServerTestDatabase(serverName, databaseName);
-            testDb.Create();
+            SQLServerTestDatabase testDb = null;
 
-            ISessionFactory sessionFactory = null;
+            //ISessionFactory sessionFactory = null;
             try
             {
                 var dbConfig = Databases.SqlServer2012()
@@ -28,8 +28,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                     .AddOperationalStoreMappings(operationalStoreOptions)
                     .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
 
-                new SchemaExport(dbConfig).Create(false, true);
-                sessionFactory = dbConfig.BuildSessionFactory();
+                testDb = new SQLServerTestDatabase(serverName, databaseName, dbConfig);
+                testDb.Create();
+                new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (System.Exception ex)
             {
@@ -37,7 +38,6 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                 testDb.Drop();
             }
 
-            testDb.SetSessionFactory(sessionFactory);
             return testDb;
         }
 
@@ -45,10 +45,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests
         {
             var connString = $"Data Source={fileName};Version=3;Pooling=True;";
 
-            var testDb = new SQLiteTestDatabase(fileName);
-            testDb.Create();
+            SQLiteTestDatabase testDb = null;
 
-            ISessionFactory sessionFactory = null;
             try
             {
                 var dbConfig = Databases.SQLite()
@@ -57,8 +55,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                     .AddOperationalStoreMappings(operationalStoreOptions)
                     .SetProperty(global::NHibernate.Cfg.Environment.Hbm2ddlAuto, "create-drop");
 
-                new SchemaExport(dbConfig).Create(false, true);
-                sessionFactory = dbConfig.BuildSessionFactory();
+                testDb = new SQLiteTestDatabase(fileName, dbConfig);
+                testDb.Create();
+                new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (System.Exception ex)
             {
@@ -66,7 +65,28 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                 testDb.Drop();
             }
 
-            testDb.SetSessionFactory(sessionFactory);
+            return testDb;
+        }
+
+        internal static SQLiteInMemoryTestDatabase SQLiteInMemoryTestDatabase(ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        {
+            SQLiteInMemoryTestDatabase testDb = null;
+
+            try
+            {
+                var dbConfig = Databases.SQLiteInMemory()
+                    .AddConfigurationStoreMappings(configurationStoreOptions)
+                    .AddOperationalStoreMappings(operationalStoreOptions);
+
+                testDb = new SQLiteInMemoryTestDatabase(dbConfig);
+                testDb.Create();
+                new SchemaExport(dbConfig).Execute(false, true, false, testDb.ActiveConnection, null);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
             return testDb;
         }
     }
