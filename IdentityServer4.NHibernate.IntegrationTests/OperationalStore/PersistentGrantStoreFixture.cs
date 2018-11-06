@@ -19,7 +19,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "PersistentGrantStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "PersistentGrantStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteTestDatabase("PersistentGrantStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public PersistentGrantStoreFixture(DatabaseFixture fixture)

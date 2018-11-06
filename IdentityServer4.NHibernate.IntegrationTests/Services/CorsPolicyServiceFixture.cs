@@ -19,7 +19,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "CorsPolicyService_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "CorsPolicyService_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteTestDatabase("CorsPolicyService_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public CorsPolicyServiceFixture(DatabaseFixture fixture)
