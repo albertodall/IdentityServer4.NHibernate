@@ -7,6 +7,7 @@
     <Description>NHibernate persistence layer for IdentityServer4</Description>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
     <Company />
+    <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
