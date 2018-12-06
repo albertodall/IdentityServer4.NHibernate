@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using IdentityModel;
-using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Storage.Extensions;
+using IdentityServer4.NHibernate.Storage.Options;
 using IdentityServer4.Models;
-using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.NHibernate.Storage.Stores;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using Moq;
@@ -311,7 +311,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testApiResource = new ApiResource()
             {
                 Name = name,
-                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
                 Scopes = new List<Scope>(),
                 UserClaims =
                 {

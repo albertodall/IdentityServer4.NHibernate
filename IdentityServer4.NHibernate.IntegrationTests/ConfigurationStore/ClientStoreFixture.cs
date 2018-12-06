@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
-using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.NHibernate.Storage.Extensions;
+using IdentityServer4.NHibernate.Storage.Options;
+using IdentityServer4.NHibernate.Storage.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

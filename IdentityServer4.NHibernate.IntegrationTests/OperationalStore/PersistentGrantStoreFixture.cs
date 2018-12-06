@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
-using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.NHibernate.Storage.Extensions;
+using IdentityServer4.NHibernate.Storage.Options;
+using IdentityServer4.NHibernate.Storage.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
 using Moq;
@@ -43,7 +43,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
            
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = session.Get<Storage.Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().NotBeNull();
             }
         }
@@ -115,7 +115,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = session.Get<Storage.Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
         }
@@ -141,7 +141,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = session.Get<Storage.Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
         }
@@ -167,7 +167,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = session.Get<Storage.Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
         }
@@ -181,7 +181,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().BeNull();
+                session.Get<Storage.Entities.PersistedGrant>(testGrant.Key).Should().BeNull();
             }
 
             using (var session = testDb.SessionFactory.OpenSession())
@@ -192,7 +192,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().NotBeNull();
+                session.Get<Storage.Entities.PersistedGrant>(testGrant.Key).Should().NotBeNull();
             }
         }
 
@@ -219,7 +219,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = session.Get<Storage.Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Expiration.Value.Should().Be(newExpirationDate);
             }
         }
