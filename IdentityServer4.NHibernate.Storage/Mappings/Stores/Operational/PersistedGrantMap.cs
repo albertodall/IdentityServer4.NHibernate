@@ -1,8 +1,8 @@
-﻿using IdentityServer4.NHibernate.Storage.Entities;
+﻿using IdentityServer4.NHibernate.Entities;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Stores.Operational
+namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
 {
     internal class PersistedGrantMap : ClassMapping<PersistedGrant>
     {

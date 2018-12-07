@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.NHibernate.Storage.Entities;
+using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NHibernate;
 using NHibernate.Criterion;
 
-namespace IdentityServer4.NHibernate.Storage.Services
+namespace IdentityServer4.NHibernate.Services
 {
     /// <summary>
     /// Implementation of NHibernate-based CorsPolicyService.

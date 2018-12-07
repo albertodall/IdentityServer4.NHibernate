@@ -1,10 +1,9 @@
 ﻿using System;
-using IdentityServer4.NHibernate;
-using IdentityServer4.NHibernate.Storage.Extensions;
-using IdentityServer4.NHibernate.Storage.Options;
-using IdentityServer4.NHibernate.Storage.Services;
-using IdentityServer4.NHibernate.Storage.Stores;
-using IdentityServer4.NHibernate.Storage.TokenCleanup;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Services;
+using IdentityServer4.NHibernate.Stores;
+using IdentityServer4.NHibernate.TokenCleanup;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Hosting;
@@ -37,32 +36,20 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton(operationalStoreOptions);
             operationalStoreOptionsAction?.Invoke(operationalStoreOptions);
 
-            // Adds NHibernate mappings
-            databaseConfiguration.AddConfigurationStoreMappings(configStoreOptions);
-            databaseConfiguration.AddOperationalStoreMappings(operationalStoreOptions);
-
-            // Adds NHibernate objects to the DI system
-            builder.Services.AddSingleton(databaseConfiguration.BuildSessionFactory());
-            builder.Services.AddScoped(provider => 
-            {
-                var factory = provider.GetService<ISessionFactory>();
-                return factory.OpenSession();
-            });
-            builder.Services.AddScoped(provider => 
-            {
-                var factory = provider.GetService<ISessionFactory>();
-                return factory.OpenStatelessSession();
-            });
+            builder.AddNHibernatePersistenceSupport(databaseConfiguration, configStoreOptions, operationalStoreOptions);
 
             // Adds configuration store components
-            builder.Services.AddTransient<IClientStore, ClientStore>();
-            builder.Services.AddTransient<IResourceStore, ResourceStore>();
-            builder.Services.AddTransient<ICorsPolicyService, CorsPolicyService>();
+            if (configStoreOptions.EnableConfigurationStoreCache)
+            {
+                builder.AddCachedConfigurationStore();
+            }
+            else
+            {
+                builder.AddConfigurationStore();
+            }
 
             // Adds operational store components.
-            builder.Services.AddSingleton<TokenCleanup>();
-            builder.Services.AddSingleton<IHostedService, TokenCleanupHost>();
-            builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
+            builder.AddOperationalStore();
 
             return builder;
         }
@@ -87,6 +74,91 @@ namespace Microsoft.Extensions.DependencyInjection
                 databaseConfigurationFunction(),
                 configurationStoreOptionsAction,
                 operationalStoreOptionsAction);
+        }
+
+        /// <summary>
+        /// Adds an implementation of the IOperationalStoreNotification to IdentityServer.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder"></param>
+        public static IIdentityServerBuilder AddOperationalStoreNotification<T>(
+           this IIdentityServerBuilder builder)
+           where T : class, IOperationalStoreNotification
+        {
+            builder.Services.AddTransient<IOperationalStoreNotification, T>();
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds NHIbernate core components to the DI system.
+        /// </summary>
+        /// <param name="databaseConfiguration">NHibernate database configuration</param>
+        /// <param name="configurationStoreOptions">Configuration store options (needed to configure NHibernate mappings).</param>
+        /// <param name="operationalStoreOptions">Operational store options (needed to configure NHibernate mappings).</param>
+        /// <returns></returns>
+        private static IIdentityServerBuilder AddNHibernatePersistenceSupport(
+            this IIdentityServerBuilder builder,
+            NHibernate.Cfg.Configuration databaseConfiguration,
+            ConfigurationStoreOptions configurationStoreOptions,
+            OperationalStoreOptions operationalStoreOptions)
+        {
+            // Adds NHibernate mappings
+            databaseConfiguration.AddConfigurationStoreMappings(configurationStoreOptions);
+            databaseConfiguration.AddOperationalStoreMappings(operationalStoreOptions);
+
+            // Registers NHibernate components
+            builder.Services.AddSingleton(databaseConfiguration.BuildSessionFactory());
+            builder.Services.AddScoped(provider =>
+            {
+                var factory = provider.GetService<ISessionFactory>();
+                return factory.OpenSession();
+            });
+            builder.Services.AddScoped(provider =>
+            {
+                var factory = provider.GetService<ISessionFactory>();
+                return factory.OpenStatelessSession();
+            });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the stores for managing IdentityServer's configuration.
+        /// </summary>
+        private static IIdentityServerBuilder AddConfigurationStore(this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddTransient<IClientStore, ClientStore>();
+            builder.Services.AddTransient<IResourceStore, ResourceStore>();
+            builder.Services.AddTransient<ICorsPolicyService, CorsPolicyService>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the cache based stores for managing IdentityServer's configuration.
+        /// </summary>
+        private static IIdentityServerBuilder AddCachedConfigurationStore(this IIdentityServerBuilder builder)
+        {
+            builder.AddInMemoryCaching();
+
+            builder.AddClientStoreCache<ClientStore>();
+            builder.AddResourceStoreCache<ResourceStore>();
+            builder.AddCorsPolicyCache<CorsPolicyService>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds stores and services for managing IdentityServer's persisted grants.
+        /// </summary>
+        private static IIdentityServerBuilder AddOperationalStore(this IIdentityServerBuilder builder)
+        {
+            builder.Services.AddSingleton<TokenCleanup>();
+            builder.Services.AddSingleton<IHostedService, TokenCleanupHost>();
+            builder.Services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
+            builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
+
+            return builder;
         }
     }
 }

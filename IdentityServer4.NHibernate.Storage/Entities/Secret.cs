@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IdentityServer4.NHibernate.Storage.Entities
+namespace IdentityServer4.NHibernate.Entities
 {
     public abstract class Secret : EntityBase<int>
     {

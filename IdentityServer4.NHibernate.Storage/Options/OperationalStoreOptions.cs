@@ -1,4 +1,4 @@
-﻿namespace IdentityServer4.NHibernate.Storage.Options
+﻿namespace IdentityServer4.NHibernate.Options
 {
     public class OperationalStoreOptions
     {

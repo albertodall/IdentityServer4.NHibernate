@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using IdentityServer4.NHibernate.Storage.Options;
-using IdentityServer4.NHibernate.Storage.TokenCleanup;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.TokenCleanup;
 using Microsoft.Extensions.Hosting;
 
-namespace IdentityServer4.NHibernate
+namespace Microsoft.Extensions.DependencyInjection
 {
     internal class TokenCleanupHost : IHostedService
     {

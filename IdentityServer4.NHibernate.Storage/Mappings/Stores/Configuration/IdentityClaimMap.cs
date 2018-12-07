@@ -1,7 +1,7 @@
-﻿using IdentityServer4.NHibernate.Storage.Entities;
+﻿using IdentityServer4.NHibernate.Entities;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Stores.Configuration
+namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
 {
     internal class IdentityClaimMap : ClassMapping<IdentityClaim>
     {

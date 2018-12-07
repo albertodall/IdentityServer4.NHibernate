@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using IdentityServer4.Models;
 
-namespace IdentityServer4.NHibernate.Storage.Entities
+namespace IdentityServer4.NHibernate.Entities
 {
     public class Client : EntityBase<int>
     {

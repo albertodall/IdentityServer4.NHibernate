@@ -1,9 +1,9 @@
-﻿using IdentityServer4.NHibernate.Storage.Mappings.Stores;
-using IdentityServer4.NHibernate.Storage.Options;
+﻿using IdentityServer4.NHibernate.Mappings.Stores;
+using IdentityServer4.NHibernate.Options;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("IdentityServer4.NHibernate.IntegrationTests")]
 
-namespace IdentityServer4.NHibernate.Storage.Extensions
+namespace IdentityServer4.NHibernate.Extensions
 {
     using global::NHibernate.Cfg;
 

@@ -1,7 +1,7 @@
-﻿using IdentityServer4.NHibernate.Storage.Mappings.Entities;
+﻿using IdentityServer4.NHibernate.Mappings.Entities;
 using AutoMapper;
 
-namespace IdentityServer4.NHibernate.Storage.Extensions
+namespace IdentityServer4.NHibernate.Extensions
 {
     public static class PersistedGrantStoreMappingExtensions
     {

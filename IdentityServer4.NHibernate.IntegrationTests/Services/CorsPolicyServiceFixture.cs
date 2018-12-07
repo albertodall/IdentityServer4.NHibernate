@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using IdentityServer4.Models;
-using IdentityServer4.NHibernate.Storage.Extensions;
-using IdentityServer4.NHibernate.Storage.Options;
-using IdentityServer4.NHibernate.Storage.Services;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;

@@ -1,9 +1,9 @@
-﻿using IdentityServer4.NHibernate.Storage.Extensions;
+﻿using IdentityServer4.NHibernate.Extensions;
 using NHibernate.Bytecode;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 
-namespace IdentityServer4.NHibernate.Storage.Database
+namespace IdentityServer4.NHibernate.Database
 {
     using global::NHibernate.Cfg;
     

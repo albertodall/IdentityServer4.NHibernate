@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IdentityServer4.NHibernate.Storage.Options
+namespace IdentityServer4.NHibernate.Options
 {  
     /// <summary>
     /// Class to control a table definition (name and schema).

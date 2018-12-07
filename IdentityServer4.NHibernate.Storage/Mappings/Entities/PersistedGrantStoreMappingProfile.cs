@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
+namespace IdentityServer4.NHibernate.Mappings.Entities
 {
     /// <summary>
     /// Entity to model mapping (and vice-versa) for persisted grants.
@@ -9,7 +9,7 @@ namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
     {
         public PersistedGrantStoreMappingProfile()
         {
-            CreateMap<NHibernate.Storage.Entities.PersistedGrant, Models.PersistedGrant>(MemberList.Destination)
+            CreateMap<NHibernate.Entities.PersistedGrant, Models.PersistedGrant>(MemberList.Destination)
                 .ReverseMap()
                     .ForMember(dest => dest.ID, map => map.MapFrom(src => src.Key));
         }

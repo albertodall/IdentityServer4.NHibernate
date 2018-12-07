@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using IdentityModel;
-using IdentityServer4.NHibernate.Storage.Extensions;
-using IdentityServer4.NHibernate.Storage.Options;
 using IdentityServer4.Models;
-using IdentityServer4.NHibernate.Storage.Stores;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.Stores;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using Moq;

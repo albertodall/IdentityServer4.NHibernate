@@ -1,8 +1,8 @@
-﻿using IdentityServer4.NHibernate.Storage.Mappings.Stores;
-using IdentityServer4.NHibernate.Storage.Mappings.Stores.Configuration;
-using IdentityServer4.NHibernate.Storage.Mappings.Stores.Operational;
+﻿using IdentityServer4.NHibernate.Mappings.Stores;
+using IdentityServer4.NHibernate.Mappings.Stores.Configuration;
+using IdentityServer4.NHibernate.Mappings.Stores.Operational;
 
-namespace IdentityServer4.NHibernate.Storage.Extensions
+namespace IdentityServer4.NHibernate.Extensions
 {
     internal static class ConfigurationStoreModelMapperExtensions
     {

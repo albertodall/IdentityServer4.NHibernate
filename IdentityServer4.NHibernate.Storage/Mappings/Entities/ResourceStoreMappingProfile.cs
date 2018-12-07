@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using IdentityServer4.Models;
-using IdentityServer4.NHibernate.Storage.Entities;
+using IdentityServer4.NHibernate.Entities;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
+namespace IdentityServer4.NHibernate.Mappings.Entities
 {
     /// <summary>
     /// Defines entity/model mapping for API resources and Identity resources.
@@ -11,7 +11,7 @@ namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
     {
         public ResourceStoreMappingProfile()
         {
-            CreateMap<Storage.Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
+            CreateMap<NHibernate.Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
                 .ForMember(dest => dest.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
                 .ReverseMap()
@@ -54,7 +54,7 @@ namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
                 .ReverseMap()
                     .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
-            CreateMap<NHibernate.Storage.Entities.IdentityResource, Models.IdentityResource>(MemberList.Destination)
+            CreateMap<NHibernate.Entities.IdentityResource, Models.IdentityResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.IdentityResource())
                 .ReverseMap()
                     .ForMember(dest => dest.UserClaims, opt => 

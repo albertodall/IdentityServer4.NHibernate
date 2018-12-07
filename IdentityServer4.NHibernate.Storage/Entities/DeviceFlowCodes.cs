@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IdentityServer4.NHibernate.Storage.Entities
+namespace IdentityServer4.NHibernate.Entities
 {
     /// <summary>
     /// Entity for device flow codes

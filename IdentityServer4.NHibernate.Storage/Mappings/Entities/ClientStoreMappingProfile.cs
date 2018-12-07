@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using AutoMapper;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
+namespace IdentityServer4.NHibernate.Mappings.Entities
 {
     /// <summary>
     /// Entity to model mapping (and vice-versa) for clients.
@@ -11,7 +11,7 @@ namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
     {
         public ClientStoreMappingProfile()
         {
-            CreateMap<Storage.Entities.Client, Models.Client>()
+            CreateMap<NHibernate.Entities.Client, Models.Client>()
                 .ForMember(dest => dest.ProtocolType, opt => opt.Condition(srs => srs != null))
                 .ReverseMap()
                     .ForMember(dest => dest.AllowedGrantTypes, opt => 
@@ -60,45 +60,45 @@ namespace IdentityServer4.NHibernate.Storage.Mappings.Entities
                         opt.UseDestinationValue();
                     });
 
-            CreateMap<Storage.Entities.ClientGrantType, string>()
+            CreateMap<NHibernate.Entities.ClientGrantType, string>()
                 .ConstructUsing(src => src.GrantType)
                 .ReverseMap()
                     .ForMember(dest => dest.GrantType, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientRedirectUri, string>()
+            CreateMap<NHibernate.Entities.ClientRedirectUri, string>()
                 .ConstructUsing(src => src.RedirectUri)
                 .ReverseMap()
                     .ForMember(dest => dest.RedirectUri, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientPostLogoutRedirectUri, string>()
+            CreateMap<NHibernate.Entities.ClientPostLogoutRedirectUri, string>()
                 .ConstructUsing(src => src.PostLogoutRedirectUri)
                 .ReverseMap()
                     .ForMember(dest => dest.PostLogoutRedirectUri, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientScope, string>()
+            CreateMap<NHibernate.Entities.ClientScope, string>()
                 .ConstructUsing(src => src.Scope)
                 .ReverseMap()
                     .ForMember(dest => dest.Scope, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientSecret, Models.Secret>(MemberList.Destination)
+            CreateMap<NHibernate.Entities.ClientSecret, Models.Secret>(MemberList.Destination)
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
-            CreateMap<Storage.Entities.ClientIdPRestriction, string>()
+            CreateMap<NHibernate.Entities.ClientIdPRestriction, string>()
                 .ConstructUsing(src => src.Provider)
                 .ReverseMap()
                     .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientClaim, Claim>(MemberList.None)
+            CreateMap<NHibernate.Entities.ClientClaim, Claim>(MemberList.None)
                 .ConstructUsing(src => new Claim(src.Type, src.Value))
                 .ReverseMap();
 
-            CreateMap<Storage.Entities.ClientCorsOrigin, string>()
+            CreateMap<NHibernate.Entities.ClientCorsOrigin, string>()
                 .ConstructUsing(src => src.Origin)
                 .ReverseMap()
                     .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src));
 
-            CreateMap<Storage.Entities.ClientProperty, KeyValuePair<string, string>>()
+            CreateMap<NHibernate.Entities.ClientProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
         }
     }

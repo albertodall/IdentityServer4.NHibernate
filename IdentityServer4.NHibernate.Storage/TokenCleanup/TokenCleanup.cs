@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityServer4.NHibernate.Storage.Entities;
-using IdentityServer4.NHibernate.Storage.Options;
+using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NHibernate;
 
-namespace IdentityServer4.NHibernate.Storage.TokenCleanup
+namespace IdentityServer4.NHibernate.TokenCleanup
 {  
     public class TokenCleanup
     {

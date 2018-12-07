@@ -1,10 +1,10 @@
 ﻿using System;
-using IdentityServer4.NHibernate.Storage.Extensions;
-using IdentityServer4.NHibernate.Storage.Mappings.Stores;
-using IdentityServer4.NHibernate.Storage.Options;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.Mappings.Stores;
+using IdentityServer4.NHibernate.Options;
 using NHibernate.Tool.hbm2ddl;
 
-namespace IdentityServer4.NHibernate.Storage.Database.Schema
+namespace IdentityServer4.NHibernate.Database.Schema
 {
     using global::NHibernate.Cfg;
 

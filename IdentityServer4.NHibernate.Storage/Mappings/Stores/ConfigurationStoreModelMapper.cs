@@ -1,9 +1,9 @@
 ﻿using System;
-using IdentityServer4.NHibernate.Storage.Entities;
-using IdentityServer4.NHibernate.Storage.Options;
+using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Options;
 using NHibernate.Mapping.ByCode;
 
-namespace IdentityServer4.NHibernate.Storage.Mappings.Stores
+namespace IdentityServer4.NHibernate.Mappings.Stores
 {
     internal class ConfigurationStoreModelMapper : ModelMapperBase
     {

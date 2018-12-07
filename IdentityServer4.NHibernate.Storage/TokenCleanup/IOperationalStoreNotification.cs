@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using IdentityServer4.NHibernate.Storage.Entities;
+using IdentityServer4.NHibernate.Entities;
 
-namespace IdentityServer4.NHibernate.Storage.TokenCleanup
+namespace IdentityServer4.NHibernate.TokenCleanup
 {
     /// <summary>
     /// Interface to model notifications from the TokenCleanup feature.

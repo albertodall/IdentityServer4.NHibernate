@@ -1,10 +1,15 @@
-﻿namespace IdentityServer4.NHibernate.Storage.Options
+﻿namespace IdentityServer4.NHibernate.Options
 {
     /// <summary>
     /// Options for configuring the configuration store.
     /// </summary>
     public class ConfigurationStoreOptions
     {
+        /// <summary>
+        /// If true, enables the cache on the configuration store.
+        /// </summary>
+        public bool EnableConfigurationStoreCache { get; set; } = false;
+
         /// <summary>
         /// Gets or sets the default schema for Configuration store's objects.
         /// </summary>

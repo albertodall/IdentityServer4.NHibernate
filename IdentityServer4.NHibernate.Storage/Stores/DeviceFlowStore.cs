@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Models;
-using IdentityServer4.NHibernate.Storage.Entities;
+using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.Stores;
 using IdentityServer4.Stores.Serialization;
 using Microsoft.Extensions.Logging;
 using NHibernate;
 
-namespace IdentityServer4.NHibernate.Storage.Stores
+namespace IdentityServer4.NHibernate.Stores
 {
     /// <summary>
     /// Implementation of the NHibernate-based device flow store.
