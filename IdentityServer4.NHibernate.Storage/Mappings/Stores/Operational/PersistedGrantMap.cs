@@ -37,7 +37,11 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
 
             Property(p => p.CreationTime, map => map.NotNullable(true));
             Property(p => p.Expiration);
-            Property(p => p.Data, map => map.NotNullable(true));
+            Property(p => p.Data, map => 
+            {
+                map.Length(50000);
+                map.NotNullable(true);
+            });
         }
     }
 }

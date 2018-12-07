@@ -37,6 +37,20 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
             },
                 r => r.OneToMany(m => m.Class(typeof(IdentityClaim)))
             );
+
+            Set(p => p.Properties, map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("IdentityResourceId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_IdentityResourceProperties_IdentityResource");
+                });
+                map.Fetch(CollectionFetchMode.Join);
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+                r => r.OneToMany(m => m.Class(typeof(IdentityResourceProperty)))
+            );
         }
     }
 }

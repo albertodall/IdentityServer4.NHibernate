@@ -58,6 +58,19 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
             },
                 r => r.OneToMany(m => m.Class(typeof(ApiResourceClaim)))
             );
+
+            Set(p => p.Properties, map =>
+            {
+                map.Key(fk =>
+                {
+                    fk.Column("ApiResourceId");
+                    fk.NotNullable(true);
+                    fk.ForeignKey("FK_ApiResourceProperties_ApiResource");
+                });
+                map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+            },
+               r => r.OneToMany(m => m.Class(typeof(ApiResourceProperty)))
+           );
         }
     }
 }

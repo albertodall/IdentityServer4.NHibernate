@@ -8,6 +8,6 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual string Value { get; set; }
         public virtual DateTime? Expiration { get; set; }
         public virtual string Type { get; set; } = "SharedSecret";
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public virtual DateTime Created { get; set; } = DateTime.UtcNow;
     }
 }

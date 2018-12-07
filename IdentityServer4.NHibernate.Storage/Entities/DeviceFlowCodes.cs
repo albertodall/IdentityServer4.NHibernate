@@ -6,7 +6,7 @@ namespace IdentityServer4.NHibernate.Entities
     /// Entity for device flow codes
     /// </summary>
     /// <remarks>
-    /// The Primary Key field id [UserCode], and maps to ID property.
+    /// The Primary Key field is [UserCode], and maps to ID property in EntityBase.
     /// </remarks>
     public class DeviceFlowCodes : EntityBase<string>
     {
@@ -16,7 +16,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The device code.
         /// </value>
-        public string DeviceCode { get; set; }
+        public virtual string DeviceCode { get; set; }
 
         /// <summary>
         /// Gets or sets the subject identifier.
@@ -24,7 +24,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The subject identifier.
         /// </value>
-        public string SubjectId { get; set; }
+        public virtual string SubjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
@@ -32,7 +32,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The client identifier.
         /// </value>
-        public string ClientId { get; set; }
+        public virtual string ClientId { get; set; }
 
         /// <summary>
         /// Gets or sets the creation time.
@@ -40,7 +40,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The creation time.
         /// </value>
-        public DateTime CreationTime { get; set; }
+        public virtual DateTime CreationTime { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration.
@@ -48,7 +48,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The expiration.
         /// </value>
-        public DateTime? Expiration { get; set; }
+        public virtual DateTime? Expiration { get; set; }
 
         /// <summary>
         /// Gets or sets the data.
@@ -56,6 +56,6 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The data.
         /// </value>
-        public string Data { get; set; }
+        public virtual string Data { get; set; }
     }
 }

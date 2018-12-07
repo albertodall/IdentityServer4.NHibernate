@@ -26,7 +26,9 @@ namespace IdentityServer4.NHibernate.Extensions
         {
             mapper.AddMapping<IdentityResourceMap>();
             mapper.AddMapping<IdentityClaimMap>();
+            mapper.AddMapping<IdentityResourcePropertyMap>();
             mapper.AddMapping<ApiResourceMap>();
+            mapper.AddMapping<ApiResourcePropertyMap>();
             mapper.AddMapping<ApiSecretMap>();
             mapper.AddMapping<ApiResourceClaimMap>();
             mapper.AddMapping<ApiScopeMap>();
