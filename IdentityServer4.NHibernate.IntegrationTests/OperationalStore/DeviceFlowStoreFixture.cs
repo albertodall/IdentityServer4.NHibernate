@@ -24,7 +24,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
         public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "DeviceFlowStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions)
+            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "DeviceFlowStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteTestDatabase("DeviceFlowStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
+            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
         };
 
         public DeviceFlowStoreFixture(DatabaseFixture fixture)
