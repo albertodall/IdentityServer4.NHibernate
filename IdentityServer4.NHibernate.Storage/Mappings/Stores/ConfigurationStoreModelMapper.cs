@@ -1,5 +1,6 @@
 ﻿using System;
 using IdentityServer4.NHibernate.Entities;
+using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
 using NHibernate.Mapping.ByCode;
 
@@ -35,15 +36,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
 
             if (tableDef != null)
             {
-                classCustomizer.Table(tableDef.Name);
-                if (string.IsNullOrEmpty(tableDef.Schema))
-                {
-                    classCustomizer.Schema(_options.DefaultSchema);
-                }
-                else
-                {
-                    classCustomizer.Schema(tableDef.Schema);
-                }
+                classCustomizer.MapToTable(tableDef, _options);
             }
 
             // Common mapping rule for IDs

@@ -1,15 +1,7 @@
 ﻿namespace IdentityServer4.NHibernate.Options
 {
-    public class OperationalStoreOptions
+    public class OperationalStoreOptions : StoreOptionsBase
     {
-        /// <summary>
-        /// Gets or sets the default schema for database objects.
-        /// </summary>
-        /// <value>
-        /// The default schema.
-        /// </value>
-        public string DefaultSchema { get; set; } = null;
-
         /// <summary>
         /// Gets or sets the persisted grants table configuration.
         /// </summary>

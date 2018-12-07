@@ -3,20 +3,12 @@
     /// <summary>
     /// Options for configuring the configuration store.
     /// </summary>
-    public class ConfigurationStoreOptions
+    public class ConfigurationStoreOptions : StoreOptionsBase
     {
         /// <summary>
         /// If true, enables the cache on the configuration store.
         /// </summary>
         public bool EnableConfigurationStoreCache { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets the default schema for Configuration store's objects.
-        /// </summary>
-        /// <value>
-        /// The default schema.
-        /// </value>
-        public string DefaultSchema { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the identity resource table configuration.
