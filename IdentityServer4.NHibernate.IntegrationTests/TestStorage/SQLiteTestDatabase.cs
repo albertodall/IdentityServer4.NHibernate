@@ -3,7 +3,6 @@
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
     using System.Data.SQLite;
-    using System.IO;
 
     /// <summary>
     /// A file-based SQLite database used for testing.

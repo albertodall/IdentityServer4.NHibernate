@@ -328,7 +328,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_cors_ordigins",
+                ClientId = "test_client_with_cors_origins",
                 ClientName = "Test Client with CORS Origins",
                 AllowedCorsOrigins =
                 {

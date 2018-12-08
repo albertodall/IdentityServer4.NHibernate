@@ -40,7 +40,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
         internal static SQLiteTestDatabase SQLiteTestDatabase(string fileName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            var connString = $"Data Source={fileName};Version=3;Pooling=True;";
+            var connString = $"Data Source={fileName};Version=3;Pooling=True;Synchronous=Full;";
 
             SQLiteTestDatabase testDb = null;
             try
