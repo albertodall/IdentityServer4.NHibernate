@@ -27,4 +27,13 @@
     <ProjectReference Include="..\IdentityServer4.NHibernate.Storage\IdentityServer4.NHibernate.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="test-database-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

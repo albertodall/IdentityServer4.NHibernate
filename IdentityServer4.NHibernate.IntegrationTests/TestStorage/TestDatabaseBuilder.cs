@@ -5,7 +5,7 @@ using IdentityServer4.NHibernate.Options;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
-namespace IdentityServer4.NHibernate.IntegrationTests
+namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
     /// <summary>
     /// Methods for creating test databases and related session factories.

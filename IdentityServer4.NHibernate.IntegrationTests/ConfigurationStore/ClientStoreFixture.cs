@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
@@ -11,18 +12,22 @@ using Moq;
 using Xunit;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
-{  
-    public class ClientStoreFixture : IClassFixture<DatabaseFixture>
+{
+    public class ClientStoreFixture : IntegrationTestFixture, IClassFixture<DatabaseFixture>
     {
-        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
-        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
+        public static TheoryData<TestDatabase> TestDatabases;
 
-        public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
+        static ClientStoreFixture()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ClientStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("ClientStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
-        };
+            var sqlServerDataSource = TestSettings["SQLServer"];
+
+            TestDatabases = new TheoryData<TestDatabase>()
+            {
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+            };
+        }
 
         public ClientStoreFixture(DatabaseFixture fixture)
         {
