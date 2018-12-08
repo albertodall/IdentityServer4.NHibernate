@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
@@ -46,7 +47,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client()
                     {
-                        ClientId = "1st_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "1st_client",
                         AllowedCorsOrigins = new[] { "https://www.site2.com" }
                     }.ToEntity()
@@ -55,7 +56,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client
                     {
-                        ClientId = "2nd_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "2nd_client",
                         AllowedCorsOrigins = new[] { "https://www.site2.com", testCorsOrigin }
                     }.ToEntity()
@@ -93,7 +94,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client()
                     {
-                        ClientId = "test_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "test_client",
                         AllowedCorsOrigins = new[] { "https://allowed.site.it" }
                     }.ToEntity()
