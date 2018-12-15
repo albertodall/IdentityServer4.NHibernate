@@ -11,6 +11,9 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
     {
         public ClientStoreMappingProfile()
         {
+            CreateMap<NHibernate.Entities.ClientProperty, KeyValuePair<string, string>>()
+                .ReverseMap();
+
             CreateMap<NHibernate.Entities.Client, Models.Client>()
                 .ForMember(dest => dest.ProtocolType, opt => opt.Condition(srs => srs != null))
                 .ReverseMap()
@@ -97,9 +100,6 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ConstructUsing(src => src.Origin)
                 .ReverseMap()
                     .ForMember(dest => dest.Origin, opt => opt.MapFrom(src => src));
-
-            CreateMap<NHibernate.Entities.ClientProperty, KeyValuePair<string, string>>()
-                .ReverseMap();
         }
     }
 }

@@ -7,7 +7,6 @@ namespace IdentityServer4.NHibernate.Database
 {
     using global::NHibernate.Cfg;
     
-
     public static class Databases
     {
         /// <summary>
@@ -17,7 +16,7 @@ namespace IdentityServer4.NHibernate.Database
         public static Configuration SqlServer2008()
         {
             var cfg = new Configuration();
-            cfg.Proxy(p => p.ProxyFactoryFactory<DefaultProxyFactoryFactory>());
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
             cfg.DataBaseIntegration(db =>
             {
                 db.Dialect<MsSql2008Dialect>();
@@ -35,7 +34,7 @@ namespace IdentityServer4.NHibernate.Database
         public static Configuration SqlServer2012()
         {
             var cfg = new Configuration();
-            cfg.Proxy(p => p.ProxyFactoryFactory<DefaultProxyFactoryFactory>());
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
             cfg.DataBaseIntegration(db =>
             {
                 db.Dialect<MsSql2012Dialect>();
@@ -53,7 +52,7 @@ namespace IdentityServer4.NHibernate.Database
         public static Configuration SQLite()
         {
             var cfg = new Configuration();
-            cfg.Proxy(p => p.ProxyFactoryFactory<DefaultProxyFactoryFactory>());
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
             cfg.DataBaseIntegration(db =>
             {
                 db.Dialect<SQLiteDialect>();
