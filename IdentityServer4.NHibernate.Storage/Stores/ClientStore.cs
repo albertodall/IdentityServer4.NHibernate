@@ -43,25 +43,25 @@ namespace IdentityServer4.NHibernate.Stores
             {
                 var clientQuery = _session.QueryOver<Client>()
                     .Where(c => c.ClientId == clientId)
-                    .Fetch(c => c.AllowedGrantTypes).Eager
-                    .Fetch(c => c.ClientSecrets).Eager
-                    .Fetch(c => c.AllowedScopes).Eager
-                    .Fetch(c => c.Claims).Eager
+                    .Fetch(SelectMode.Fetch, c => c.AllowedGrantTypes)
+                    .Fetch(SelectMode.Fetch, c => c.ClientSecrets)
+                    .Fetch(SelectMode.Fetch, c => c.AllowedScopes)
+                    .Fetch(SelectMode.Fetch, c => c.Claims)
                     .TransformUsing(Transformers.DistinctRootEntity)
                     .FutureValue<Client>();
 
                 _session.QueryOver<Client>()
                     .Where(c => c.ClientId == clientId)
-                    .Fetch(c => c.RedirectUris).Eager
-                    .Fetch(c => c.PostLogoutRedirectUris).Eager
-                    .Fetch(c => c.AllowedCorsOrigins).Eager
+                    .Fetch(SelectMode.Fetch, c => c.RedirectUris)
+                    .Fetch(SelectMode.Fetch, c => c.PostLogoutRedirectUris)
+                    .Fetch(SelectMode.Fetch, c => c.AllowedCorsOrigins)
                     .TransformUsing(Transformers.DistinctRootEntity)
                     .FutureValue<Client>();
 
                 _session.QueryOver<Client>()
                     .Where(c => c.ClientId == clientId)
-                    .Fetch(c => c.IdentityProviderRestrictions).Eager
-                    .Fetch(c => c.Properties).Eager
+                    .Fetch(SelectMode.Fetch, c => c.IdentityProviderRestrictions)
+                    .Fetch(SelectMode.Fetch, c => c.Properties)
                     .TransformUsing(Transformers.DistinctRootEntity)
                     .FutureValue<Client>();
 

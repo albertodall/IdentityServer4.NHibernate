@@ -43,8 +43,8 @@ namespace IdentityServer4.NHibernate.Database.Schema
             configurationStoreMapper.AddResourceContextMappings();
             operationalStoreMapper.AddPersistedGrantContextMappings();
 
-            configuration.AddMapping(configurationStoreMapper.CompileMappingForAllExplicitlyAddedEntities());
-            configuration.AddMapping(operationalStoreMapper.CompileMappingForAllExplicitlyAddedEntities());
+            configuration.AddConfigurationStoreMappings(configurationStoreOptions);
+            configuration.AddOperationalStoreMappings(operationalStoreOptions);
 
             new SchemaExport(configuration)
                 .SetOutputFile(scriptFileName)

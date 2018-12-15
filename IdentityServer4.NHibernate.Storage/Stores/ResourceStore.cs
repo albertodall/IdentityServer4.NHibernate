@@ -39,9 +39,9 @@ namespace IdentityServer4.NHibernate.Stores
         {
             var apiResource = await _session.QueryOver<Entities.ApiResource>()
                 .Where(r => r.Name == name)
-                .Fetch(r => r.Secrets).Eager
-                .Fetch(r => r.Scopes).Eager
-                .Fetch(r => r.UserClaims).Eager
+                .Fetch(SelectMode.Fetch, r => r.Secrets)
+                .Fetch(SelectMode.Fetch, r => r.Scopes)
+                .Fetch(SelectMode.Fetch, r => r.UserClaims)
                 .SingleOrDefaultAsync();
 
             if (apiResource != null)
@@ -64,8 +64,9 @@ namespace IdentityServer4.NHibernate.Stores
         {
             ApiScopeClaim apiScopeClaimAlias = null;
             var resourcesQuery = _session.QueryOver<Entities.ApiResource>()
-                .Fetch(api => api.Secrets).Eager
-                .Fetch(api => api.UserClaims).Eager
+                .Fetch(SelectMode.Fetch, api => api.Secrets)
+                .Fetch(SelectMode.Fetch, api => api.UserClaims)
+                .Fetch(SelectMode.Fetch, api => api.Properties)
                 // Left specification is mandatory for NHibernate to eagerly fetch the associations
                 .Left.JoinQueryOver<ApiScope>(api => api.Scopes) 
                     .Left.JoinAlias(scope => scope.UserClaims, () => apiScopeClaimAlias)
@@ -107,13 +108,15 @@ namespace IdentityServer4.NHibernate.Stores
             using (var tx = _session.BeginTransaction())
             {
                 var identityResources = _session.QueryOver<Entities.IdentityResource>()
-                    .Fetch(ir => ir.UserClaims).Eager
+                    .Fetch(SelectMode.Fetch, ir => ir.UserClaims)
+                    .Fetch(SelectMode.Fetch, ir => ir.Properties)
                     .Future();
 
                 var apiResources = _session.QueryOver<Entities.ApiResource>()
-                    .Fetch(ar => ar.Secrets).Eager
-                    .Fetch(ar => ar.Scopes).Eager
-                    .Fetch(ar => ar.UserClaims).Eager
+                    .Fetch(SelectMode.Fetch, ar => ar.Secrets)
+                    .Fetch(SelectMode.Fetch, ar => ar.Scopes)
+                    .Fetch(SelectMode.Fetch, ar => ar.UserClaims)
+                    .Fetch(SelectMode.Fetch, ar => ar.Properties)
                     .Future();
 
                 result = new Resources(

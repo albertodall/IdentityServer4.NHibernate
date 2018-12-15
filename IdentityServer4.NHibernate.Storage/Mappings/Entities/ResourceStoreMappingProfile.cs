@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Entities;
+using System.Collections.Generic;
 
 namespace IdentityServer4.NHibernate.Mappings.Entities
 {
@@ -11,6 +12,9 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
     {
         public ResourceStoreMappingProfile()
         {
+            CreateMap<ApiResourceProperty, KeyValuePair<string, string>>()
+                .ReverseMap();
+
             CreateMap<NHibernate.Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
                 .ForMember(dest => dest.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
@@ -28,6 +32,11 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                     .ForMember(dest => dest.UserClaims, opt =>
                     {
                         opt.MapFrom(src => src.UserClaims);
+                        opt.UseDestinationValue();
+                    })
+                    .ForMember(dest => dest.Properties, opt =>
+                    {
+                        opt.MapFrom(src => src.Properties);
                         opt.UseDestinationValue();
                     });
 
@@ -54,12 +63,20 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ReverseMap()
                     .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
+            CreateMap<IdentityResourceProperty, KeyValuePair<string, string>>()
+                .ReverseMap();
+
             CreateMap<NHibernate.Entities.IdentityResource, Models.IdentityResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.IdentityResource())
                 .ReverseMap()
                     .ForMember(dest => dest.UserClaims, opt => 
                     {
                         opt.MapFrom(src => src.UserClaims);
+                        opt.UseDestinationValue();
+                    })
+                    .ForMember(dest => dest.Properties, opt =>
+                    {
+                        opt.MapFrom(src => src.Properties);
                         opt.UseDestinationValue();
                     });
 

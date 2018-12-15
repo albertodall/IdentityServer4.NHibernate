@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate.IntegrationTests", "IdentityServer4.NHibernate.IntegrationTests\IdentityServer4.NHibernate.IntegrationTests.csproj", "{773CE57E-6088-46B8-B8AF-9E47CFE66015}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer4.NHibernate.Storage", "IdentityServer4.NHibernate.Storage\IdentityServer4.NHibernate.Storage.csproj", "{613CA501-CB00-403E-8FC7-707190382E9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate.Storage", "IdentityServer4.NHibernate.Storage\IdentityServer4.NHibernate.Storage.csproj", "{613CA501-CB00-403E-8FC7-707190382E9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABFEF781-D57E-406E-A0FC-189403BC4513}"
+	ProjectSection(SolutionItems) = preProject
+		Export-DatabaseSchemas.ps1 = Export-DatabaseSchemas.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
