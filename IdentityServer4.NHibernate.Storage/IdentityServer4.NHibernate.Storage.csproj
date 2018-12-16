@@ -12,6 +12,7 @@
     <Product>IdentityServer4.NHibernate.Storage</Product>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
     <RootNamespace>IdentityServer4.NHibernate</RootNamespace>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
