@@ -27,6 +27,6 @@ $exportableSchemas = [IdentityServer4.NHibernate.Database.Databases].GetMethods(
 $exportableSchemas | ForEach-Object {
     $fileName = $_.Name
     $currentSchema = $_.Invoke($null, $null)
-    Write-Host "Creating script $filename.sql..."
+    Write-Host "Creating script $fileName.sql in $OutputPath..."
     [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase("$OutputPath\$fileName.sql", $currentSchema, $configStoreOptions, $opStoreOptions)
 }
