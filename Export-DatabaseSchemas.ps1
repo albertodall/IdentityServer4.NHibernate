@@ -8,8 +8,16 @@ Param(
     [string] $OutputPath
 )
 
-Add-Type -AssemblyName "$PublishPath\IdentityServer4.NHibernate.Storage.dll"
-Add-Type -AssemblyName "$PublishPath\NHibernate.dll"
+if (Test-Path -Path "$PublishPath\IdentityServer4.NHibernate.Storage.dll" -PathType Leaf) {
+    Write-Host "Assembly $PublishPath\IdentityServer4.NHibernate.Storage.dll found. Adding types..."
+    Add-Type -AssemblyName "$PublishPath\IdentityServer4.NHibernate.Storage.dll"
+}
+
+if (Test-Path -Path "$PublishPath\NHibernate.dll" -PathType Leaf) {
+    Write-Host "Assembly $PublishPath\NHibernate.dll found. Adding types..."
+    Add-Type -AssemblyName "$PublishPath\NHibernate.dll"
+}
+
 $configStoreOptions = New-Object IdentityServer4.NHibernate.Options.ConfigurationStoreOptions
 $opStoreOptions = New-Object IdentityServer4.NHibernate.Options.OperationalStoreOptions
 
@@ -19,5 +27,6 @@ $exportableSchemas = [IdentityServer4.NHibernate.Database.Databases].GetMethods(
 $exportableSchemas | ForEach-Object {
     $fileName = $_.Name
     $currentSchema = $_.Invoke($null, $null)
+    Write-Host "Creating script $filename.sql..."
     [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase("$OutputPath\$fileName.sql", $currentSchema, $configStoreOptions, $opStoreOptions)
 }
