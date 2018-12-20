@@ -8,6 +8,7 @@
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
     <Company />
     <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/albertodall/IdentityServer4.NHibernate/master/ids4-nh-logo128.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
