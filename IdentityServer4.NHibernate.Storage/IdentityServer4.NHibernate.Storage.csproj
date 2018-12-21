@@ -16,12 +16,8 @@
     <PackageLicenseUrl>https://licenses.nuget.org/Apache-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
     <RepositoryUrl>https://github.com/albertodall/IdentityServer4.NHibernate</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <RepositoryType>Git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

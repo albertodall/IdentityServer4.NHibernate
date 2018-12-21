@@ -1,21 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Version>1.0.0</Version>
     <Authors>Alberto Dallagiacoma</Authors>
     <Description>NHibernate persistence layer for IdentityServer4</Description>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
     <Company />
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/albertodall/IdentityServer4.NHibernate/master/ids4-nh-logo128.png</PackageIconUrl>
-    <RepositoryType>git</RepositoryType>
+    <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/albertodall/IdentityServer4.NHibernate</RepositoryUrl>
     <PackageLicenseUrl>https://licenses.nuget.org/Apache-2.0</PackageLicenseUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\Alby\Source\IdentityServer4.NHibernate\IdentityServer4.NHibernate\IdentityServer4.NHibernate.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

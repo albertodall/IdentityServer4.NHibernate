@@ -12,7 +12,7 @@ using NHibernate;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Extensions for configuring NHIbernate-based stores in IdentityServer
+    /// Extensions for configuring NHibernate-based stores in IdentityServer
     /// </summary>
     public static class IdentityServerBuilderNHibernateExtensions
     {
