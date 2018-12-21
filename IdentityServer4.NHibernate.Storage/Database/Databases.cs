@@ -6,7 +6,10 @@ using NHibernate.Driver;
 namespace IdentityServer4.NHibernate.Database
 {
     using global::NHibernate.Cfg;
-    
+
+    /// <summary>
+    /// NHibernate configurations for supported databases.
+    /// </summary>
     public static class Databases
     {
         /// <summary>

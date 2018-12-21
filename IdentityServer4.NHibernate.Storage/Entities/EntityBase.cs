@@ -1,17 +1,29 @@
 ﻿namespace IdentityServer4.NHibernate.Entities
 {
+    /// <summary>
+    /// Base class for entities.
+    /// </summary>
+    /// <typeparam name="TId">Identifier type.</typeparam>
     public abstract class EntityBase<TId> : IEntity<TId>
     {
         private const int HashMultiplier = 29;
 
         private int? cachedHashCode;
 
+        /// <summary>
+        /// Unique identifier.
+        /// </summary>
         public virtual TId ID { get; protected internal set; }
 
+        /// <summary>
+        /// Returns true if the entity is transient (not yet persisted in the database).
+        /// </summary>
         public virtual bool IsTransient()
         {
             return ID == null || ID.Equals(default(TId));
         }
+
+        #pragma warning disable 1591
 
         public override bool Equals(object obj)
         {

@@ -9,7 +9,10 @@ using Microsoft.Extensions.Logging;
 using NHibernate;
 
 namespace IdentityServer4.NHibernate.TokenCleanup
-{  
+{
+    /// <summary>
+    /// Periodically cleans up expired persisted grants.
+    /// </summary>
     public class TokenCleanup
     {
         private readonly IServiceProvider _serviceProvider;
@@ -18,6 +21,12 @@ namespace IdentityServer4.NHibernate.TokenCleanup
 
         private CancellationTokenSource _source;
 
+        /// <summary>
+        /// Initializes a TokenCleanup instance.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="logger">The logger.</param>
+        /// <param name="options">Configuration options.</param>
         public TokenCleanup(IServiceProvider serviceProvider, ILogger<TokenCleanup> logger, OperationalStoreOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -36,13 +45,19 @@ namespace IdentityServer4.NHibernate.TokenCleanup
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
-        public TimeSpan CleanupInterval => TimeSpan.FromSeconds(_options.TokenCleanupInterval);
+        private TimeSpan CleanupInterval => TimeSpan.FromSeconds(_options.TokenCleanupInterval);
 
+        /// <summary>
+        /// Starts the token cleanup task.
+        /// </summary>
         public void Start()
         {
             Start(CancellationToken.None);
         }
 
+        /// <summary>
+        /// Starts the token cleanup task.
+        /// </summary>
         public void Start(CancellationToken cancellationToken)
         {
             if (_source != null) throw new InvalidOperationException("TokenCleanup task already started. Call Stop() first.");
@@ -54,6 +69,9 @@ namespace IdentityServer4.NHibernate.TokenCleanup
             Task.Factory.StartNew(() => StartInternal(_source.Token));
         }
 
+        /// <summary>
+        /// Stops the token cleanup task.
+        /// </summary>
         public void Stop()
         {
             if (_source == null) throw new InvalidOperationException("TokenCleanup task not started. Call Start() first.");
@@ -70,7 +88,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogDebug("TokenCleanup - CancellationRequested. Exiting.");
+                    _logger.LogDebug("CancellationRequested. Exiting.");
                     break;
                 }
 
@@ -80,51 +98,72 @@ namespace IdentityServer4.NHibernate.TokenCleanup
                 }
                 catch (TaskCanceledException)
                 {
-                    _logger.LogDebug("TokenCleanup - TaskCanceledException. Exiting.");
+                    _logger.LogDebug("TaskCanceledException. Exiting.");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("TokenCleanup - Task.Delay exception: {0}. Exiting.", ex.Message);
+                    _logger.LogError("Task.Delay exception: {0}. Exiting.", ex.Message);
                     break;
                 }
 
-                await ClearTokens();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogDebug("CancellationRequested. Exiting.");
+                    break;
+                }
+
+                await RemoveExpiredGrantsAsync();
             }
         }
 
         /// <summary>
-        /// Performs the actual token cleanup.
+        /// Performs the actual cleanup.
         /// </summary>
-        private async Task ClearTokens()
+        private async Task RemoveExpiredGrantsAsync()
         {
             string deleteExpiredTokensHql = "delete PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
 
             try
             {
-                _logger.LogTrace("TokenCleanup - Querying for tokens to clear");
+                _logger.LogTrace("TokenCleanup - Querying for expired grants to clear");
+
+                var found = int.MaxValue;
 
                 using (var serviceScope = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
+                    var tokenCleanupNotification = serviceScope.ServiceProvider.GetService<IOperationalStoreNotification>();
+
                     using (var session = serviceScope.ServiceProvider.GetService<ISession>())
                     {
-                        using (var tx = session.BeginTransaction())
+                        while (found >= _options.TokenCleanupBatchSize)
                         {
-                            var expiredTokensQuery = session.QueryOver<PersistedGrant>()
-                                .Where(g => g.CreationTime < DateTimeOffset.UtcNow)
-                                .Select(g => g.ID);
-
-                            var expiredTokensIDs = (await expiredTokensQuery.ListAsync()).ToArray();
-
-                            if (expiredTokensIDs.Any())
+                            using (var tx = session.BeginTransaction())
                             {
-                                _logger.LogDebug($"Clearing {expiredTokensIDs.Length} tokens");
+                                var expiredTokensQuery = session.QueryOver<PersistedGrant>()
+                                    .Where(g => g.CreationTime < DateTimeOffset.UtcNow)
+                                    .OrderBy(g => g.ID).Asc
+                                    .Select(g => g.ID)
+                                    .Take(_options.TokenCleanupBatchSize);
 
-                                await session.CreateQuery(deleteExpiredTokensHql)
-                                    .SetParameterList("expiredTokensIDs", expiredTokensIDs)
-                                    .ExecuteUpdateAsync();
+                                var expiredTokensIDs = (await expiredTokensQuery.ListAsync()).ToArray();
+                                found = expiredTokensIDs.Length;
 
-                                await tx.CommitAsync();
+                                if (found > 0)
+                                {
+                                    _logger.LogInformation($"Removing {found} expired grants");
+
+                                    await session.CreateQuery(deleteExpiredTokensHql)
+                                        .SetParameterList("expiredTokensIDs", expiredTokensIDs)
+                                        .ExecuteUpdateAsync();
+
+                                    await tx.CommitAsync();
+
+                                    if (tokenCleanupNotification != null)
+                                    {
+                                        await tokenCleanupNotification.PersistedGrantsRemovedAsync(expiredTokensIDs);
+                                    }
+                                }
                             }
                         }
                     }
@@ -132,7 +171,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
             }
             catch (Exception ex)
             {
-                _logger.LogError("TokenCleanup - Exception clearing tokens: {exception}", ex.Message);
+                _logger.LogError($"TokenCleanup - Exception clearing tokens: {ex.Message}");
             }
         }
     }

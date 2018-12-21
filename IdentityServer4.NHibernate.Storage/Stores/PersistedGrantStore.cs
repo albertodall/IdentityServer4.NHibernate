@@ -64,6 +64,11 @@ namespace IdentityServer4.NHibernate.Stores
             return await Task.FromResult(model);
         }
 
+        /// <summary>
+        /// Removes all grants for a given subject id and client id combination.
+        /// </summary>
+        /// <param name="subjectId">The subject identifier.</param>
+        /// <param name="clientId">The client identifier.</param>
         public async Task RemoveAllAsync(string subjectId, string clientId)
         {
             string deleteHql = "delete from PersistedGrant where SubjectId = :subjectId and ClientId = :clientId";

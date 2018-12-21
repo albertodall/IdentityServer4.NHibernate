@@ -7,6 +7,9 @@ namespace IdentityServer4.NHibernate.Extensions
 {
     using global::NHibernate.Cfg;
 
+    /// <summary>
+    /// Extension methods for configuring NHibernate.
+    /// </summary>
     public static class NHibernateConfigurationExtensions
     {
         /// <summary>
@@ -14,7 +17,6 @@ namespace IdentityServer4.NHibernate.Extensions
         /// </summary>
         /// <param name="configuration">The NHibernate configuration.</param>
         /// <param name="connectionString">The connection string.</param>
-        /// <returns></returns>
         public static Configuration UsingConnectionString(this Configuration configuration, string connectionString)
         {
             configuration.SetProperty(Environment.ConnectionString, connectionString);
@@ -26,7 +28,6 @@ namespace IdentityServer4.NHibernate.Extensions
         /// </summary>
         /// <param name="configuration">The NHibernate configuration.</param>
         /// <param name="connectionStringName">The connection string name.</param>
-        /// <returns></returns>
         public static Configuration UsingConnectionStringName(this Configuration configuration, string connectionStringName)
         {
             configuration.SetProperty(Environment.ConnectionStringName, connectionStringName);

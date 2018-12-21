@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace IdentityServer4.NHibernate.Entities
 {
+    #pragma warning disable 1591
+
     public class IdentityResource : EntityBase<int>
     {
         public virtual bool Enabled { get; set; } = true;

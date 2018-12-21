@@ -3,6 +3,9 @@ using AutoMapper;
 
 namespace IdentityServer4.NHibernate.Extensions
 {
+    /// <summary>
+    /// Add mapping profile for <see cref="Entities.Client"/> to AutoMapper configuration.
+    /// </summary>
     public static class ClientStoreMappingExtensions
     {
         private static IMapper Mapper;

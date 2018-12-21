@@ -3,6 +3,9 @@ using AutoMapper;
 
 namespace IdentityServer4.NHibernate.Extensions
 {
+    /// <summary>
+    /// Add mapping profile for <see cref="Entities.PersistedGrant"/> to AutoMapper configuration.
+    /// </summary>
     public static class PersistedGrantStoreMappingExtensions
     {
         private static IMapper Mapper;

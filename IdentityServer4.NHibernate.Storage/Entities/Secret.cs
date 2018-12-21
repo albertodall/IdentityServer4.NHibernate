@@ -2,6 +2,8 @@
 
 namespace IdentityServer4.NHibernate.Entities
 {
+    #pragma warning disable 1591
+
     public abstract class Secret : EntityBase<int>
     {
         public virtual string Description { get; set; }

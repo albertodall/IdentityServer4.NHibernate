@@ -3,6 +3,10 @@ using AutoMapper;
 
 namespace IdentityServer4.NHibernate.Extensions
 {
+    /// <summary>
+    /// Add mapping profile for <see cref="Entities.ApiResource"/> and <see cref="Entities.IdentityResource"/> 
+    /// to AutoMapper configuration.
+    /// </summary>
     public static class ResourceStoreMappingExtensions
     {
         private static IMapper Mapper;

@@ -46,7 +46,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// Gets or sets the expiration.
         /// </summary>
         /// <value>
-        /// The expiration.
+        /// The expiration date.
         /// </value>
         public virtual DateTime? Expiration { get; set; }
 

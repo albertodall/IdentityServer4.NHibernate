@@ -2,6 +2,8 @@
 
 namespace IdentityServer4.NHibernate.Entities
 {
+    #pragma warning disable 1591
+
     public class ApiScope : EntityBase<int>
     {
         public virtual string Name { get; set; }

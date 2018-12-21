@@ -1,5 +1,8 @@
 ﻿namespace IdentityServer4.NHibernate.Options
 {
+    /// <summary>
+    /// Available options for IdentityServer operational store configuration.
+    /// </summary>
     public class OperationalStoreOptions : StoreOptionsBase
     {
         /// <summary>

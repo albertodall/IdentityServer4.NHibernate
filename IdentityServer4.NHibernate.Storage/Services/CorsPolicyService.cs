@@ -20,6 +20,11 @@ namespace IdentityServer4.NHibernate.Services
         private readonly IHttpContextAccessor _context;
         private readonly ILogger<CorsPolicyService> _logger;
 
+        /// <summary>
+        /// Creates a new instance of the NHibernate-based Cors Policy Service.
+        /// </summary>
+        /// <param name="context">The http context.</param>
+        /// <param name="logger">The logger.</param>
         public CorsPolicyService(IHttpContextAccessor context, ILogger<CorsPolicyService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));

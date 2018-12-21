@@ -19,6 +19,12 @@ namespace IdentityServer4.NHibernate.Stores
         private readonly ILogger _logger;
         private readonly IPersistentGrantSerializer _serializer;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DeviceFlowStore"/> class.
+        /// </summary>
+        /// <param name="session">The NHibernate session.</param>
+        /// <param name="serializer">The serializer</param>
+        /// <param name="logger">The logger.</param>
         public DeviceFlowStore(ISession session, IPersistentGrantSerializer serializer, ILogger<DeviceFlowStore> logger)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -26,6 +32,10 @@ namespace IdentityServer4.NHibernate.Stores
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Finds device authorization by device code.
+        /// </summary>
+        /// <param name="deviceCode">The device code.</param>
         public async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
             DeviceCode model = null;
@@ -43,6 +53,10 @@ namespace IdentityServer4.NHibernate.Stores
             return model;
         }
 
+        /// <summary>
+        /// Finds device authorization by user code.
+        /// </summary>
+        /// <param name="userCode">The user code.</param>
         public async Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
             DeviceCode model = null;
@@ -57,6 +71,10 @@ namespace IdentityServer4.NHibernate.Stores
             return model;
         }
 
+        /// <summary>
+        /// Removes the device authorization, searching by device code.
+        /// </summary>
+        /// <param name="deviceCode">The device code.</param>
         public async Task RemoveByDeviceCodeAsync(string deviceCode)
         {
             using (var tx = _session.BeginTransaction())
@@ -86,6 +104,12 @@ namespace IdentityServer4.NHibernate.Stores
             }
         }
 
+        /// <summary>
+        /// Stores the device authorization request.
+        /// </summary>
+        /// <param name="deviceCode">The device code.</param>
+        /// <param name="userCode">The user code.</param>
+        /// <param name="data">The data.</param>
         public async Task StoreDeviceAuthorizationAsync(string deviceCode, string userCode, DeviceCode data)
         {
             using (var tx = _session.BeginTransaction())
@@ -95,6 +119,11 @@ namespace IdentityServer4.NHibernate.Stores
             }
         }
 
+        /// <summary>
+        /// Updates device authorization, searching by user code.
+        /// </summary>
+        /// <param name="userCode">The user code.</param>
+        /// <param name="data">The data.</param>
         public async Task UpdateByUserCodeAsync(string userCode, DeviceCode data)
         {
             using (var tx = _session.BeginTransaction())
@@ -124,6 +153,9 @@ namespace IdentityServer4.NHibernate.Stores
             }
         }
 
+        /// <summary>
+        /// Maps a <see cref="DeviceCode"/> to a <see cref="DeviceFlowCodes"/> instance.
+        /// </summary>
         private DeviceFlowCodes ToEntity(DeviceCode model, string deviceCode, string userCode)
         {
             if (model == null || deviceCode == null || userCode == null) return null;
@@ -140,6 +172,9 @@ namespace IdentityServer4.NHibernate.Stores
             };
         }
 
+        /// <summary>
+        /// Maps a device code to a <see cref="DeviceCode"/> instance.
+        /// </summary>
         private DeviceCode ToModel(string entity)
         {
             if (entity == null) return null;

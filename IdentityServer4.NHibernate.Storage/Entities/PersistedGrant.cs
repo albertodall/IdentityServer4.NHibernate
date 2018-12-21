@@ -2,6 +2,8 @@
 
 namespace IdentityServer4.NHibernate.Entities
 {
+    #pragma warning disable 1591
+
     public class PersistedGrant : EntityBase<string>
     {
         public virtual string Type { get; set; }

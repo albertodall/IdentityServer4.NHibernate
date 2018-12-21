@@ -1,18 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AssemblyName>IdentityServer4.NHibernate.Storage</AssemblyName>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <PackageId>IdentityServer4.NHibernate.Storage</PackageId>
     <Authors>Alberto Dallagiacoma</Authors>
     <Company />
     <Product>IdentityServer4.NHibernate.Storage</Product>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
     <RootNamespace>IdentityServer4.NHibernate</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>1.0.0</Version>
+    <PackageLicenseUrl>https://licenses.nuget.org/Apache-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/albertodall/IdentityServer4.NHibernate</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,6 +11,9 @@ using NHibernate;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Extensions for configuring NHIbernate-based stores in IdentityServer
+    /// </summary>
     public static class IdentityServerBuilderNHibernateExtensions
     {
         /// <summary>
@@ -22,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseConfiguration">The NHibernate configuration to access the underlying database.</param>
         /// <param name="configurationStoreOptionsAction">The configurations store options action.</param>
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
-        public static IIdentityServerBuilder AddDatabaseSupport(
+        public static IIdentityServerBuilder AddNHibernateStores(
             this IIdentityServerBuilder builder,
             NHibernate.Cfg.Configuration databaseConfiguration,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
@@ -57,20 +60,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Configures NHibernate-based database support for IdentityServer.
         /// - Adds NHibernate implementation of IClientStore, IResourceStore, and ICorsPolicyService (configuration store)
-        /// - Adds NHibernate implementation of IPersistedGrantStore and TokenCleanup (operational store).
+        /// - Adds NHibernate implementation of IPersistedGrantStore, IDeviceFlowStore and TokenCleanup (operational store).
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="databaseConfigurationFunction">Configuration function that configures NHibernate to access the underlying database.</param>
         /// <param name="configurationStoreOptionsAction">The configurations store options action.</param>
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddDatabaseSupport(
+        public static IIdentityServerBuilder AddNHibernateDatabaseStores(
             this IIdentityServerBuilder builder,
             Func<NHibernate.Cfg.Configuration> databaseConfigurationFunction,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
             Action<OperationalStoreOptions> operationalStoreOptionsAction)
         {
-            return builder.AddDatabaseSupport(
+            return builder.AddNHibernateStores(
                 databaseConfigurationFunction(),
                 configurationStoreOptionsAction,
                 operationalStoreOptionsAction);
@@ -79,8 +82,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds an implementation of the IOperationalStoreNotification to IdentityServer.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="builder"></param>
+        /// <typeparam name="T">Concrete implementation if the <see cref="IOperationalStoreNotification"/> interface.</typeparam>
+        /// <param name="builder">The builder.</param>
         public static IIdentityServerBuilder AddOperationalStoreNotification<T>(
            this IIdentityServerBuilder builder)
            where T : class, IOperationalStoreNotification
@@ -90,12 +93,12 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds NHIbernate core components to the DI system.
+        /// Adds NHibernate core components to the DI system.
         /// </summary>
-        /// <param name="databaseConfiguration">NHibernate database configuration</param>
+        /// <param name="builder">The builder.</param>
+        /// <param name="databaseConfiguration">NHibernate database configuration.</param>
         /// <param name="configurationStoreOptions">Configuration store options (needed to configure NHibernate mappings).</param>
         /// <param name="operationalStoreOptions">Operational store options (needed to configure NHibernate mappings).</param>
-        /// <returns></returns>
         private static IIdentityServerBuilder AddNHibernatePersistenceSupport(
             this IIdentityServerBuilder builder,
             NHibernate.Cfg.Configuration databaseConfiguration,
@@ -123,8 +126,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the stores for managing IdentityServer's configuration.
+        /// Adds the stores for managing IdentityServer configuration.
         /// </summary>
+        /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddConfigurationStore(this IIdentityServerBuilder builder)
         {
             builder.Services.AddTransient<IClientStore, ClientStore>();
@@ -135,8 +139,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the cache based stores for managing IdentityServer's configuration.
+        /// Adds the cache based stores for managing IdentityServer configuration.
         /// </summary>
+        /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddCachedConfigurationStore(this IIdentityServerBuilder builder)
         {
             builder.AddInMemoryCaching();
@@ -149,8 +154,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds stores and services for managing IdentityServer's persisted grants.
+        /// Adds stores and services for managing IdentityServer persisted grants.
         /// </summary>
+        /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddOperationalStore(this IIdentityServerBuilder builder)
         {
             builder.Services.AddSingleton<TokenCleanup>();
