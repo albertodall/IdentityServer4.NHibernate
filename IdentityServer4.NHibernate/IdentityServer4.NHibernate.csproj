@@ -27,4 +27,10 @@
     <ProjectReference Include="..\IdentityServer4.NHibernate.Storage\IdentityServer4.NHibernate.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="IdentityServer4.NHibernate.nuspec">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
