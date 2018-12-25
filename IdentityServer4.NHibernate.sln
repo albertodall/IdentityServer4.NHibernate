@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABFEF781-D57E-406E-A0FC-189403BC4513}"
 	ProjectSection(SolutionItems) = preProject
 		Export-DatabaseSchemas.ps1 = Export-DatabaseSchemas.ps1
+		GitVersion.yml = GitVersion.yml
 		ids4-nh-logo128.png = ids4-nh-logo128.png
 	EndProjectSection
 EndProject
