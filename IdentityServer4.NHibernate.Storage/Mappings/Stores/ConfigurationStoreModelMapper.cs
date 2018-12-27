@@ -29,6 +29,10 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
             {
                 tableDef = GetTableDefinition(nameof(_options.ApiClaim), _options);
             }
+            else if (type == typeof(ClientScope))
+            {
+                tableDef = GetTableDefinition(nameof(_options.ClientScopes), _options);
+            }
             else
             {
                 tableDef = GetTableDefinition(type.Name, _options);

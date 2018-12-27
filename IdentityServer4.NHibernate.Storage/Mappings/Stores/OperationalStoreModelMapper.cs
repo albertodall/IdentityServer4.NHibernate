@@ -1,4 +1,5 @@
 ﻿using System;
+using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
 using NHibernate.Mapping.ByCode;
@@ -17,7 +18,15 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
 
         private void BeforeMapOperationalStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            var tableDef = GetTableDefinition(type.Name, _options);
+            TableDefinition tableDef = null;
+            if (type == typeof(PersistedGrant))
+            {
+                tableDef = GetTableDefinition(nameof(_options.PersistedGrants), _options);
+            }
+            else
+            {
+                tableDef = GetTableDefinition(type.Name, _options);
+            }
             if (tableDef != null)
             {
                 classCustomizer.MapToTable(tableDef, _options);
