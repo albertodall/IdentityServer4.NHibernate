@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Configures NHibernate-based database support for IdentityServer.
         /// - Adds NHibernate implementation of IClientStore, IResourceStore, and ICorsPolicyService (configuration store)
-        /// - Adds NHibernate implementation of IPersistedGrantStore and TokenCleanup (operational store).
+        /// - Adds NHibernate implementation of IPersistedGrantStore, IDeviceFlowStore and TokenCleanup (operational store).
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="databaseConfiguration">The NHibernate configuration to access the underlying database.</param>
@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Configures NHibernate-based database support for IdentityServer.
-        /// - Adds NHibernate implementation of IClientStore, IResourceStore, and ICorsPolicyService (configuration store)
+        /// - Adds NHibernate implementation of IClientStore, IResourceStore, and ICorsPolicyService (configuration store).
         /// - Adds NHibernate implementation of IPersistedGrantStore, IDeviceFlowStore and TokenCleanup (operational store).
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configurationStoreOptionsAction">The configurations store options action.</param>
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
         /// <returns></returns>
-        public static IIdentityServerBuilder AddNHibernateDatabaseStores(
+        public static IIdentityServerBuilder AddNHibernateStores(
             this IIdentityServerBuilder builder,
             Func<NHibernate.Cfg.Configuration> databaseConfigurationFunction,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
@@ -82,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds an implementation of the IOperationalStoreNotification to IdentityServer.
         /// </summary>
-        /// <typeparam name="T">Concrete implementation if the <see cref="IOperationalStoreNotification"/> interface.</typeparam>
+        /// <typeparam name="T">Concrete implementation of the <see cref="IOperationalStoreNotification"/> interface.</typeparam>
         /// <param name="builder">The builder.</param>
         public static IIdentityServerBuilder AddOperationalStoreNotification<T>(
            this IIdentityServerBuilder builder)
