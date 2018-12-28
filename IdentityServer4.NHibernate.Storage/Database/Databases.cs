@@ -81,6 +81,7 @@ namespace IdentityServer4.NHibernate.Database
                     EnableSqlLogging(db);
                 }
             });
+
             return cfg;
         }
 

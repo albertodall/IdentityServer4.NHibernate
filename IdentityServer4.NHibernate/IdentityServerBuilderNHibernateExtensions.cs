@@ -191,7 +191,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         var schemaExport = new SchemaExport(databaseConfiguration);
                         // Drop
-                        schemaExport.Execute(false, true, true, connection, null);
+                        schemaExport.Drop(false, true);
                         // Create
                         schemaExport.Execute(false, true, false, connection, null);
                     }
