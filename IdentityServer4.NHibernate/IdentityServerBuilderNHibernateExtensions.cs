@@ -8,7 +8,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Hosting;
 using NHibernate;
-using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -45,10 +44,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.AddNHibernatePersistenceSupport(databaseConfiguration, configStoreOptions, operationalStoreOptions);
 
-            // Creates database schema from scratch if requested;
+            // Creates database schema from scratch, if requested;
             if (createDatabaseSchema)
             {
-                CreateDatabaseSchema(builder, databaseConfiguration);
+                CreateDatabaseSchema(databaseConfiguration);
             }
 
             // Adds configuration store components
@@ -180,23 +179,15 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void CreateDatabaseSchema(IIdentityServerBuilder builder, NHibernate.Cfg.Configuration databaseConfiguration)
+        /// <summary>
+        /// Creates database schema from scratch.
+        /// </summary>
+        /// <param name="databaseConfiguration">The database configuration.</param>
+        private static void CreateDatabaseSchema(NHibernate.Cfg.Configuration databaseConfiguration)
         {
-            using (var serviceProvider = builder.Services.BuildServiceProvider(true))
-            {
-                using (var serviceScope = serviceProvider.GetService<IServiceScopeFactory>().CreateScope())
-                {
-                    var sessionFactory = serviceProvider.GetRequiredService<ISessionFactory>();
-                    using (var connection = ((sessionFactory as ISessionFactoryImplementor).ConnectionProvider).GetConnection())
-                    {
-                        var schemaExport = new SchemaExport(databaseConfiguration);
-                        // Drop
-                        schemaExport.Drop(false, true);
-                        // Create
-                        schemaExport.Execute(false, true, false, connection, null);
-                    }
-                }
-            }
+            var schemaExport = new SchemaExport(databaseConfiguration);
+            schemaExport.Drop(false, true);
+            schemaExport.Create(false, true);
         }
     }
 }
