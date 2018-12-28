@@ -35,6 +35,18 @@ namespace IdentityServer4.NHibernate.Extensions
         }
 
         /// <summary>
+        /// Enables logging of generated SQL statemens in console.
+        /// </summary>
+        /// <param name="configuration">The NHibernate configuration.</param>
+        public static Configuration EnableSqlStatementsLogging(this Configuration configuration)
+        {
+            configuration.SetProperty(Environment.ShowSql, bool.TrueString);
+            configuration.SetProperty(Environment.FormatSql, bool.TrueString);
+            configuration.SetProperty(Environment.UseSqlComments, bool.TrueString);
+            return configuration;
+        }
+
+        /// <summary>
         /// Loads all mappings related to IdentityServer configuration into the NHibernate configuration.
         /// </summary>
         /// <param name="configuration">The NHibernate configuration.</param>

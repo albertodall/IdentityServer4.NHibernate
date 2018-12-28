@@ -21,6 +21,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 var dbConfig = Databases.SqlServer2012()
                     .UsingConnectionString(connString)
+                    .EnableSqlStatementsLogging()
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions)
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
@@ -47,6 +48,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 var dbConfig = Databases.SQLite()
                     .UsingConnectionString(connString)
+                    .EnableSqlStatementsLogging()
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions)
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
@@ -70,6 +72,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             try
             {
                 var dbConfig = Databases.SQLiteInMemory()
+                    .EnableSqlStatementsLogging()
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions);
 

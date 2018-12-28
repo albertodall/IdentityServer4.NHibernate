@@ -11,8 +11,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     /// <remarks>
     /// By default SQLite in-memory databases are "per-connection", so different NH sessions use different databases.
-    /// To share the in-memory database between sessions, the SchemaExport action that creates the schema and the Session that will
-    /// act on the database must share the same connection. That's why this configuration gets the active connection thru the NHibernate's connection provider.
+    /// To share the in-memory database between sessions, the SchemaExport action that creates the schema and the 
+    /// Session that will act on the database must share the same connection. 
+    /// That's why this configuration asks for the active connection to the NHibernate's connection provider.
     /// </remarks>
     internal class SQLiteInMemoryTestDatabase : TestDatabase
     {
