@@ -8,6 +8,8 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Hosting;
 using NHibernate;
+using NHibernate.Engine;
+using NHibernate.Tool.hbm2ddl;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -25,11 +27,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseConfiguration">The NHibernate configuration to access the underlying database.</param>
         /// <param name="configurationStoreOptionsAction">The configurations store options action.</param>
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
+        /// <param name="createDatabaseSchema">If true, drops and creates the database schema (only the schema, NOT the database). Default is false.</param>
         public static IIdentityServerBuilder AddNHibernateStores(
             this IIdentityServerBuilder builder,
             NHibernate.Cfg.Configuration databaseConfiguration,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
-            Action<OperationalStoreOptions> operationalStoreOptionsAction)
+            Action<OperationalStoreOptions> operationalStoreOptionsAction,
+            bool createDatabaseSchema = false)
         {
             var configStoreOptions = new ConfigurationStoreOptions();
             builder.Services.AddSingleton(configStoreOptions);
@@ -40,6 +44,12 @@ namespace Microsoft.Extensions.DependencyInjection
             operationalStoreOptionsAction?.Invoke(operationalStoreOptions);
 
             builder.AddNHibernatePersistenceSupport(databaseConfiguration, configStoreOptions, operationalStoreOptions);
+
+            // Creates database schema from scratch if requested;
+            if (createDatabaseSchema)
+            {
+                CreateDatabaseSchema(builder, databaseConfiguration);
+            }
 
             // Adds configuration store components
             if (configStoreOptions.EnableConfigurationStoreCache)
@@ -66,17 +76,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="databaseConfigurationFunction">Configuration function that configures NHibernate to access the underlying database.</param>
         /// <param name="configurationStoreOptionsAction">The configurations store options action.</param>
         /// <param name="operationalStoreOptionsAction">The operational store options action.</param>
-        /// <returns></returns>
+        /// <param name="createDatabaseSchema">If true, drops and creates the database schema (only the schema, NOT the database). Default is false.</param>
         public static IIdentityServerBuilder AddNHibernateStores(
             this IIdentityServerBuilder builder,
             Func<NHibernate.Cfg.Configuration> databaseConfigurationFunction,
             Action<ConfigurationStoreOptions> configurationStoreOptionsAction,
-            Action<OperationalStoreOptions> operationalStoreOptionsAction)
+            Action<OperationalStoreOptions> operationalStoreOptionsAction,
+            bool createDatabaseSchema = false)
         {
             return builder.AddNHibernateStores(
                 databaseConfigurationFunction(),
                 configurationStoreOptionsAction,
-                operationalStoreOptionsAction);
+                operationalStoreOptionsAction,
+                createDatabaseSchema);
         }
 
         /// <summary>
@@ -89,6 +101,7 @@ namespace Microsoft.Extensions.DependencyInjection
            where T : class, IOperationalStoreNotification
         {
             builder.Services.AddTransient<IOperationalStoreNotification, T>();
+
             return builder;
         }
 
@@ -165,6 +178,25 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
 
             return builder;
+        }
+
+        private static void CreateDatabaseSchema(IIdentityServerBuilder builder, NHibernate.Cfg.Configuration databaseConfiguration)
+        {
+            using (var serviceProvider = builder.Services.BuildServiceProvider(true))
+            {
+                using (var serviceScope = serviceProvider.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var sessionFactory = serviceProvider.GetRequiredService<ISessionFactory>();
+                    using (var connection = ((sessionFactory as ISessionFactoryImplementor).ConnectionProvider).GetConnection())
+                    {
+                        var schemaExport = new SchemaExport(databaseConfiguration);
+                        // Drop
+                        schemaExport.Execute(false, true, true, connection, null);
+                        // Create
+                        schemaExport.Execute(false, true, false, connection, null);
+                    }
+                }
+            }
         }
     }
 }

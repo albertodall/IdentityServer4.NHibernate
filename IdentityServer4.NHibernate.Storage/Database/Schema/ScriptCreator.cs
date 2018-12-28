@@ -2,13 +2,13 @@
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Mappings.Stores;
 using IdentityServer4.NHibernate.Options;
-using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.Database.Schema
 {
     using global::NHibernate.Cfg;
+    using global::NHibernate.Tool.hbm2ddl;
 
-    #pragma warning disable 1591
+#pragma warning disable 1591
 
     public static class ScriptCreator
     {
@@ -40,10 +40,6 @@ namespace IdentityServer4.NHibernate.Database.Schema
 
             var configurationStoreMapper = new ConfigurationStoreModelMapper(configurationStoreOptions);
             var operationalStoreMapper = new OperationalStoreModelMapper(operationalStoreOptions);
-
-            configurationStoreMapper.AddClientContextMappings();
-            configurationStoreMapper.AddResourceContextMappings();
-            operationalStoreMapper.AddPersistedGrantContextMappings();
 
             configuration.AddConfigurationStoreMappings(configurationStoreOptions);
             configuration.AddOperationalStoreMappings(operationalStoreOptions);
