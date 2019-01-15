@@ -20,7 +20,9 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
         /// Sets table name and table's schema based on the rule that a the table's name is the same as the type's name.
         /// </summary>
         /// <remarks>
-        /// The only exception to the rule is the "ApiResourceClaim" class, that has to be mapped to the "ApiClaims" table.
+        /// Exceptions to the rule:
+        ///     - "ApiResourceClaim" class has to be mapped to the "ApiClaims" table.
+        ///     - "ClientScope" class has to be mapped to the "ClientScopes" table.
         /// </remarks>
         private void BeforeMapConfigurationStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {

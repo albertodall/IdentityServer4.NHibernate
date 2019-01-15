@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="IdentityServer4.Storage" Version="2.3.1" />
-    <PackageReference Include="NHibernate" Version="5.2.1" />
+    <PackageReference Include="NHibernate" Version="5.2.3" />
   </ItemGroup>
 
 </Project>
