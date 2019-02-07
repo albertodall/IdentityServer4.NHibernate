@@ -17,7 +17,7 @@ namespace IdentityServer4.NHibernate.Extensions
         }
 
         /// <summary>
-        /// Maps an "PersistedGrant" entity to a "PersistedGrant" model.
+        /// Maps a "PersistedGrant" entity to a "PersistedGrant" model.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public static Models.PersistedGrant ToModel(this Entities.PersistedGrant entity)

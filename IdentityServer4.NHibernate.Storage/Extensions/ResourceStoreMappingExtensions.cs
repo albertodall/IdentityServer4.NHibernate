@@ -18,7 +18,7 @@ namespace IdentityServer4.NHibernate.Extensions
         }
 
         /// <summary>
-        /// Maps an "ApiResource" entity to a "ApiResource" model.
+        /// Maps a "ApiResource" entity to a "ApiResource" model.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public static Models.ApiResource ToModel(this Entities.ApiResource entity)
@@ -36,7 +36,7 @@ namespace IdentityServer4.NHibernate.Extensions
         }
 
         /// <summary>
-        /// Maps an "IdentityResource" entity to a "IdentityResource" model.
+        /// Maps a "IdentityResource" entity to a "IdentityResource" model.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public static Models.IdentityResource ToModel(this Entities.IdentityResource entity)

@@ -17,7 +17,7 @@ namespace IdentityServer4.NHibernate.Extensions
         }
 
         /// <summary>
-        /// Maps an "Client" entity to a "Client" model.
+        /// Maps a "Client" entity to a "Client" model.
         /// </summary>
         /// <param name="entity">The entity.</param>
         public static Models.Client ToModel(this Entities.Client entity)
