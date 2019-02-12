@@ -27,7 +27,7 @@ services.AddIdentityServer()
 In this example, we are configuring the NHibernate provider in order to:
 
 1. Store the configuration data in a [SQL Server](https://www.microsoft.com/en-us/sql-server/) 2012 (or later) database, whose connection string is the one called `Default` in the `appsettings.json` file
-2. Put all the configuration store objects and operational store objects are in the `dbo` schema.
+2. Put all the configuration store objects and operational store objects in the `dbo` schema.
 3. Show all the generated SQL statements in the console (`showGeneratedSql: true`).
 
 # Supported Databases
@@ -41,18 +41,23 @@ Currently, the provider directly supports the following databases:
 
 It's obviously possible to use every database supported by NHibernate.
 
+Remember to add the required libraries to your IdentityServer project, in order to support the database you're going to use:
+
+- For [SQL Server](https://www.nuget.org/packages/System.Data.SqlClient): `Install-Package System.Data.SqlClient`
+- For [SQLite](https://www.nuget.org/packages/System.Data.SQLite.Core): `Install-Package System.Data.SQLite.Core`
+
 # Database Schema Creation
 In the package's _Content_ folder you will find the schema creation scripts for every supported database.
 You can use these scripts to create the database objects in the database you're going to use. 
 Before executing, remember to modify them accordingly to your database schema.
 
 # Known Issues
-1. As the Entity Framework provider, also this one "splits" the store in two logical stores:
+1. As the Entity Framework provider, also this one "splits" the storage in two logical stores:
 
   - _Configuration Store_
   - _Persisted Grant Store_
 
-    The difference here is that the Entity Framework provider configures two `DbContext`, one for each store, so theoretically, you could put the each store in a dedicated database;
+    The difference here is that the Entity Framework provider configures two `DbContext` instances, one for each store, so theoretically, you could put the each store in a dedicated database;
     in this provider, both stores are managed by the same NHibernate SessionFactory, so they have to be created in the same database. It's possible to put them in different schemas, but the database has to be the same.
 
 2. SQLite in-memory databases are "_per-connection_", so different NHibernate sessions use different databases.
