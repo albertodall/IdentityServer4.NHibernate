@@ -12,8 +12,9 @@ To configure the provider, simply add it to the IdentityServer configuration in 
 services.AddIdentityServer()
     .AddDeveloperSigningCredential()
     .AddNHibernateStores(
-        Databases.SqlServer2012(showGeneratedSql: true)
-            .UsingConnectionString(Configuration["ConnectionStrings:Default"]),
+        Databases.SqlServer2012()
+            .UsingConnectionString(Configuration["ConnectionStrings:Default"])
+            .EnableSqlStatementsLogging(),
         cfgStore =>
         {
             cfgStore.DefaultSchema = "dbo";
@@ -27,8 +28,9 @@ services.AddIdentityServer()
 In this example, we are configuring the NHibernate provider in order to:
 
 1. Store the configuration data in a [SQL Server](https://www.microsoft.com/en-us/sql-server/) 2012 (or later) database, whose connection string is the one called `Default` in the `appsettings.json` file
-2. Put all the configuration store objects and operational store objects in the `dbo` schema.
-3. Show all the generated SQL statements in the console (`showGeneratedSql: true`).
+2. Show all the generated SQL statements in the console (`EnableSqlStatementsLogging()`).
+3. Put all the configuration store objects and operational store objects in the `dbo` schema.
+
 
 # Supported Databases
 
@@ -51,14 +53,17 @@ In the package's _Content_ folder you will find the schema creation scripts for 
 You can use these scripts to create the database objects in the database you're going to use. 
 Before executing, remember to modify them accordingly to your database schema.
 
-# Known Issues
-1. As the Entity Framework provider, also this one "splits" the storage in two logical stores:
+# Additional configuration options
+The `ConfigurationStoreOptions` class has an additional `EnableConfigurationStoreCache` option that enables the default cache for the configuration store.
 
-  - _Configuration Store_
-  - _Persisted Grant Store_
+# Known Issues
+1. Like the official Entity Framework provider, also this one splits the storage in two logical stores:
+
+    - _Configuration Store_
+    - _Persisted Grant Store_
 
     The difference here is that the Entity Framework provider configures two `DbContext` instances, one for each store, so theoretically, you could put the each store in a dedicated database;
-    in this provider, both stores are managed by the same NHibernate SessionFactory, so they have to be created in the same database. It's possible to put them in different schemas, but the database has to be the same.
+    in this provider, both stores are managed by the same NHibernate SessionFactory, so they have to be created in the same database. It's possible to put them in different database schemas, but the database has to be the same.
 
 2. SQLite in-memory databases are "_per-connection_", so different NHibernate sessions use different databases.
 That's why it's not recommennded to use this provider in production with an in-memory SQLite backing store.
