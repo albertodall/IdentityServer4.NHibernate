@@ -22,11 +22,11 @@ $configStoreOptions = New-Object IdentityServer4.NHibernate.Options.Configuratio
 $opStoreOptions = New-Object IdentityServer4.NHibernate.Options.OperationalStoreOptions
 
 $bindingFlags= [Reflection.BindingFlags] "Public,Static"
-$exportableSchemas = [IdentityServer4.NHibernate.Database.Databases].GetMethods($bindingFlags) `
+$exportableConfigurations = [IdentityServer4.NHibernate.Database.Databases].GetMethods($bindingFlags) `
     | Where-Object { ($_.Name -inotlike '*equals*') -and ($_.Name -inotlike '*memory*')}
-$exportableSchemas | ForEach-Object {
+$exportableConfigurations | ForEach-Object {
     $fileName = $_.Name
-    $currentSchema = $_.Invoke($null, $false)
+    $currentConfiguration = $_.Invoke($null, $null)
     Write-Host "Creating script $fileName.sql in $OutputPath..."
-    [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase("$OutputPath\$fileName.sql", $currentSchema, $configStoreOptions, $opStoreOptions)
+    [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase("$OutputPath\$fileName.sql", $currentConfiguration, $configStoreOptions, $opStoreOptions)
 }

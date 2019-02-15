@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="IdentityServer4.NHibernate.nuspec">
+    <None Update="IdentityServer4.Contrib.NHibernate.nuspec">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -6,7 +6,6 @@ using NHibernate.Driver;
 namespace IdentityServer4.NHibernate.Database
 {
     using global::NHibernate.Cfg;
-    using global::NHibernate.Cfg.Loquacious;
 
     /// <summary>
     /// NHibernate configurations for supported databases.
