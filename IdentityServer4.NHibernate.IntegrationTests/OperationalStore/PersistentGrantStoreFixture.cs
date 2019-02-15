@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
-using Moq;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 {
-    public class PersistentGrantStoreFixture : IClassFixture<DatabaseFixture>
+    public class PersistentGrantStoreFixture : IntegrationTestFixture, IClassFixture<DatabaseFixture>
     {
-        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
-        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
+        public static TheoryData<TestDatabase> TestDatabases;
 
-        public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
+        static PersistentGrantStoreFixture()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "PersistentGrantStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("PersistentGrantStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
-        };
+            var sqlServerDataSource = TestSettings["SQLServer"];
+
+            TestDatabases = new TheoryData<TestDatabase>()
+            {
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+            };
+        }
 
         public PersistentGrantStoreFixture(DatabaseFixture fixture)
         {

@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
 using IdentityServer4.NHibernate.Services;
+using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -12,17 +14,21 @@ using Xunit;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.Services
 {
-    public class CorsPolicyServiceFixture : IClassFixture<DatabaseFixture>
+    public class CorsPolicyServiceFixture : IntegrationTestFixture, IClassFixture<DatabaseFixture>
     {
-        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
-        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
+        public static TheoryData<TestDatabase> TestDatabases;
 
-        public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
+        static CorsPolicyServiceFixture()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "CorsPolicyService_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("CorsPolicyService_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
-        };
+            var sqlServerDataSource = TestSettings["SQLServer"];
+
+            TestDatabases = new TheoryData<TestDatabase>()
+            {
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+            };
+        }
 
         public CorsPolicyServiceFixture(DatabaseFixture fixture)
         {
@@ -41,7 +47,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client()
                     {
-                        ClientId = "1st_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "1st_client",
                         AllowedCorsOrigins = new[] { "https://www.site2.com" }
                     }.ToEntity()
@@ -50,7 +56,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client
                     {
-                        ClientId = "2nd_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "2nd_client",
                         AllowedCorsOrigins = new[] { "https://www.site2.com", testCorsOrigin }
                     }.ToEntity()
@@ -88,7 +94,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Save(
                     new Client()
                     {
-                        ClientId = "test_client",
+                        ClientId = Guid.NewGuid().ToString(),
                         ClientName = "test_client",
                         AllowedCorsOrigins = new[] { "https://allowed.site.it" }
                     }.ToEntity()

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
+using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
@@ -11,18 +13,22 @@ using Moq;
 using Xunit;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
-{  
-    public class ClientStoreFixture : IClassFixture<DatabaseFixture>
+{
+    public class ClientStoreFixture : IntegrationTestFixture, IClassFixture<DatabaseFixture>
     {
-        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
-        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
+        public static TheoryData<TestDatabase> TestDatabases;
 
-        public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
+        static ClientStoreFixture()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ClientStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("ClientStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
-        };
+            var sqlServerDataSource = TestSettings["SQLServer"];
+
+            TestDatabases = new TheoryData<TestDatabase>()
+            {
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+            };
+        }
 
         public ClientStoreFixture(DatabaseFixture fixture)
         {
@@ -36,7 +42,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client"
             };
 
@@ -78,7 +84,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_grant_types",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Grant Types",
                 AllowedGrantTypes =
                 {
@@ -113,7 +119,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_client_secrets",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Client Secrets",
                 ClientSecrets = new List<Secret>()
                 {
@@ -148,7 +154,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_redirect_uris",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Redirect Uris",
                 RedirectUris =
                 {
@@ -183,7 +189,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_postlogout_redirect_uris",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with PostLogout Redirect Uris",
                 PostLogoutRedirectUris =
                 {
@@ -218,7 +224,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_allowed_scopes",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Allowed Scopes",
                 AllowedScopes =
                 {
@@ -253,7 +259,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_provider_restrictions",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Provider Restrictions",
                 IdentityProviderRestrictions =
                 {
@@ -288,7 +294,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_claims",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Claims",
                 Claims =
                 {
@@ -323,7 +329,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_cors_ordigins",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with CORS Origins",
                 AllowedCorsOrigins =
                 {
@@ -358,7 +364,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testClient = new Client()
             {
-                ClientId = "test_client_with_properties",
+                ClientId = Guid.NewGuid().ToString(),
                 ClientName = "Test Client with Properties",
                 Properties =
                 {

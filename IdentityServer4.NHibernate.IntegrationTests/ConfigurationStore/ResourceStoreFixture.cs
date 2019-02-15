@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using IdentityModel;
-using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Options;
 using IdentityServer4.Models;
+using IdentityServer4.NHibernate.Extensions;
+using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
@@ -13,17 +14,21 @@ using Xunit;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
-    public class ResourceStoreFixture : IClassFixture<DatabaseFixture>
+    public class ResourceStoreFixture : IntegrationTestFixture, IClassFixture<DatabaseFixture>
     {
-        private static readonly ConfigurationStoreOptions ConfigurationStoreOptions = new ConfigurationStoreOptions();
-        private static readonly OperationalStoreOptions OperationalStoreOptions = new OperationalStoreOptions();
+        public static TheoryData<TestDatabase> TestDatabases;
 
-        public static readonly TheoryData<TestDatabase> TestDatabases = new TheoryData<TestDatabase>()
+        static ResourceStoreFixture()
         {
-            TestDatabaseBuilder.SQLServer2012TestDatabase("(local)", "ResourceStore_NH_Test", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteTestDatabase("ResourceStore_NH_Test.sqlite", ConfigurationStoreOptions, OperationalStoreOptions),
-            TestDatabaseBuilder.SQLiteInMemoryTestDatabase(ConfigurationStoreOptions, OperationalStoreOptions)
-        };
+            var sqlServerDataSource = TestSettings["SQLServer"];
+
+            TestDatabases = new TheoryData<TestDatabase>()
+            {
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+            };
+        }
 
         public ResourceStoreFixture(DatabaseFixture fixture)
         {
@@ -313,7 +318,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var testApiResource = new ApiResource()
             {
                 Name = name,
-                ApiSecrets = new List<Secret> { new Secret("secret".Sha256()) },
+                ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
                 Scopes = new List<Scope>(),
                 UserClaims =
                 {

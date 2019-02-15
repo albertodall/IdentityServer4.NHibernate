@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>IdentityServer4.Contrib.NHibernate</id>
+    <version>$version$</version>
+    <authors>Alberto Dallagiacoma</authors>
+    <owners>Alberto Dallagiacoma</owners>
+    <license type="expression">Apache-2.0</license>
+    <projectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/albertodall/IdentityServer4.NHibernate/master/ids4-nh-logo128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>NHibernate persistence layer for IdentityServer4.</description>
+    <releaseNotes></releaseNotes>
+    <copyright></copyright>
+    <tags>OAuth2 OAuth2.0 OpenIDConnect Security Identity IdentityServer IdentityServer4 NHibernate</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="IdentityServer4" version="2.3.2" />
+        <dependency id="IdentityServer4.Storage" version="2.3.1" />
+        <dependency id="NETStandard.Library" version="2.0.3" />
+        <dependency id="NHibernate" version="5.2.0" />
+        <dependency id="AutoMapper" version="8.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="IdentityServer4.NHibernate*.dll" target="lib/netstandard2.0" />
+    <file src="*.pdb" target="lib/netstandard2.0" />
+    <file src="*.xml" target="lib/netstandard2.0" />
+    <file src="*.sql" target="content/Scripts" />
+  </files>
+</package>

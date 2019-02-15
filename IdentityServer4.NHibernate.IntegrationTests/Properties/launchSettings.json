@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "IdentityServer4.NHibernate.IntegrationTests": {
+      "commandName": "Project"
+    }
+  }
+}

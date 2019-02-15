@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>IdentityServer4.NHibernate.Storage</AssemblyName>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageId>IdentityServer4.NHibernate.Storage</PackageId>
+    <Authors>Alberto Dallagiacoma</Authors>
+    <Company />
+    <Product>IdentityServer4.NHibernate.Storage</Product>
+    <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;NHibernate</PackageTags>
+    <RootNamespace>IdentityServer4.NHibernate</RootNamespace>
+    <Version>1.0.0</Version>
+    <PackageLicenseUrl>https://licenses.nuget.org/Apache-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/albertodall/IdentityServer4.NHibernate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/albertodall/IdentityServer4.NHibernate</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="IdentityServer4.Storage" Version="2.3.1" />
+    <PackageReference Include="NHibernate" Version="5.2.3" />
+  </ItemGroup>
+
+</Project>
