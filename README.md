@@ -2,8 +2,16 @@
 IdentityServer4.NHibernate is a persistence layer for IdentityServer 4 configuration data that uses [NHibernate](https://github.com/nhibernate/nhibernate-core) to access the storage layer.
 It's heavily based on the [Entity Framework Provider](https://github.com/IdentityServer/IdentityServer4.EntityFramework), in order to implement all the features required by IdentityServer.
 
+I decided to not use [FluentNHibernate](https://github.com/FluentNHibernate/) for creating mappings, for having the fewest possible dependencies.
+All mappings are defined using the integrated _Mapping By Code_ feature and the _Loquacious API_.
+
 # Current status
+### Build
 [![Build status](https://dev.azure.com/albertod/IdentityServer4.NHibernate/_apis/build/status/IdentityServer4.NHibernate-CI)](https://dev.azure.com/albertod/IdentityServer4.NHibernate/_build/latest?definitionId=3)
+
+### NuGet
+[![NuGet](https://img.shields.io/nuget/v/IdentityServer4.Contrib.NHibernate.svg)](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/)
+
 
 # Configuration
 To configure the provider, simply add it to the IdentityServer configuration in the `Startup` class' `ConfigureServices()` method.
@@ -49,7 +57,7 @@ Remember to add the required libraries to your IdentityServer project, in order 
 - For [SQLite](https://www.nuget.org/packages/System.Data.SQLite.Core): `Install-Package System.Data.SQLite.Core`
 
 # Database Schema Creation
-In the package's _Content_ folder you will find the schema creation scripts for every supported database.
+In the package's _Scripts_ folder you will find the schema creation scripts for every supported database.
 You can use these scripts to create the database objects in the database you're going to use. 
 Before executing, remember to modify them accordingly to your database schema.
 
@@ -66,5 +74,19 @@ The `ConfigurationStoreOptions` class has an additional `EnableConfigurationStor
     in this provider, both stores are managed by the same NHibernate SessionFactory, so they have to be created in the same database. It's possible to put them in different database schemas, but the database has to be the same.
 
 2. SQLite in-memory databases are "_per-connection_", so different NHibernate sessions use different databases.
-That's why it's not recommennded to use this provider in production with an in-memory SQLite backing store.
+That's why it's not recommended to use this provider in production with an in-memory SQLite backing store.
 
+# Acknowledgements
+This package has been built using these awesome Open Source projects:
+
+- [.NET Core](https://github.com/dotnet)
+- [AutoMapper](https://github.com/AutoMapper)
+- [FluentAssertions](https://github.com/fluentassertions)
+- [GitVersion](https://github.com/GitTools/GitVersion)
+- [Moq](https://github.com/moq)
+- [NHibernate](https://github.com/NHibernate)
+- [XUnit](https://github.com/XUnit)
+
+And obviously, [IdentityServer](https://github.com/IdentityServer). :-)
+
+Thanks everybody for the great work!
