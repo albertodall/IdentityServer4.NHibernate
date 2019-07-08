@@ -7,7 +7,7 @@ All mappings are defined using the integrated _Mapping By Code_ feature and the 
 
 # Current status
 ### Build
-[![Build status](https://dev.azure.com/albertod/IdentityServer4.NHibernate/_apis/build/status/IdentityServer4.NHibernate-CI)](https://dev.azure.com/albertod/IdentityServer4.NHibernate/_build/latest?definitionId=3)
+[![Build status](https://dev.azure.com/albertodall/IdentityServer4.NHibernate/_apis/build/status/IdentityServer4.NHibernate-CI)](https://dev.azure.com/albertodall/IdentityServer4.NHibernate/_build/latest?definitionId=3)
 
 ### NuGet
 [![NuGet](https://img.shields.io/nuget/v/IdentityServer4.Contrib.NHibernate.svg)](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/)
