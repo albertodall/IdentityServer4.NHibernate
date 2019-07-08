@@ -1,0 +1,9 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDelivery
+branches:
+  master:
+    mode: ContinuousDelivery
+    tag: preview
+  release: {}
+ignore:
+  sha: []
