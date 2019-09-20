@@ -242,6 +242,59 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
+        public void Should_Retrieve_All_Resource_With_More_Than_One_Api_Scope(TestDatabase testDb)
+        {
+            var testIdentityResource = CreateTestIdentityResource("identity_resource_1");
+            var testApiResource = new ApiResource()
+            {
+                Name = "test_api_resource_1",
+                ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
+                Scopes = new List<Scope>(),
+                UserClaims =
+                {
+                    "user_claim_1",
+                    "user_claim_2"
+                }
+            };
+
+            testApiResource.Scopes.Add(
+                new Scope()
+                {
+                    Name = "user",
+                    UserClaims =
+                    {
+                        "test_api_resource_1_user_claim_1",
+                        "test_api_resource_1_user_claim_2"
+                    }
+                });
+
+            using (var session = testDb.OpenSession())
+            {
+                session.Save(testIdentityResource.ToEntity());
+                session.Save(testApiResource.ToEntity());
+                session.Flush();
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            Resources resources;
+            using (var session = testDb.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = store.GetAllResourcesAsync().Result;
+            }
+
+            resources.Should().NotBeNull();
+            resources.IdentityResources.Should().NotBeEmpty();
+            resources.ApiResources.Count().Should().Be(1);
+
+            var ar = resources.ApiResources.First();
+            ar.Scopes.Count().Should().Be(1);
+            ar.Scopes.First().UserClaims.Count().Should().Be(2);
+
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
         public void Should_Retrieve_Identity_Resource_And_Its_Claims_By_Scope(TestDatabase testDb)
         {
             var testIdentityResourceName = "idres1";
