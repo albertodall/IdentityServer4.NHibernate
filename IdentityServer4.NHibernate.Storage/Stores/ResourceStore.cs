@@ -112,11 +112,14 @@ namespace IdentityServer4.NHibernate.Stores
                     .Fetch(SelectMode.Fetch, ir => ir.Properties)
                     .Future();
 
+                ApiScopeClaim apiScopeClaimAlias = null;
                 var apiResources = _session.QueryOver<Entities.ApiResource>()
                     .Fetch(SelectMode.Fetch, ar => ar.Secrets)
                     .Fetch(SelectMode.Fetch, ar => ar.Scopes)
-                    .Fetch(SelectMode.Fetch, ar => ar.UserClaims)
                     .Fetch(SelectMode.Fetch, ar => ar.Properties)
+                    .Left.JoinQueryOver<ApiScope>(api => api.Scopes)
+                        .Left.JoinAlias(scope => scope.UserClaims, () => apiScopeClaimAlias)
+                    .TransformUsing(Transformers.DistinctRootEntity)
                     .Future();
 
                 result = new Resources(
