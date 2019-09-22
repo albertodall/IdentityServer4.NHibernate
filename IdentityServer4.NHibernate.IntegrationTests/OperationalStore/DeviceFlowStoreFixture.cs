@@ -71,6 +71,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 foundDeviceFlowCodes?.DeviceCode.Should().Be(deviceCode);
                 foundDeviceFlowCodes?.ID.Should().Be(userCode);
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -108,6 +110,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 deserializedData.ClientId.Should().Be(data.ClientId);
                 deserializedData.Lifetime.Should().Be(data.Lifetime);
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -158,6 +162,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
                 await act.Should().ThrowAsync<HibernateException>();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -212,6 +218,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             code.Should().BeEquivalentTo(expectedDeviceCodeData, assertionOptions => assertionOptions.Excluding(x => x.Subject));
             code.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -226,6 +234,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var code = await store.FindByUserCodeAsync($"user_{Guid.NewGuid().ToString()}");
                 code.Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -280,6 +290,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
             code.Should().BeEquivalentTo(expectedDeviceCodeData, assertionOptions => assertionOptions.Excluding(x => x.Subject));
             code.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -293,6 +305,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var code = await store.FindByDeviceCodeAsync($"device_{Guid.NewGuid().ToString()}");
                 code.Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -370,6 +384,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var parsedCode = serializer.Deserialize<DeviceCode>(updatedCodes.Data);
             parsedCode.Should().BeEquivalentTo(authorizedDeviceCode, assertionOptions => assertionOptions.Excluding(x => x.Subject));
             parsedCode.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject && x.Value == expectedSubject).Should().NotBeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -418,6 +434,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 (await session.GetAsync<DeviceFlowCodes>(testUserCode)).Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -434,6 +452,20 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 Func<Task> act = async () => await store.RemoveByDeviceCodeAsync($"device_{Guid.NewGuid().ToString()}");
 
                 await act.Should().NotThrowAsync();
+            }
+
+            CleanupTestData(testDb);
+        }
+
+        private static void CleanupTestData(TestDatabase db)
+        {
+            using (var session = db.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Delete("from DeviceFlowCodes dfc");
+                    tx.Commit();
+                }
             }
         }
     }

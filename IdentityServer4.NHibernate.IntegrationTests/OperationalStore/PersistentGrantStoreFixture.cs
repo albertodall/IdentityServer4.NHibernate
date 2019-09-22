@@ -53,6 +53,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().NotBeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -76,6 +78,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             }
 
             foundGrant.Should().NotBeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -99,6 +103,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             }
 
             foundGrants.Should().NotBeEmpty();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -125,6 +131,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -151,6 +159,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -177,6 +187,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -201,6 +213,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 session.Get<Entities.PersistedGrant>(testGrant.Key).Should().NotBeNull();
             }
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -229,6 +243,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Expiration.Value.Should().Be(newExpirationDate);
             }
+
+            CleanupTestData(testDb);
         }
 
         private static PersistedGrant CreateTestGrant()
@@ -243,6 +259,18 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 Expiration = new DateTime(2018, 11, 30),
                 Data = "test data for this grant"
             };
+        }
+
+        private static void CleanupTestData(TestDatabase db)
+        {
+            using (var session = db.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Delete("from PersistedGrant pg");
+                    tx.Commit();
+                }
+            }
         }
     }
 }

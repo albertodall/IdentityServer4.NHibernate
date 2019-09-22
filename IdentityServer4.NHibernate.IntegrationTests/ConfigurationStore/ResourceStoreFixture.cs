@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using NHibernate.Linq;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
@@ -64,6 +65,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             resources.First().Scopes.Count().Should().Be(2);
             resources.First().Scopes.First().UserClaims.Count().Should().Be(1);
             resources.First().UserClaims.Count().Should().Be(2);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -96,6 +99,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             resources.First().Scopes.Count().Should().Be(2);
             resources.First().Scopes.First().UserClaims.Count().Should().Be(1);
             resources.First().UserClaims.Count().Should().Be(2);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -125,6 +130,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             }
 
             resources.Count().Should().Be(2);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -151,6 +158,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             }
 
             resources.Should().BeEmpty();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -181,6 +190,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             resource.Scopes.First().UserClaims.Should().NotBeEmpty();
             resource.Scopes.First().UserClaims.Count().Should().Be(1);
             resource.UserClaims.Count().Should().Be(2);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -238,6 +249,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
             Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -291,6 +304,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             ar.Scopes.Count().Should().Be(1);
             ar.Scopes.First().UserClaims.Count().Should().Be(2);
 
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -319,6 +333,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             resources.Should().NotBeEmpty();
             resources.First().Name.Should().Be(testIdentityResourceName);
             resources.First().UserClaims.Count().Should().Be(2);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -347,6 +363,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             resources.Should().NotBeEmpty();
             resources.Count().Should().Be(1);
+
+            CleanupTestData(testDb);
         }
 
 
@@ -391,6 +409,19 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             }
 
             return testApiResource;
+        }
+
+        private static void CleanupTestData(TestDatabase db)
+        {
+            using (var session = db.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Delete("from IdentityResource ir");
+                    session.Delete("from ApiResource ar");
+                    tx.Commit();
+                }
+            }
         }
     }
 }

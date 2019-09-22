@@ -61,6 +61,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             }
 
             requestedClient.Should().NotBeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -76,6 +78,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             }
 
             requestedClient.Should().BeNull();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -111,6 +115,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedGrantTypes.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -146,6 +152,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.ClientSecrets.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -181,6 +189,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.RedirectUris.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -216,6 +226,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.PostLogoutRedirectUris.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -251,6 +263,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedScopes.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -286,6 +300,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.IdentityProviderRestrictions.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -321,6 +337,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.Claims.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -356,6 +374,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedCorsOrigins.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -391,6 +411,20 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             requestedClient.Should().NotBeNull();
             requestedClient.Properties.Count.Should().Be(3);
+
+            CleanupTestData(testDb);
+        }
+
+        private static void CleanupTestData(TestDatabase db)
+        {
+            using (var session = db.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Delete("from Client c");
+                    tx.Commit();
+                }
+            }
         }
     }
 }

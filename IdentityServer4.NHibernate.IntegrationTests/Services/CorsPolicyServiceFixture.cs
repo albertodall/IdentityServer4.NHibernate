@@ -83,6 +83,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
             result = service.IsOriginAllowedAsync(testCorsOrigin).Result;
 
             result.Should().BeTrue();
+
+            CleanupTestData(testDb);
         }
 
         [Theory]
@@ -121,6 +123,20 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
             result = service.IsOriginAllowedAsync("https://not.allowed.site.it").Result;
 
             result.Should().BeFalse();
+
+            CleanupTestData(testDb);
+        }
+
+        private static void CleanupTestData(TestDatabase db)
+        {
+            using (var session = db.OpenSession())
+            {
+                using (var tx = session.BeginTransaction())
+                {
+                    session.Delete("from Client c");
+                    tx.Commit();
+                }
+            }
         }
     }
 }
