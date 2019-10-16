@@ -1,0 +1,113 @@
+trigger:
+  branches:
+    include:
+      - master
+      - release/*
+  paths:
+    exclude:
+      - azure-pipelines.yml
+      - GitVersion.yml
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+stages:
+- stage: BuildAndTest
+  displayName: 'Build and test'
+  jobs:
+  - job: BuildLib
+    displayName: 'Build solution and run tests'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Install .NET Core SDK 2.2.x'
+      inputs:
+        version: 2.2.x
+
+    - task: GitVersion@5
+      displayName: 'Apply Semantic Versioning'
+      inputs:
+        updateAssemblyInfo: true
+        additionalArguments: '/output buildserver'  
+        
+    - powershell: echo "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
+      name: SemVer
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build library project'
+      inputs:
+        command: 'build'
+        projects: '**/IdentityServer4.NHibernate.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(SemVer.PackageVersion) '
+    
+    - script: 'sqllocaldb start MSSQLLocalDB'
+      displayName: 'Start MSSQLLocalDB instance'
+      condition: succeeded()
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run integration tests'
+      inputs:
+        command: test
+        projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+        testRunTitle: 'Integration tests'
+
+    - script: 'sqllocaldb stop MSSQLLocalDB -i'
+      displayName: 'Stop MSSQLLocalDB instance'
+      condition: always()
+
+  - job: CreateScripts
+    displayName: Create database schema scripts
+    steps:
+    - checkout: self
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish Storage project to allow schema scripts creation'
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: '**/IdentityServer4.NHibernate.Storage.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/storagelib'
+        zipAfterPublish: false
+        modifyOutputPath: false
+
+    - task: PowerShell@2
+      displayName: 'Create schema scripts'
+      inputs:
+        targetType: filePath
+        filePath: '$(Build.SourcesDirectory)/Export-DatabaseSchemas.ps1'
+        arguments: '-PublishPath $(Build.ArtifactStagingDirectory)/storagelib -OutputPath $(Build.ArtifactStagingDirectory)/lib'
+        failOnStderr: true
+        pwsh: true
+
+  - job: Pack
+    displayName: 'Create NuGet package'
+    dependsOn: 
+    - BuildLib
+    - CreateScripts
+    condition: succeeded()
+    variables:
+      PackageVersion: $[dependencies.BuildAndTest.outputs['SemVer.PackageVersion']] 
+    steps:
+    - checkout: none
+          
+    - task: NuGetToolInstaller@1
+      inputs:
+        versionSpec: '5.x'
+    
+    - task: NuGetCommand@2
+      displayName: 'Create NuGet package'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec'
+        packDestination: '$(Build.ArtifactStagingDirectory)/package'
+        versioningScheme: 'off'
+        buildProperties: 'version=$(PackageVersion)'
+        basePath: '$(Build.ArtifactStagingDirectory)/lib'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish artifact'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/package'
+        artifact: 'package'
