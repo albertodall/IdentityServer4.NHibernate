@@ -1,6 +1,5 @@
 ﻿using System;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Mappings.Stores;
 using IdentityServer4.NHibernate.Options;
 
 namespace IdentityServer4.NHibernate.Database.Schema
@@ -8,8 +7,9 @@ namespace IdentityServer4.NHibernate.Database.Schema
     using global::NHibernate.Cfg;
     using global::NHibernate.Tool.hbm2ddl;
 
-#pragma warning disable 1591
-
+    /// <summary>
+    /// Creates schema scripts for each supported database.
+    /// </summary>
     public static class ScriptCreator
     {
         /// <summary>
@@ -37,9 +37,6 @@ namespace IdentityServer4.NHibernate.Database.Schema
             {
                 throw new ArgumentNullException(nameof(operationalStoreOptions));
             }
-
-            var configurationStoreMapper = new ConfigurationStoreModelMapper(configurationStoreOptions);
-            var operationalStoreMapper = new OperationalStoreModelMapper(operationalStoreOptions);
 
             configuration.AddConfigurationStoreMappings(configurationStoreOptions);
             configuration.AddOperationalStoreMappings(operationalStoreOptions);
