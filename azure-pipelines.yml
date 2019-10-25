@@ -40,10 +40,10 @@ stages:
       inputs:
         command: 'build'
         projects: '**/IdentityServer4.NHibernate.csproj'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(SemVer.PackageVersion) '
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(SemVer.PackageVersion)'
     
     - script: 'sqllocaldb start MSSQLLocalDB'
-      displayName: 'Start MSSQLLocalDB instance'
+      displayName: 'Start MSSQLLocalDB instance for integration testing'
       condition: succeeded()
 
     - task: DotNetCoreCLI@2
@@ -58,10 +58,6 @@ stages:
       displayName: 'Stop MSSQLLocalDB instance'
       condition: always()
 
-  - job: CreateScripts
-    displayName: Create database schema scripts
-    steps:
-    - checkout: self
     - task: DotNetCoreCLI@2
       displayName: 'Publish Storage project to allow schema scripts creation'
       inputs:
@@ -76,38 +72,93 @@ stages:
       displayName: 'Create schema scripts'
       inputs:
         targetType: filePath
-        filePath: '$(Build.SourcesDirectory)/Export-DatabaseSchemas.ps1'
+        filePath: './Export-DatabaseSchemas.ps1'
         arguments: '-PublishPath $(Build.ArtifactStagingDirectory)/storagelib -OutputPath $(Build.ArtifactStagingDirectory)/lib'
         failOnStderr: true
         pwsh: true
 
-  - job: Pack
-    displayName: 'Create NuGet package'
-    dependsOn: 
-    - BuildLib
-    - CreateScripts
-    condition: succeeded()
-    variables:
-      PackageVersion: $[dependencies.BuildAndTest.outputs['SemVer.PackageVersion']] 
-    steps:
-    - checkout: none
-          
-    - task: NuGetToolInstaller@1
-      inputs:
-        versionSpec: '5.x'
-    
-    - task: NuGetCommand@2
-      displayName: 'Create NuGet package'
+    - task: DotNetCoreCLI@2
+      displayName: Create NuGet package
       inputs:
         command: 'pack'
-        packagesToPack: '$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec'
-        packDestination: '$(Build.ArtifactStagingDirectory)/package'
+        packagesToPack: '**/IdentityServer4.NHibernate.csproj'
+        packDirectory: '$(Build.ArtifactStagingDirectory)/package'
+        nobuild: true
         versioningScheme: 'off'
-        buildProperties: 'version=$(PackageVersion)'
-        basePath: '$(Build.ArtifactStagingDirectory)/lib'
+        buildProperties: 'NuspecFile=$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec;NuspecProperties="version=$(GitVersion.SemVer)"'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish artifact'
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/package'
         artifact: 'package'
+
+- stage: ReleaseLocalPreview
+  displayName: Release to local feed as preview
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  jobs:
+    - job: PublishToFeed
+      displayName: 'Download and publish package'
+      steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: Download package
+        inputs:
+          buildType: 'current'
+          itemPattern: '*.nupkg'
+          targetPath: '$(Pipeline.Workspace)/package'
+          artifactName: package
+        
+      - task: DotNetCoreCLI@2
+        displayName: Publish to feed
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: 'edeffd7e-0f28-45d8-8e6f-d9775b55cf52'
+
+- stage: ReleaseLocalStable
+  displayName: Release to local feed as stable
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release/'))
+  jobs:
+    - job: PublishToFeed
+      displayName: 'Download and publish package'
+      steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: Download package
+        inputs:
+          buildType: 'current'
+          itemPattern: '*.nupkg'
+          targetPath: '$(Pipeline.Workspace)/package'
+          artifactName: package
+        
+      - task: DotNetCoreCLI@2
+        displayName: Publish to feed
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: 'edeffd7e-0f28-45d8-8e6f-d9775b55cf52'
+
+- stage: ReleasePublicStable
+  displayName: Release to NuGet.org as stable
+  dependsOn: ReleaseLocalStable
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release/'))
+  jobs:
+    - job: PublishToFeed
+      displayName: 'Download and publish package'
+      steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: Download package
+        inputs:
+          buildType: 'current'
+          itemPattern: '*.nupkg'
+          targetPath: '$(Pipeline.Workspace)/package'
+          artifactName: package
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish to feed
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+          nuGetFeedType: 'external'
+          publishFeedCredentials: 'nuget.org'

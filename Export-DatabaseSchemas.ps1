@@ -29,6 +29,11 @@ if ($exportableConfigurations -eq $null) {
 } else {
     Write-Host Found ($exportableConfigurations | Measure-Object).Count configurations
 
+    if (!(Test-Path -Path $OutputPath)) {
+        Write-Host Folder $OutputPath does not exist. Creating it...
+        New-Item -ItemType Directory -Path $OutputPath
+    }
+
     $exportableConfigurations | ForEach-Object {
         $fileName = $_.Name
         $currentConfiguration = $_.Invoke($null, $null)
