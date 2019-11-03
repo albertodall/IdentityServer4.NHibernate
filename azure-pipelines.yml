@@ -35,10 +35,12 @@ stages:
         updateAssemblyInfo: true
 
     - task: PowerShell@2
-      displayName: 'Show semantic version number'
+      displayName: 'Show build context parameters'
       inputs:
         targetType: 'inline'
-        script: 'Write-Host "Building package version: $(GitVersion.SemVer)"'
+        script: |
+          Write-Host "Building package version: $(GitVersion.SemVer)"
+          Write-Host "Build triggered by branch: $(Build.SourceBranch)"
         errorActionPreference: 'silentlyContinue'
         pwsh: true
 
@@ -101,8 +103,9 @@ stages:
         artifact: 'package'
 
 - stage: ReleaseLocalPreview
-  displayName: Release to local feed as preview
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  displayName: 'Release to local feed as preview'
+  dependsOn: BuildAndTest
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to Azure Artifacts feed'
@@ -127,7 +130,8 @@ stages:
 
 - stage: ReleaseLocalStable
   displayName: Release to local feed as stable
-  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/heads/release/'))
+  dependsOn: BuildAndTest
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to Azure Artifacts feed'
