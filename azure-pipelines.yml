@@ -14,6 +14,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   gitHubConnection: 'albertodall_on_github'
+  azureArtifactsFeed: 'bcc33bf9-8305-455e-868a-96a9217439a2'
 
 stages:
 - stage: BuildAndTest
@@ -113,7 +114,7 @@ stages:
     - checkout: none
 
     - task: DownloadPipelineArtifact@2
-      displayName: Download package
+      displayName: 'Download package'
       inputs:
         buildType: 'current'
         itemPattern: '*.nupkg'
@@ -126,10 +127,10 @@ stages:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
-        publishVstsFeed: 'edeffd7e-0f28-45d8-8e6f-d9775b55cf52'
+        publishVstsFeed: $(azureArtifactsFeed)
 
 - stage: ReleaseLocalStable
-  displayName: Release to local feed as stable
+  displayName: 'Release to local feed as stable'
   dependsOn: BuildAndTest
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
@@ -151,12 +152,13 @@ stages:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
-        publishVstsFeed: 'edeffd7e-0f28-45d8-8e6f-d9775b55cf52'
+        publishVstsFeed: $(azureArtifactsFeed)
+      continueOnError: true
 
 - stage: ReleaseNuGetStable
-  displayName: Release to NuGet.org as stable
+  displayName: 'Release to NuGet.org'
   dependsOn: ReleaseLocalStable
-  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/heads/release/'))
+  condition: and(succeededOrFailed(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to NuGet feed'
@@ -164,25 +166,30 @@ stages:
     - checkout: none
     
     - task: DownloadPipelineArtifact@2
-      displayName: Download package
+      displayName: 'Download package'
       inputs:
         buildType: 'current'
         itemPattern: '*.nupkg'
         targetPath: '$(Pipeline.Workspace)/package'
         artifactName: package
         
+    - task: NuGetAuthenticate@0
+      displayName: 'Authenticate on NuGet'
+      inputs:
+        nuGetServiceConnections: 'nuget.org'
+
     - task: DotNetCoreCLI@2
-      displayName: Publish to feed
+      displayName: 'Publish to feed'
       inputs:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'external'
         publishFeedCredentials: 'nuget.org'
 
-- stage: ReleaseGitHubStable
-  displayName: 'Release to GitHub'
+- stage: CreateReleaseOnGitHub
+  displayName: 'Create release on GitHub'
   dependsOn: ReleaseNuGetStable
-  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/heads/release/'))
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: CreateGitHubRelease
     displayName: 'Create GitHub Release'
@@ -203,8 +210,9 @@ stages:
         gitHubConnection: '$(gitHubConnection)'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
-        target: '$(GitVersion.SemVer)'
-        tagSource: 'gitTag'
+        target: '$(GitVersion.Sha)'
+        tagSource: 'userSpecifiedTag'
+        title: 'v$(GitVersion.SemVer)'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
