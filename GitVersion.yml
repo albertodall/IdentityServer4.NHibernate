@@ -2,10 +2,18 @@ assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
 branches:
   master:
+    regex: master
     mode: ContinuousDeployment
     tag: preview
+    is-release-branch: false
+    is-mainline: true
   release:
+    regex: release?[/-]
     mode: ContinuousDelivery
+    tag: ''
+    is-release-branch: true
+    source-branches: ['master']
+
 ignore:
   sha: []
 merge-message-formats: {}
