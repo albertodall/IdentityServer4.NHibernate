@@ -2,8 +2,10 @@ assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
 branches:
   master:
-    mode: ContinuousDelivery
+    mode: ContinuousDeployment
     tag: preview
-  release: {}
+  release:
+    mode: ContinuousDelivery
 ignore:
   sha: []
+merge-message-formats: {}

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2047
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate", "IdentityServer4.NHibernate\IdentityServer4.NHibernate.csproj", "{52B3B045-FE74-4CD1-B65E-DB964845F712}"
 EndProject
@@ -11,8 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer4.NHibernate.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABFEF781-D57E-406E-A0FC-189403BC4513}"
 	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
 		Export-DatabaseSchemas.ps1 = Export-DatabaseSchemas.ps1
-		GitVersion.yaml = GitVersion.yaml
+		GitVersion.yml = GitVersion.yml
 		ids4-nh-logo128.png = ids4-nh-logo128.png
 		README.md = README.md
 	EndProjectSection
