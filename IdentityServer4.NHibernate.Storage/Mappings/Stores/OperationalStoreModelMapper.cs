@@ -18,7 +18,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
 
         private void BeforeMapOperationalStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            TableDefinition tableDef = null;
+            TableDefinition tableDef;
             if (type == typeof(PersistedGrant))
             {
                 tableDef = GetTableDefinition(nameof(_options.PersistedGrants), _options);
