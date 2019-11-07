@@ -132,7 +132,7 @@ stages:
 - stage: ReleaseLocalStable
   displayName: 'Release to local feed as stable'
   dependsOn: BuildAndTest
-  condition: and(failed(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to Azure Artifacts feed'
@@ -156,6 +156,7 @@ stages:
 
 - stage: ReleaseNuGetStable
   displayName: 'Release to NuGet.org'
+  dependsOn: ReleaseLocalStable
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
