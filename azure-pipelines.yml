@@ -172,6 +172,11 @@ stages:
         targetPath: '$(Pipeline.Workspace)/package'
         artifactName: package
         
+    - task: NuGetAuthenticate@0
+      displayName: 'Authenticate on NuGet'
+      inputs:
+        nuGetServiceConnections: 'nuget.org'
+
     - task: DotNetCoreCLI@2
       displayName: 'Publish to feed'
       inputs:
