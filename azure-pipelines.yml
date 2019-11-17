@@ -15,6 +15,7 @@ variables:
   buildConfiguration: 'Release'
   gitHubConnection: 'albertodall_on_github'
   azureArtifactsFeed: 'bcc33bf9-8305-455e-868a-96a9217439a2'
+  nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
 
 stages:
 - stage: BuildAndTest
@@ -146,6 +147,11 @@ stages:
         targetPath: '$(Pipeline.Workspace)/package'
         artifactName: package
 
+    - task: NuGetToolInstaller@1
+      displayName: 'Install required NuGet version'
+      inputs:
+        versionSpec: '5.3.x'
+
     - task: NuGetCommand@2
       displayName: 'Publish to feed'
       inputs:
@@ -174,18 +180,10 @@ stages:
         targetPath: '$(Pipeline.Workspace)/package'
         artifactName: package
         
-    - task: NuGetAuthenticate@0
-      displayName: 'Authenticate on NuGet'
-      inputs:
-        nuGetServiceConnections: 'nuget.org'
-
-    - task: NuGetCommand@2
+    - task: CmdLine@2
       displayName: 'Publish to feed'
       inputs:
-        command: 'push'
-        packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
-        nuGetFeedType: 'external'
-        publishFeedCredentials: 'nuget.org'
+        script: 'dotnet nuget push $(Pipeline.Workspace)/package/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey)'
 
 - stage: CreateReleaseOnGitHub
   displayName: 'Create release on GitHub'
