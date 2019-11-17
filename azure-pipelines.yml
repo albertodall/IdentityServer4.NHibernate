@@ -16,15 +16,13 @@ variables:
   gitHubConnection: 'albertodall_on_github'
   azureArtifactsFeed: 'bcc33bf9-8305-455e-868a-96a9217439a2'
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
-  gitversion_version: ''
-  gitversion_sha: ''
 
 stages:
-- stage: BuildAndTest
-  displayName: 'Build and test'
+- stage: Build_Test_Publish
+  displayName: 'Build project, run tests and publish'
   jobs:
   - job: BuildLib
-    displayName: 'Build solution and run tests'
+    displayName: 'Build solution, version package and run tests'
     steps:
     - task: UseDotNet@2
       displayName: 'Install .NET Core SDK 2.2.x'
@@ -37,16 +35,20 @@ stages:
         runtime: 'core'
         configFilePath: 'GitVersion.yml'
         updateAssemblyInfo: true
+    
+    - powershell: |
+        Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
+        Write-Host "##vso[task.setvariable variable=CommitSha;isOutput=true]$(GitVersion.Sha)"
+      name: BuildContext
+      displayName: 'Set build context parameters'
 
     - task: PowerShell@2
       displayName: 'Show build context parameters'
       inputs:
         targetType: 'inline'
         script: |
-          Write-Host "##vso[task.setvariable variable=gitversion_version]$(GitVersion.SemVer)"
-          Write-Host "##vso[task.setvariable variable=gitversion_sha]$(GitVersion.Sha)"
-          Write-Host "Building package version: $(GitVersion.SemVer)"
-          Write-Host "Commit that triggered the release: $(gitversion_sha)"
+          Write-Host "Building package version: $(BuildContext.PackageVersion)"
+          Write-Host "Commit that triggered the release: $(BuildContext.CommitSha)"
           Write-Host "Build triggered by branch: $(Build.SourceBranch)"
         errorActionPreference: 'silentlyContinue'
         pwsh: true
@@ -108,14 +110,11 @@ stages:
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/package'
         artifact: 'package'
-
-- stage: ReleaseLocalPreview
-  displayName: 'Release to local feed as preview'
-  dependsOn: BuildAndTest
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  jobs:
-  - job: PublishToFeed
-    displayName: 'Publish package to Azure Artifacts feed'
+    
+  - job: PublishToLocalPreviewFeed
+    displayName: 'Publish package to Azure Artifacts preview feed'
+    dependsOn: BuildLib
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     steps:
     - checkout: none
 
@@ -135,15 +134,13 @@ stages:
         nuGetFeedType: 'internal'
         publishVstsFeed: $(azureArtifactsFeed)
 
-- stage: ReleaseLocalStable
-  displayName: 'Release to local feed as stable'
-  dependsOn: BuildAndTest
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
-  jobs:
-  - job: PublishToFeed
-    displayName: 'Publish package to Azure Artifacts feed'
+  - job: PublishToLocalStableFeed
+    displayName: 'Publish package to Azure Artifacts stable feed'
+    dependsOn: BuildLib
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
     steps:
     - checkout: none
+
     - task: DownloadPipelineArtifact@2
       displayName: Download package
       inputs:
@@ -167,13 +164,10 @@ stages:
         allowPackageConflicts: true
       continueOnError: true
 
-- stage: ReleaseNuGetStable
-  displayName: 'Release to NuGet.org'
-  dependsOn: ReleaseLocalStable
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
-  jobs:
-  - job: PublishToFeed
-    displayName: 'Publish package to NuGet feed'
+  - job: PublishToNuGetFeed
+    displayName: 'Publish package to NuGet.org'
+    dependsOn: BuildLib
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
     steps:
     - checkout: none
     
@@ -192,13 +186,15 @@ stages:
         workingDirectory: '$(Pipeline.Workspace)'
       continueOnError: true
 
-- stage: CreateReleaseOnGitHub
-  displayName: 'Create release on GitHub'
-  dependsOn: ReleaseNuGetStable
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
-  jobs:
   - job: CreateGitHubRelease
     displayName: 'Create GitHub Release'
+    dependsOn: 
+    -  BuildLib
+    -  PublishToNuGetFeed
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+    variables:
+      PackageVersion: $[ dependencies.BuildLib.outputs['BuildContext.PackageVersion'] ]
+      CommitSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitSha'] ]
     steps:
     - checkout: none
 
@@ -211,15 +207,14 @@ stages:
         artifactName: package
 
     - task: GitHubRelease@1
-      displayName: 'Create corresponding release on GitHub'
+      displayName: 'Create release'
       inputs:
         gitHubConnection: '$(gitHubConnection)'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
-        target: '$(gitversion_sha)'
+        target: '$(CommitSha)'
         tagSource: 'userSpecifiedTag'
-        tag: '$(gitversion_version)'
-        title: 'v$(gitversion_version)'
+        title: 'v$(PackageVersion)'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
