@@ -15,5 +15,7 @@ branches:
     source-branches: ['master']
 
 ignore:
-  sha: []
+  sha: 
+    - 9c90b8141a52f1dd3d65fcfa54b3a65b07ca2f21
+
 merge-message-formats: {}
