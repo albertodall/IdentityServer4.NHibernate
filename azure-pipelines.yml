@@ -183,8 +183,9 @@ stages:
     - task: CmdLine@2
       displayName: 'Publish package on NuGet'
       inputs:
-        script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey)'
+        script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols true'
         workingDirectory: '$(Pipeline.Workspace)'
+      continueOnError: true
 
 - stage: CreateReleaseOnGitHub
   displayName: 'Create release on GitHub'
