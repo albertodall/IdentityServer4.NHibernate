@@ -189,8 +189,8 @@ stages:
   - job: CreateGitHubRelease
     displayName: 'Create GitHub Release'
     dependsOn: 
-      BuildLib
-      PublishToNuGetFeed
+    -  BuildLib
+    -  PublishToNuGetFeed
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
     variables:
       PackageVersion: $[ dependencies.BuildLib.outputs['BuildContext.PackageVersion'] ]
