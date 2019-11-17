@@ -1,3 +1,5 @@
+name: $(GitVersion.SemVer)-$(Year:yy)$(DayOfYear)$(rev:.r)
+
 trigger:
   branches:
     include:
