@@ -153,11 +153,12 @@ stages:
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
         publishVstsFeed: $(azureArtifactsFeed)
+      continueOnError: true
 
 - stage: ReleaseNuGetStable
   displayName: 'Release to NuGet.org'
   dependsOn: ReleaseLocalStable
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+  condition: and(succeededOrFailed(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to NuGet feed'
@@ -180,12 +181,13 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: 'Publish to feed'
       inputs:
-        command: 'custom'
-        custom: 'nuget push'
-        arguments: '$(Pipeline.Workspace)/package/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $(NuGetToken)'
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'nuget.org'
 
-- stage: ReleaseGitHubStable
-  displayName: 'Release to GitHub'
+- stage: CreateReleaseOnGitHub
+  displayName: 'Create release on GitHub'
   dependsOn: ReleaseNuGetStable
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
