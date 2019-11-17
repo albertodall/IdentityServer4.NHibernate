@@ -145,14 +145,15 @@ stages:
         itemPattern: '*.nupkg'
         targetPath: '$(Pipeline.Workspace)/package'
         artifactName: package
-        
-    - task: DotNetCoreCLI@2
-      displayName: Publish to feed
+
+    - task: NuGetCommand@2
+      displayName: 'Publish to feed'
       inputs:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
         publishVstsFeed: $(azureArtifactsFeed)
+        allowPackageConflicts: true
       continueOnError: true
 
 - stage: ReleaseNuGetStable
@@ -178,7 +179,7 @@ stages:
       inputs:
         nuGetServiceConnections: 'nuget.org'
 
-    - task: DotNetCoreCLI@2
+    - task: NuGetCommand@2
       displayName: 'Publish to feed'
       inputs:
         command: 'push'
