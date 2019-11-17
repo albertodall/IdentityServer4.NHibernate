@@ -31,6 +31,12 @@ stages:
       inputs:
         version: 2.2.x
 
+    - script: echo %Action%%BuildVersion%
+      displayName: 'Set build version'
+      env:
+        Action: '##vso[build.updatebuildnumber]'
+        BuildVersion: $(GitVersion.SemVer)
+
     - task: GitVersion@5
       displayName: 'Apply Semantic Versioning'
       inputs:
@@ -199,6 +205,7 @@ stages:
     variables:
       PackageVersion: $[ dependencies.BuildLib.outputs['BuildContext.PackageVersion'] ]
       CommitSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitSha'] ]
+      CommitShortSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitShortSha'] ]
     steps:
     - checkout: none
 
@@ -217,8 +224,9 @@ stages:
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(CommitSha)'
-        tagSource: 'gitTag'
-        title: 'v$(PackageVersion)'
+        tagSource: 'userSpecifiedTag'
+        tag: '$(PackageVersion)'
+        title: 'v$(PackageVersion) $(CommitShortSha)'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
