@@ -181,9 +181,10 @@ stages:
         artifactName: package
         
     - task: CmdLine@2
-      displayName: 'Publish to feed'
+      displayName: 'Publish package on NuGet'
       inputs:
-        script: 'dotnet nuget push $(Pipeline.Workspace)/package/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey)'
+        script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey)'
+        workingDirectory: '$(Pipeline.Workspace)'
 
 - stage: CreateReleaseOnGitHub
   displayName: 'Create release on GitHub'
