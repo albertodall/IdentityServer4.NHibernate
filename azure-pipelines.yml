@@ -39,6 +39,7 @@ stages:
     - powershell: |
         Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
         Write-Host "##vso[task.setvariable variable=CommitSha;isOutput=true]$(GitVersion.Sha)"
+        Write-Host "##vso[task.setvariable variable=CommitShortSha;isOutput=true]$(GitVersion.ShortSha)"
       name: BuildContext
       displayName: 'Set build context parameters'
 
@@ -48,8 +49,9 @@ stages:
         targetType: 'inline'
         script: |
           Write-Host "Building package version: $(BuildContext.PackageVersion)"
-          Write-Host "Commit that triggered the release: $(BuildContext.CommitSha)"
           Write-Host "Build triggered by branch: $(Build.SourceBranch)"
+          Write-Host "Build triggered by commit: $(BuildContext.CommitSha)"
+          Write-Host "Build triggered by commit (short): $(BuildContext.CommitShortSha)"
         errorActionPreference: 'silentlyContinue'
         pwsh: true
 
@@ -213,7 +215,7 @@ stages:
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(CommitSha)'
-        tagSource: 'userSpecifiedTag'
+        tagSource: 'gitTag'
         title: 'v$(PackageVersion)'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
