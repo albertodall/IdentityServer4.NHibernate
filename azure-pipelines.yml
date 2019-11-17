@@ -16,6 +16,8 @@ variables:
   gitHubConnection: 'albertodall_on_github'
   azureArtifactsFeed: 'bcc33bf9-8305-455e-868a-96a9217439a2'
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
+  gitversion_version: ''
+  gitversion_sha: ''
 
 stages:
 - stage: BuildAndTest
@@ -41,7 +43,10 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          Write-Host "##vso[task.setvariable variable=gitversion_version]$(GitVersion.SemVer)"
+          Write-Host "##vso[task.setvariable variable=gitversion_sha]$(GitVersion.Sha)"
           Write-Host "Building package version: $(GitVersion.SemVer)"
+          Write-Host "Commit that triggered the release: $(gitversion_sha)"
           Write-Host "Build triggered by branch: $(Build.SourceBranch)"
         errorActionPreference: 'silentlyContinue'
         pwsh: true
@@ -165,7 +170,7 @@ stages:
 - stage: ReleaseNuGetStable
   displayName: 'Release to NuGet.org'
   dependsOn: ReleaseLocalStable
-  condition: and(succeededOrFailed(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
   jobs:
   - job: PublishToFeed
     displayName: 'Publish package to NuGet feed'
@@ -211,9 +216,10 @@ stages:
         gitHubConnection: '$(gitHubConnection)'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
-        target: '$(GitVersion.Sha)'
+        target: '$(gitversion_sha)'
         tagSource: 'userSpecifiedTag'
-        title: 'v$(GitVersion.SemVer)'
+        tag: '$(gitversion_version)'
+        title: 'v$(gitversion_version)'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
