@@ -15,8 +15,6 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  gitHubConnection: 'albertodall_on_github'
-  azureArtifactsFeed: 'bcc33bf9-8305-455e-868a-96a9217439a2'
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
 
 stages:
@@ -27,9 +25,14 @@ stages:
     displayName: 'Build solution, version package and run tests'
     steps:
     - task: UseDotNet@2
-      displayName: 'Install .NET Core SDK 2.2.x'
+      displayName: 'Install .NET Core SDK 3.0.x'
       inputs:
-        version: 2.2.x
+        version: 3.0.x
+
+    - task: UseDotNet@2
+      displayName: 'Install .NET Core SDK 2.1.x required for GitVersion'
+      inputs:
+        version: 2.1.x
 
     - script: echo %Action%%BuildVersion%
       displayName: 'Set build version'
@@ -142,7 +145,7 @@ stages:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
-        publishVstsFeed: $(azureArtifactsFeed)
+        publishVstsFeed: $(AzureArtifactsFeed)
 
   - job: PublishToLocalStableFeed
     displayName: 'Publish package to Azure Artifacts stable feed'
@@ -170,7 +173,7 @@ stages:
         command: 'push'
         packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
         nuGetFeedType: 'internal'
-        publishVstsFeed: $(azureArtifactsFeed)
+        publishVstsFeed: $(AzureArtifactsFeed)
         allowPackageConflicts: true
       continueOnError: true
 
@@ -220,13 +223,14 @@ stages:
     - task: GitHubRelease@1
       displayName: 'Create release'
       inputs:
-        gitHubConnection: '$(gitHubConnection)'
+        gitHubConnection: '$(GitHubConnection)'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(CommitSha)'
         tagSource: 'userSpecifiedTag'
         tag: '$(PackageVersion)'
         title: 'v$(PackageVersion) $(CommitShortSha)'
+        releaseNotesFilePath: 'RELEASENOTES.md'
         assets: '$(Pipeline.Workspace)/package/*.nupkg'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'

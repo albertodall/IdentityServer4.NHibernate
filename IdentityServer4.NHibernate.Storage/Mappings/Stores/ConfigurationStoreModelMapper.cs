@@ -17,7 +17,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
         }
 
         /// <summary>
-        /// Sets table name and table's schema based on the rule that a the table's name is the same as the type's name.
+        /// Sets table name and table's schema following the rule that the table name is the same as the type name.
         /// </summary>
         /// <remarks>
         /// Exceptions to the rule:
