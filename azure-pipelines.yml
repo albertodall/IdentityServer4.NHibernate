@@ -127,7 +127,7 @@ stages:
   - job: PublishToLocalPreviewFeed
     displayName: 'Publish package to Azure Artifacts preview feed'
     dependsOn: BuildLib
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['SkipFeedPush'], false)))
     steps:
     - checkout: none
 
@@ -150,7 +150,7 @@ stages:
   - job: PublishToLocalStableFeed
     displayName: 'Publish package to Azure Artifacts stable feed'
     dependsOn: BuildLib
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+    condition: and(succeeded(), and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['SkipFeedPush'], false)))
     steps:
     - checkout: none
 
@@ -180,7 +180,7 @@ stages:
   - job: PublishToNuGetFeed
     displayName: 'Publish package to NuGet.org'
     dependsOn: BuildLib
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+    condition: and(succeeded(), and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['SkipFeedPush'], false)))
     steps:
     - checkout: none
     
@@ -210,7 +210,7 @@ stages:
       CommitSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitSha'] ]
       CommitShortSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitShortSha'] ]
     steps:
-    - checkout: none
+    - checkout: self
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download package'
