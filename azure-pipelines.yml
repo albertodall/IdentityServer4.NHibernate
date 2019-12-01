@@ -33,22 +33,25 @@ stages:
       displayName: 'Install .NET Core SDK 2.1.x required for GitVersion'
       inputs:
         version: 2.1.x
+    
+    - task: NuGetCommand@2
+      displayName: 'Install GitVersion CommandLine'
+      inputs:
+        command: custom
+        arguments: install GitVersion.CommandLine -OutputDirectory $(Build.BinariesDirectory) -ExcludeVersion
+    
+    - script: $(Build.BinariesDirectory)/GitVersion.CommandLine/tools/GitVersion.exe /output buildserver /updateassemblyinfo /nofetch
+      displayName: 'Apply Semantic Versioning'
 
     - script: echo %Action%%BuildVersion%
       displayName: 'Set build version'
       env:
         Action: '##vso[build.updatebuildnumber]'
         BuildVersion: $(GitVersion.SemVer)
-
-    - task: GitVersion@5
-      displayName: 'Apply Semantic Versioning'
-      inputs:
-        runtime: 'core'
-        configFilePath: 'GitVersion.yml'
-        updateAssemblyInfo: true
     
     - powershell: |
         Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
+        Write-Host "##vso[task.setvariable variable=FullPackageVersion;isOutput=true]$(GitVersion.FullSemVer)"
         Write-Host "##vso[task.setvariable variable=CommitSha;isOutput=true]$(GitVersion.Sha)"
         Write-Host "##vso[task.setvariable variable=CommitShortSha;isOutput=true]$(GitVersion.ShortSha)"
       name: BuildContext
@@ -60,6 +63,7 @@ stages:
         targetType: 'inline'
         script: |
           Write-Host "Building package version: $(BuildContext.PackageVersion)"
+          Write-Host "Building package version (full): $(BuildContext.FullPackageVersion)"
           Write-Host "Build triggered by branch: $(Build.SourceBranch)"
           Write-Host "Build triggered by commit: $(BuildContext.CommitSha)"
           Write-Host "Build triggered by commit (short): $(BuildContext.CommitShortSha)"
