@@ -158,7 +158,7 @@ stages:
   - stage: PublishToLocalStableFeed
     displayName: 'Publish package to Azure Artifacts preview feed'
     dependsOn: Build_Test_Publish
-    condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['SkipFeedPush'], false)))
+    condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/release'), eq(variables['SkipFeedPush'], false)))
     jobs:
       - job: PublishToLocalStableFeed
         displayName: 'Publish package to Azure Artifacts stable feed'
