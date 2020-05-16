@@ -37,7 +37,7 @@ namespace IdentityServer4.NHibernate.Services
         /// <param name="origin">The origin.</param>
         public async Task<bool> IsOriginAllowedAsync(string origin)
         {
-            bool isAllowed = false;
+            bool isAllowed;
 
             using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
             {

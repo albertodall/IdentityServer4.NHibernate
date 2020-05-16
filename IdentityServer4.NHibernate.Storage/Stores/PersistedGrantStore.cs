@@ -110,8 +110,8 @@ namespace IdentityServer4.NHibernate.Stores
         /// <param name="type">The type.</param>
         public async Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
-            string deleteHql = "delete from PersistedGrant where SubjectId = :subjectId and ClientId = :clientId and Type = :type";
-            int persistedGrantsCount = 0;
+            const string deleteHql = "delete from PersistedGrant where SubjectId = :subjectId and ClientId = :clientId and Type = :type";
+            var persistedGrantsCount = 0;
 
             using (var tx = _session.BeginTransaction())
             {

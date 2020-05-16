@@ -66,7 +66,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
 
             _source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            Task.Factory.StartNew(() => StartInternal(_source.Token));
+            Task.Factory.StartNew(() => StartInternal(_source.Token), cancellationToken);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace IdentityServer4.NHibernate.TokenCleanup
         /// </summary>
         private async Task RemoveExpiredGrantsAsync()
         {
-            string deleteExpiredTokensHql = "delete PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
+            const string deleteExpiredTokensHql = "delete PersistedGrant pg where pg.ID in (:expiredTokensIDs)";
 
             try
             {

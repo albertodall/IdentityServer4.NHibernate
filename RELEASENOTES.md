@@ -1,8 +1,20 @@
+## Build 2.1.0
+_Release notes - IdentityServer4.NHibernate - Version 2.1.0_
+
+__New features__
+- Support for IdentityServer4 version 3.1
+
+==breaking change==
+This version supports **only** `netcoreapp31` targeted projects. If your project doesn't target this .NET Core version, please, keep using the 1.x version.
+
+__Resolved issues__
+- No issues
 ## Build 2.0.0
 _Release notes - IdentityServer4.NHibernate - Version 2.0.0_
 
 __New features__
 - Support for IdentityServer4 version 3.0
+
 ==breaking change==
 This version supports **only** `netcoreapp3` targeted projects. If your project doesn't target this .NET Core version, please, keep using the 1.x version.
 

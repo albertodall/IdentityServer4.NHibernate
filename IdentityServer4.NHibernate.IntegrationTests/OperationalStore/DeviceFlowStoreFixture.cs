@@ -121,7 +121,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var loggerMock = new Mock<ILogger<DeviceFlowStore>>();
             var serializer = new PersistentGrantSerializer();
 
-            var existingUserCode = $"user_{Guid.NewGuid().ToString()}";
+            var existingUserCode = $"user_{Guid.NewGuid()}";
             var deviceCodeData = new DeviceCode()
             {
                 ClientId = "device_flow",
@@ -131,7 +131,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 IsOpenId = true,
                 Subject = new ClaimsPrincipal(
                     new ClaimsIdentity(
-                        new List<Claim> { new Claim(JwtClaimTypes.Subject, $"sub_{Guid.NewGuid().ToString()}") }
+                        new List<Claim> { new Claim(JwtClaimTypes.Subject, $"sub_{Guid.NewGuid()}") }
                     )
                 )
             };
@@ -142,7 +142,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 {
                     await session.SaveAsync(new DeviceFlowCodes()
                     {
-                        DeviceCode = $"device_{Guid.NewGuid().ToString()}",
+                        DeviceCode = $"device_{Guid.NewGuid()}",
                         ID = existingUserCode,
                         ClientId = deviceCodeData.ClientId,
                         SubjectId = deviceCodeData.Subject.FindFirst(JwtClaimTypes.Subject).Value,
@@ -158,7 +158,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 var store = new DeviceFlowStore(session, new PersistentGrantSerializer(), loggerMock.Object);
 
-                Func<Task> act = async () => await store.StoreDeviceAuthorizationAsync($"device_{Guid.NewGuid().ToString()}", existingUserCode, deviceCodeData);
+                Func<Task> act = async () => await store.StoreDeviceAuthorizationAsync($"device_{Guid.NewGuid()}", existingUserCode, deviceCodeData);
 
                 await act.Should().ThrowAsync<HibernateException>();
             }
@@ -173,11 +173,11 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var loggerMock = new Mock<ILogger<DeviceFlowStore>>();
             var serializer = new PersistentGrantSerializer();
 
-            var testDeviceCode = $"device_{Guid.NewGuid().ToString()}";
-            var testUserCode = $"user_{Guid.NewGuid().ToString()}";
+            var testDeviceCode = $"device_{Guid.NewGuid()}";
+            var testUserCode = $"user_{Guid.NewGuid()}";
 
-            var expectedSubject = $"sub_{Guid.NewGuid().ToString()}";
-            var expectedDeviceCodeData = new DeviceCode()
+            var expectedSubject = $"sub_{Guid.NewGuid()}";
+            var expectedDeviceCodeData = new DeviceCode
             {
                 ClientId = "device_flow",
                 RequestedScopes = new[] { "openid", "api1" },
@@ -195,7 +195,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    await session.SaveAsync(new DeviceFlowCodes()
+                    await session.SaveAsync(new DeviceFlowCodes
                     {
                         DeviceCode = testDeviceCode,
                         ID = testUserCode,
@@ -231,7 +231,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new DeviceFlowStore(session, new PersistentGrantSerializer(), loggerMock.Object);
-                var code = await store.FindByUserCodeAsync($"user_{Guid.NewGuid().ToString()}");
+                var code = await store.FindByUserCodeAsync($"user_{Guid.NewGuid()}");
                 code.Should().BeNull();
             }
 
@@ -245,10 +245,10 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var loggerMock = new Mock<ILogger<DeviceFlowStore>>();
             var serializer = new PersistentGrantSerializer();
 
-            var testDeviceCode = $"device_{Guid.NewGuid().ToString()}";
-            var testUserCode = $"user_{Guid.NewGuid().ToString()}";
+            var testDeviceCode = $"device_{Guid.NewGuid()}";
+            var testUserCode = $"user_{Guid.NewGuid()}";
 
-            var expectedSubject = $"sub_{Guid.NewGuid().ToString()}";
+            var expectedSubject = $"sub_{Guid.NewGuid()}";
             var expectedDeviceCodeData = new DeviceCode()
             {
                 ClientId = "device_flow",
@@ -267,7 +267,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    await session.SaveAsync(new DeviceFlowCodes()
+                    await session.SaveAsync(new DeviceFlowCodes
                     {
                         DeviceCode = testDeviceCode,
                         ID = testUserCode,
@@ -302,7 +302,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             using (var session = testDb.SessionFactory.OpenSession())
             {
                 var store = new DeviceFlowStore(session, new PersistentGrantSerializer(), loggerMock.Object);
-                var code = await store.FindByDeviceCodeAsync($"device_{Guid.NewGuid().ToString()}");
+                var code = await store.FindByDeviceCodeAsync($"device_{Guid.NewGuid()}");
                 code.Should().BeNull();
             }
 
@@ -316,10 +316,10 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var loggerMock = new Mock<ILogger<DeviceFlowStore>>();
             var serializer = new PersistentGrantSerializer();
 
-            var testDeviceCode = $"device_{Guid.NewGuid().ToString()}";
-            var testUserCode = $"user_{Guid.NewGuid().ToString()}";
+            var testDeviceCode = $"device_{Guid.NewGuid()}";
+            var testUserCode = $"user_{Guid.NewGuid()}";
 
-            var expectedSubject = $"sub_{Guid.NewGuid().ToString()}";
+            var expectedSubject = $"sub_{Guid.NewGuid()}";
             var unauthorizedDeviceCode = new DeviceCode()
             {
                 ClientId = "device_flow",
@@ -346,7 +346,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 }
             }
 
-            var authorizedDeviceCode = new DeviceCode()
+            var authorizedDeviceCode = new DeviceCode
             {
                 ClientId = unauthorizedDeviceCode.ClientId,
                 RequestedScopes = unauthorizedDeviceCode.RequestedScopes,
@@ -395,8 +395,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             var loggerMock = new Mock<ILogger<DeviceFlowStore>>();
             var serializer = new PersistentGrantSerializer();
 
-            var testDeviceCode = $"device_{Guid.NewGuid().ToString()}";
-            var testUserCode = $"user_{Guid.NewGuid().ToString()}";
+            var testDeviceCode = $"device_{Guid.NewGuid()}";
+            var testUserCode = $"user_{Guid.NewGuid()}";
 
             var existingDeviceCode = new DeviceCode
             {
@@ -411,7 +411,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    await session.SaveAsync(new DeviceFlowCodes()
+                    await session.SaveAsync(new DeviceFlowCodes
                     {
                         DeviceCode = testDeviceCode,
                         ID = testUserCode,
@@ -449,7 +449,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 var store = new DeviceFlowStore(session, serializer, loggerMock.Object);
 
-                Func<Task> act = async () => await store.RemoveByDeviceCodeAsync($"device_{Guid.NewGuid().ToString()}");
+                Func<Task> act = async () => await store.RemoveByDeviceCodeAsync($"device_{Guid.NewGuid()}");
 
                 await act.Should().NotThrowAsync();
             }

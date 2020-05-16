@@ -71,7 +71,7 @@ The `ConfigurationStoreOptions` class has an additional `EnableConfigurationStor
     - _Persisted Grant Store_
 
     The difference here is that the Entity Framework provider configures two `DbContext` instances, one for each store, so theoretically, you could put the each store in a dedicated database;
-    in this provider, both stores are managed by the same NHibernate SessionFactory, so they have to be created in the same database. It's possible to put them in different database schemas, but the database has to be the same.
+    with this provider, both stores are managed by the same NHibernate *SessionFactory*, so they have to be created in the same database. It's possible to put them in different database schemas, but the database has to be the same.
 
 2. SQLite in-memory databases are "_per-connection_", so different NHibernate sessions use different databases.
 That's why it's not recommended to use this provider in production with an in-memory SQLite backing store.

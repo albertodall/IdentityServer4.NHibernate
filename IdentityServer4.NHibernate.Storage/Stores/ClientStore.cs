@@ -38,7 +38,7 @@ namespace IdentityServer4.NHibernate.Stores
         /// </returns>
         public async Task<Models.Client> FindClientByIdAsync(string clientId)
         {
-            Client client = null;
+            Client client;
             using (var tx = _session.BeginTransaction())
             {
                 var clientQuery = _session.QueryOver<Client>()

@@ -14,18 +14,18 @@
     <copyright></copyright>
     <tags>OAuth2 OAuth2.0 OpenIDConnect Security Identity IdentityServer IdentityServer4 NHibernate</tags>
     <dependencies>
-      <group targetFramework="netcoreapp3.0">
-        <dependency id="IdentityServer4" version="3.0.0" />
-        <dependency id="IdentityServer4.Storage" version="3.0.0" />
+      <group targetFramework="netcoreapp3.1">
+        <dependency id="IdentityServer4" version="3.1.0" />
+        <dependency id="IdentityServer4.Storage" version="3.1.0" />
         <dependency id="NHibernate" version="5.2.0" />
-        <dependency id="AutoMapper" version="8.0.0" />
+        <dependency id="AutoMapper" version="9.0.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="IdentityServer4.NHibernate*.dll" target="lib/netcoreapp3.0" />
-    <file src="*.pdb" target="lib/netcoreapp3.0" />
-    <file src="*.xml" target="lib/netcoreapp3.0" />
+    <file src="IdentityServer4.NHibernate*.dll" target="lib/netcoreapp3.1" />
+    <file src="*.pdb" target="lib/netcoreapp3.1" />
+    <file src="*.xml" target="lib/netcoreapp3.1" />
     <file src="*.sql" target="content/Scripts" />
     <file src="icon.png" target="" />
   </files>

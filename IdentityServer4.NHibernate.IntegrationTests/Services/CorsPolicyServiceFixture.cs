@@ -64,13 +64,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Flush();
             }
 
-            bool result;
             var ctx = new DefaultHttpContext();
             var svcs = new ServiceCollection();
-            svcs.AddScoped(provider =>
-            {
-                return testDb.OpenStatelessSession();
-            });
+            svcs.AddScoped(provider => testDb.OpenStatelessSession());
             ctx.RequestServices = svcs.BuildServiceProvider();
 
             var ctxAccessor = new HttpContextAccessor()
@@ -80,7 +76,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
             var loggerMock = new Mock<ILogger<CorsPolicyService>>();
             var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
-            result = service.IsOriginAllowedAsync(testCorsOrigin).Result;
+            var result = service.IsOriginAllowedAsync(testCorsOrigin).Result;
 
             result.Should().BeTrue();
 
@@ -104,13 +100,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 session.Flush();
             }
 
-            bool result;
             var ctx = new DefaultHttpContext();
             var svcs = new ServiceCollection();
-            svcs.AddScoped(provider =>
-            {
-                return testDb.OpenStatelessSession();
-            });
+            svcs.AddScoped(provider => testDb.OpenStatelessSession());
             ctx.RequestServices = svcs.BuildServiceProvider();
 
             var ctxAccessor = new HttpContextAccessor()
@@ -120,7 +112,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
             var loggerMock = new Mock<ILogger<CorsPolicyService>>();
             var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
-            result = service.IsOriginAllowedAsync("https://not.allowed.site.it").Result;
+            var result = service.IsOriginAllowedAsync("https://not.allowed.site.it").Result;
 
             result.Should().BeFalse();
 
