@@ -18,223 +18,222 @@ variables:
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
 
 stages:
-- stage: Build_Test_Publish
-  displayName: 'Build project, run tests and publish'
-  jobs:
-  - job: BuildLib
-    displayName: 'Build solution, version package and run tests'
-    steps:
-    - task: UseDotNet@2
-      displayName: 'Install .NET Core SDK 3.0.x'
-      inputs:
-        version: 3.0.x
+  - stage: Build_Test_Publish
+    displayName: 'Build project, run tests and publish'
+    jobs:
+      - job: BuildLib
+        displayName: 'Build solution, version package and run tests'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET Core SDK 3.1.x'
+            inputs:
+              version: 3.1.x
+          - task: UseDotNet@2
+            displayName: 'Install .NET Core SDK 2.1.x required for GitVersion'
+            inputs:
+              packageType: 'sdk'
+              version: '2.1.x'
 
-    - task: UseDotNet@2
-      displayName: 'Install .NET Core SDK 2.1.x required for GitVersion'
-      inputs:
-        version: 2.1.x
+          - task: NuGetCommand@2
+            displayName: 'Install GitVersion CommandLine'
+            inputs:
+              command: custom
+              arguments: install GitVersion.CommandLine -OutputDirectory $(Build.BinariesDirectory) -ExcludeVersion
     
-    - task: NuGetCommand@2
-      displayName: 'Install GitVersion CommandLine'
-      inputs:
-        command: custom
-        arguments: install GitVersion.CommandLine -OutputDirectory $(Build.BinariesDirectory) -ExcludeVersion
+          - script: $(Build.BinariesDirectory)/GitVersion.CommandLine/tools/GitVersion.exe /output buildserver /updateassemblyinfo /nofetch
+            displayName: 'Apply Semantic Versioning'
+
+          - script: echo %Action%%BuildVersion%
+            displayName: 'Set build version'
+            env:
+              Action: '##vso[build.updatebuildnumber]'
+              BuildVersion: $(GitVersion.SemVer)
     
-    - script: $(Build.BinariesDirectory)/GitVersion.CommandLine/tools/GitVersion.exe /output buildserver /updateassemblyinfo /nofetch
-      displayName: 'Apply Semantic Versioning'
+          - powershell: |
+              Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
+              Write-Host "##vso[task.setvariable variable=FullPackageVersion;isOutput=true]$(GitVersion.FullSemVer)"
+              Write-Host "##vso[task.setvariable variable=CommitSha;isOutput=true]$(GitVersion.Sha)"
+              Write-Host "##vso[task.setvariable variable=CommitShortSha;isOutput=true]$(GitVersion.ShortSha)"
+            name: BuildContext
+            displayName: 'Set build context parameters'
 
-    - script: echo %Action%%BuildVersion%
-      displayName: 'Set build version'
-      env:
-        Action: '##vso[build.updatebuildnumber]'
-        BuildVersion: $(GitVersion.SemVer)
+          - task: PowerShell@2
+            displayName: 'Show build context parameters'
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "Building package version: $(BuildContext.PackageVersion)"
+                Write-Host "Building package version (full): $(BuildContext.FullPackageVersion)"
+                Write-Host "Build triggered by branch: $(Build.SourceBranch)"
+                Write-Host "Build triggered by commit: $(BuildContext.CommitSha)"
+                Write-Host "Build triggered by commit (short): $(BuildContext.CommitShortSha)"
+              errorActionPreference: 'silentlyContinue'
+              pwsh: true
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build library project'
+            inputs:
+              command: 'build'
+              projects: '**/IdentityServer4.NHibernate.csproj'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(GitVersion.SemVer)'
     
-    - powershell: |
-        Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true]$(GitVersion.SemVer)"
-        Write-Host "##vso[task.setvariable variable=FullPackageVersion;isOutput=true]$(GitVersion.FullSemVer)"
-        Write-Host "##vso[task.setvariable variable=CommitSha;isOutput=true]$(GitVersion.Sha)"
-        Write-Host "##vso[task.setvariable variable=CommitShortSha;isOutput=true]$(GitVersion.ShortSha)"
-      name: BuildContext
-      displayName: 'Set build context parameters'
+          - script: 'sqllocaldb start MSSQLLocalDB'
+            displayName: 'Start MSSQLLocalDB instance for integration testing'
+            condition: succeeded()
 
-    - task: PowerShell@2
-      displayName: 'Show build context parameters'
-      inputs:
-        targetType: 'inline'
-        script: |
-          Write-Host "Building package version: $(BuildContext.PackageVersion)"
-          Write-Host "Building package version (full): $(BuildContext.FullPackageVersion)"
-          Write-Host "Build triggered by branch: $(Build.SourceBranch)"
-          Write-Host "Build triggered by commit: $(BuildContext.CommitSha)"
-          Write-Host "Build triggered by commit (short): $(BuildContext.CommitShortSha)"
-        errorActionPreference: 'silentlyContinue'
-        pwsh: true
+          - task: DotNetCoreCLI@2
+            displayName: 'Run integration tests'
+            inputs:
+              command: test
+              projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
+              arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+              testRunTitle: 'Integration tests'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Build library project'
-      inputs:
-        command: 'build'
-        projects: '**/IdentityServer4.NHibernate.csproj'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(GitVersion.SemVer)'
+          - script: 'sqllocaldb stop MSSQLLocalDB -i'
+            displayName: 'Stop MSSQLLocalDB instance'
+            condition: always()
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish Storage project to allow schema scripts creation'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: '**/IdentityServer4.NHibernate.Storage.csproj'
+              arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/storagelib'
+              zipAfterPublish: false
+              modifyOutputPath: false
+
+          - task: PowerShell@2
+            displayName: 'Create schema scripts'
+            inputs:
+              targetType: filePath
+              filePath: './Export-DatabaseSchemas.ps1'
+              arguments: '-PublishPath $(Build.ArtifactStagingDirectory)/storagelib -OutputPath $(Build.ArtifactStagingDirectory)/lib'
+              failOnStderr: true
+              pwsh: true
     
-    - script: 'sqllocaldb start MSSQLLocalDB'
-      displayName: 'Start MSSQLLocalDB instance for integration testing'
-      condition: succeeded()
+          - task: DotNetCoreCLI@2
+            displayName: Create NuGet package
+            inputs:
+              command: 'pack'
+              packagesToPack: '**/IdentityServer4.NHibernate.csproj'
+              packDirectory: '$(Build.ArtifactStagingDirectory)/package'
+              nobuild: true
+              versioningScheme: 'off'
+              buildProperties: 'NuspecFile=$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec;NuspecProperties="version=$(GitVersion.SemVer)"'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Run integration tests'
-      inputs:
-        command: test
-        projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-        testRunTitle: 'Integration tests'
-
-    - script: 'sqllocaldb stop MSSQLLocalDB -i'
-      displayName: 'Stop MSSQLLocalDB instance'
-      condition: always()
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Publish Storage project to allow schema scripts creation'
-      inputs:
-        command: publish
-        publishWebProjects: false
-        projects: '**/IdentityServer4.NHibernate.Storage.csproj'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/storagelib'
-        zipAfterPublish: false
-        modifyOutputPath: false
-
-    - task: PowerShell@2
-      displayName: 'Create schema scripts'
-      inputs:
-        targetType: filePath
-        filePath: './Export-DatabaseSchemas.ps1'
-        arguments: '-PublishPath $(Build.ArtifactStagingDirectory)/storagelib -OutputPath $(Build.ArtifactStagingDirectory)/lib'
-        failOnStderr: true
-        pwsh: true
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish artifact'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)/package'
+              artifact: 'package'
     
-    - task: DotNetCoreCLI@2
-      displayName: Create NuGet package
-      inputs:
-        command: 'pack'
-        packagesToPack: '**/IdentityServer4.NHibernate.csproj'
-        packDirectory: '$(Build.ArtifactStagingDirectory)/package'
-        nobuild: true
-        versioningScheme: 'off'
-        buildProperties: 'NuspecFile=$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec;NuspecProperties="version=$(GitVersion.SemVer)"'
-
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish artifact'
-      inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)/package'
-        artifact: 'package'
-    
-  - job: PublishToLocalPreviewFeed
+  - stage: PublishToLocalPreviewFeed
     displayName: 'Publish package to Azure Artifacts preview feed'
-    dependsOn: BuildLib
+    dependsOn: Build_Test_Publish
     condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['SkipFeedPush'], false)))
-    steps:
-    - checkout: none
+    jobs:
+      - job: 
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - checkout: none
 
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download package'
-      inputs:
-        buildType: 'current'
-        itemPattern: '*.nupkg'
-        targetPath: '$(Pipeline.Workspace)/package'
-        artifactName: package
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download package'
+            inputs:
+              buildType: 'current'
+              itemPattern: '*.nupkg'
+              targetPath: '$(Pipeline.Workspace)/package'
+              artifactName: package
       
-    - task: DotNetCoreCLI@2
-      displayName: Publish to feed
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
-        nuGetFeedType: 'internal'
-        publishVstsFeed: $(AzureArtifactsFeed)
+          - task: DotNetCoreCLI@2
+            displayName: Publish to feed
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: $(AzureArtifactsFeed)
+  
+  - stage: PublishToLocalStableFeed
+    displayName: 'Publish package to Azure Artifacts preview feed'
+    dependsOn: Build_Test_Publish
+    condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['SkipFeedPush'], false)))
+    jobs:
+      - job: PublishToLocalStableFeed
+        displayName: 'Publish package to Azure Artifacts stable feed'
+        steps:
+          - checkout: none
 
-  - job: PublishToLocalStableFeed
-    displayName: 'Publish package to Azure Artifacts stable feed'
-    dependsOn: BuildLib
-    condition: and(succeeded(), and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['SkipFeedPush'], false)))
-    steps:
-    - checkout: none
+          - task: DownloadPipelineArtifact@2
+            displayName: Download package
+            inputs:
+              buildType: 'current'
+              itemPattern: '*.nupkg'
+              targetPath: '$(Pipeline.Workspace)/package'
+              artifactName: package
 
-    - task: DownloadPipelineArtifact@2
-      displayName: Download package
-      inputs:
-        buildType: 'current'
-        itemPattern: '*.nupkg'
-        targetPath: '$(Pipeline.Workspace)/package'
-        artifactName: package
+          - task: NuGetToolInstaller@1
+            displayName: 'Install required NuGet version'
+            inputs:
+              versionSpec: '5.3.x'
 
-    - task: NuGetToolInstaller@1
-      displayName: 'Install required NuGet version'
-      inputs:
-        versionSpec: '5.3.x'
+          - task: NuGetCommand@2
+            displayName: 'Publish to feed'
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: $(AzureArtifactsFeed)
+              allowPackageConflicts: true
+            continueOnError: true
 
-    - task: NuGetCommand@2
-      displayName: 'Publish to feed'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Pipeline.Workspace)/package/*.nupkg'
-        nuGetFeedType: 'internal'
-        publishVstsFeed: $(AzureArtifactsFeed)
-        allowPackageConflicts: true
-      continueOnError: true
-
-  - job: PublishToNuGetFeed
+  - stage: 'ReleaseNuGetPackage'
     displayName: 'Publish package to NuGet.org'
-    dependsOn: BuildLib
-    condition: and(succeeded(), and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['SkipFeedPush'], false)))
-    steps:
-    - checkout: none
-    
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download package'
-      inputs:
-        buildType: 'current'
-        itemPattern: '*.nupkg'
-        targetPath: '$(Pipeline.Workspace)/package'
-        artifactName: package
-        
-    - task: CmdLine@2
-      displayName: 'Publish package on NuGet'
-      inputs:
-        script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols true'
-        workingDirectory: '$(Pipeline.Workspace)'
-      continueOnError: true
-
-  - job: CreateGitHubRelease
-    displayName: 'Create GitHub Release'
     dependsOn: 
-    -  BuildLib
-    -  PublishToNuGetFeed
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+      - Build_Test_Publish
+      - PublishToLocalStableFeed
+    condition: and(succeeded(), and(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['SkipFeedPush'], false)))
     variables:
-      PackageVersion: $[ dependencies.BuildLib.outputs['BuildContext.PackageVersion'] ]
-      CommitSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitSha'] ]
-      CommitShortSha: $[ dependencies.BuildLib.outputs['BuildContext.CommitShortSha'] ]
-    steps:
-    - checkout: self
-
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download package'
-      inputs:
-        buildType: 'current'
-        itemPattern: '*.nupkg'
-        targetPath: '$(Pipeline.Workspace)/package'
-        artifactName: package
-
-    - task: GitHubRelease@1
-      displayName: 'Create release'
-      inputs:
-        gitHubConnection: '$(GitHubConnection)'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(CommitSha)'
-        tagSource: 'userSpecifiedTag'
-        tag: '$(PackageVersion)'
-        title: 'v$(PackageVersion) $(CommitShortSha)'
-        releaseNotesFilePath: 'RELEASENOTES.md'
-        assets: '$(Pipeline.Workspace)/package/*.nupkg'
-        changeLogCompareToRelease: 'lastFullRelease'
-        changeLogType: 'commitBased'
+      PackageVersion: $[ dependencies.Build_Test_Publish.outputs['BuildContext.PackageVersion'] ]
+      CommitSha: $[ dependencies.Build_Test_Publish.outputs['BuildContext.CommitSha'] ]
+      CommitShortSha: $[ dependencies.Build_Test_Publish.outputs['BuildContext.CommitShortSha'] ]
+    jobs:
+      - deployment:
+        pool:
+          vmImage: 'windows-latest'
+        environment: 'NuGet Feed'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  displayName: 'Download package'
+                  inputs:
+                    buildType: 'current'
+                    itemPattern: '*.nupkg'
+                    targetPath: '$(Pipeline.Workspace)/package'
+                    artifactName: package
+        
+                - task: CmdLine@2
+                  name: PublishOnNuGet
+                  displayName: 'Publish package on NuGet'
+                  inputs:
+                    script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols true'
+                    workingDirectory: '$(Pipeline.Workspace)'
+                  continueOnError: true
+                      
+                - task: GitHubRelease@1
+                  displayName: 'Create release'
+                  inputs:
+                    gitHubConnection: '$(GitHubConnection)'
+                    repositoryName: '$(Build.Repository.Name)'
+                    action: 'create'
+                    target: '$(CommitSha)'
+                    tagSource: 'userSpecifiedTag'
+                    tag: '$(PackageVersion)'
+                    title: 'v$(PackageVersion) $(CommitShortSha)'
+                    releaseNotesFilePath: 'RELEASENOTES.md'
+                    assets: '$(Pipeline.Workspace)/package/*.nupkg'
+                    changeLogCompareToRelease: 'lastFullRelease'
+                    changeLogType: 'commitBased'
