@@ -1,22 +1,22 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
+next-version: 2.1.0
 branches:
   master:
-    regex: master
     mode: ContinuousDeployment
     tag: preview
+    regex: master
     is-release-branch: false
     is-mainline: true
   release:
-    regex: release?[/-]
     mode: ContinuousDelivery
     tag: ''
+    regex: release?[/-]
+    source-branches:
+    - master
     is-release-branch: true
-    source-branches: ['master']
-
 ignore:
-  sha: 
-    - 9c90b8141a52f1dd3d65fcfa54b3a65b07ca2f21
-    - 0cbb52920632d157fbaaeff98d99f91721708929
-
+  sha:
+  - 9c90b8141a52f1dd3d65fcfa54b3a65b07ca2f21
+  - 0cbb52920632d157fbaaeff98d99f91721708929
 merge-message-formats: {}
