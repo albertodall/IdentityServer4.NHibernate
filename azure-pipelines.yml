@@ -194,15 +194,15 @@ stages:
       - Build_Test_Publish
       - PublishToLocalStableFeed
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
-    variables:
-      PackageVersion: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.PackageVersion'] ]
-      CommitSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitSha'] ]
-      CommitShortSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitShortSha'] ]
     jobs:
       - deployment:
         pool:
           vmImage: 'windows-latest'
         environment: 'NuGet Feed'
+        variables:
+          PackageVersion: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.PackageVersion'] ]
+          CommitSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitSha'] ]
+          CommitShortSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitShortSha'] ]
         strategy:
           runOnce:
             deploy:
