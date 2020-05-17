@@ -22,7 +22,7 @@ variables:
 
 stages:
   - stage: Build_Test_Publish
-    displayName: 'Build project, run tests and publish'
+    displayName: 'Build, versioning, testing and create package'
     jobs:
       - job: BuildLib
         displayName: 'Build solution, version package and run tests'
@@ -195,9 +195,9 @@ stages:
       - PublishToLocalStableFeed
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
     variables:
-      PackageVersion: $[ dependencies.Build_Test_Publish.outputs['BuildContext.PackageVersion'] ]
-      CommitSha: $[ dependencies.Build_Test_Publish.outputs['BuildContext.CommitSha'] ]
-      CommitShortSha: $[ dependencies.Build_Test_Publish.outputs['BuildContext.CommitShortSha'] ]
+      PackageVersion: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.PackageVersion'] ]
+      CommitSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitSha'] ]
+      CommitShortSha: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.CommitShortSha'] ]
     jobs:
       - deployment:
         pool:
