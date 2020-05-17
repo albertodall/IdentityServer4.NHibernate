@@ -130,7 +130,8 @@ stages:
     dependsOn: Build_Test_Publish
     condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['SkipFeedPush'], false)))
     jobs:
-      - job: 
+      - job:
+        displayName: 'Publish package
         pool:
           vmImage: 'windows-latest'
         steps:
@@ -153,12 +154,14 @@ stages:
               publishVstsFeed: $(AzureArtifactsFeed)
   
   - stage: PublishToLocalStableFeed
-    displayName: 'Publish package to Azure Artifacts preview feed'
+    displayName: 'Publish package to Azure Artifacts stable feed'
     dependsOn: Build_Test_Publish
     condition: and(succeeded(), and(eq(variables['Build.SourceBranch'], 'refs/heads/release'), eq(variables['SkipFeedPush'], false)))
     jobs:
       - job: PublishToLocalStableFeed
-        displayName: 'Publish package to Azure Artifacts stable feed'
+        displayName: 'Publish package
+        pool:
+          vmImage: 'windows-latest'
         steps:
           - checkout: none
 
@@ -214,7 +217,7 @@ stages:
         
                 - task: CmdLine@2
                   name: PublishOnNuGet
-                  displayName: 'Publish package on NuGet'
+                  displayName: 'Publish package'
                   inputs:
                     script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols true'
                     workingDirectory: '$(Pipeline.Workspace)'
