@@ -211,7 +211,7 @@ stages:
                   name: PublishOnNuGet
                   displayName: 'Publish package'
                   inputs:
-                    script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols'
+                    script: 'dotnet nuget push **/*.nupkg --source $(nuGetSourceFeed) --api-key $(NuGetApiKey) --no-symbols true'
                     workingDirectory: '$(Pipeline.Workspace)'
                   condition: eq(variables['SkipNugetFeedPush'], false)
 
