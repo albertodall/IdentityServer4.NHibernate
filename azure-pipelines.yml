@@ -215,16 +215,17 @@ stages:
                     workingDirectory: '$(Pipeline.Workspace)'
                   condition: eq(variables['SkipNugetFeedPush'], false)
 
-                - task: GitHubRelease@1
-                  displayName: 'Create release'
+                - task: GitHubRelease@0
+                  displayName: 'Create release on GitHub'
                   inputs:
                     gitHubConnection: '$(gitHubConnection)'
                     repositoryName: '$(Build.Repository.Name)'
                     action: 'create'
                     target: '$(CommitSha)'
-                    tagSource: 'userSpecifiedTag'
+                    tagSource: 'manual'
+                    tag: '$(PackageVersion)'
                     title: 'v$(PackageVersion) $(CommitShortSha)'
-                    releaseNotesFilePath: 'RELEASENOTES.md'
+                    releaseNotesFile: 'RELEASENOTES.md'
                     assets: '$(Pipeline.Workspace)/package/*.nupkg'
                     changeLogCompareToRelease: 'lastFullRelease'
                     changeLogType: 'commitBased'
