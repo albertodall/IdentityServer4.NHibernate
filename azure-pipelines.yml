@@ -9,6 +9,8 @@ trigger:
     exclude:
       - azure-pipelines.yml
       - GitVersion.yml
+      - README.md
+      - RELEASENOTES.md
 
 pool:
   vmImage: 'windows-latest'
