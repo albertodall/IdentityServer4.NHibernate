@@ -223,7 +223,6 @@ stages:
                     action: 'create'
                     target: '$(CommitSha)'
                     tagSource: 'userSpecifiedTag'
-                    tag: '$(PackageVersion)'
                     title: 'v$(PackageVersion) $(CommitShortSha)'
                     releaseNotesFilePath: 'RELEASENOTES.md'
                     assets: '$(Pipeline.Workspace)/package/*.nupkg'
