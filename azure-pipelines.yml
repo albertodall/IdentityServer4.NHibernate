@@ -120,6 +120,16 @@ stages:
               versioningScheme: 'off'
               buildProperties: 'NuspecFile=$(Build.ArtifactStagingDirectory)/lib/IdentityServer4.Contrib.NHibernate.nuspec;NuspecProperties="version=$(GitVersion.SemVer)"'
 
+          - task: CopyFiles@2
+            displayName: Copy additional assets
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: |
+                README.md
+                RELEASENOTES.md
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/package'
+              OverWrite: true
+
           - task: PublishPipelineArtifact@1
             displayName: 'Publish artifact'
             inputs:
@@ -165,17 +175,12 @@ stages:
           - checkout: none
 
           - task: DownloadPipelineArtifact@2
-            displayName: Download package
+            displayName: 'Download package'
             inputs:
               buildType: 'current'
               itemPattern: '*.nupkg'
               targetPath: '$(Pipeline.Workspace)/package'
               artifactName: package
-
-          - task: NuGetToolInstaller@1
-            displayName: 'Install required NuGet version'
-            inputs:
-              versionSpec: '5.5.x'
 
           - task: NuGetCommand@2
             displayName: 'Publish to feed'
@@ -224,7 +229,7 @@ stages:
                     tagSource: 'userSpecifiedTag'
                     tag: $(PackageVersion)
                     title: 'v$(PackageVersion) $(CommitShortSha)'
-                    releaseNotesFilePath: 'RELEASENOTES.md'
+                    releaseNotesFilePath: '$(Pipeline.Workspace)/package/RELEASENOTES.md'
                     assets: '$(Pipeline.Workspace)/package/*.nupkg'
                     changeLogCompareToRelease: 'lastFullRelease'
                     changeLogType: 'commitBased'
