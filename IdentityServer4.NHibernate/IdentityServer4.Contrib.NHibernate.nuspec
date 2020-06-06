@@ -15,9 +15,9 @@
     <tags>OAuth2 OAuth2.0 OpenIDConnect Security Identity IdentityServer IdentityServer4 NHibernate</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="IdentityServer4" version="2.3.2" />
-        <dependency id="IdentityServer4.Storage" version="2.3.1" />
-        <dependency id="NETStandard.Library" version="2.0.3" />
+        <dependency id="IdentityServer4" version="2.3.0" />
+        <dependency id="IdentityServer4.Storage" version="2.3.0" />
+        <dependency id="NETStandard.Library" version="2.0.0" />
         <dependency id="NHibernate" version="5.2.0" />
         <dependency id="AutoMapper" version="8.0.0" />
       </group>
