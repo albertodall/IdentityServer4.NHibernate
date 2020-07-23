@@ -1,3 +1,8 @@
+## Build 3.0.0
+_Release notes - IdentityServer4.NHibernate - Version 3.0.0_
+
+__New features__
+- Support for IdentityServer4 version 4.0
 ## Build 2.1.0
 _Release notes - IdentityServer4.NHibernate - Version 2.1.0_
 
@@ -8,7 +13,7 @@ __New features__
 ==breaking change==
 This version supports **only** `netcoreapp31` targeted projects. If your project doesn't target this .NET Core version, you can:
 - Use version [2.0.0](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/2.0.0) if your project targets `netcoreapp3`.
-- Use version [1.1.2](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/1.1.2) for other project targets.
+- Use version [1.1.4](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/1.1.4) for older targets.
 
 __Resolved issues__
 - No issues
@@ -23,6 +28,14 @@ This version supports **only** `netcoreapp3` targeted projects. If your project 
 
 __Resolved issues__
 - No issues
+## Build 1.1.4
+_Release notes - IdentityServer4.NHibernate - Version 1.1.4_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- #5 - Automapper 8 - 9 version mismatch.
 ## Build 1.1.2
 _Release notes - IdentityServer4.NHibernate - Version 1.1.2_
 
