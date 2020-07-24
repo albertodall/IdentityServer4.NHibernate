@@ -16,56 +16,39 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
 
             CreateMap<ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
-                .ForMember(dest => dest.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
+                .ForMember(dst => dst.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
+                .ForMember(
+                    dst => dst.AllowedAccessTokenSigningAlgorithms, 
+                    opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedAccessTokenSigningAlgorithms))
                 .ReverseMap()
-                    .ForMember(dest => dest.Scopes, opt =>
-                    {
-                        opt.MapFrom(src => src.Scopes);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.Secrets, opt =>
-                    {
-                        opt.MapFrom(src => src.ApiSecrets);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.UserClaims, opt =>
-                    {
-                        opt.MapFrom(src => src.UserClaims);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.Properties, opt =>
-                    {
-                        opt.MapFrom(src => src.Properties);
-                        opt.UseDestinationValue();
-                    });
+                    .ForMember(
+                        dst => dst.AllowedAccessTokenSigningAlgorithms, 
+                        opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedAccessTokenSigningAlgorithms));
 
             CreateMap<ApiResourceClaim, string>()
                 .ConstructUsing(x => x.Type)
                 .ReverseMap()
-                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
+                    .ForMember(dst => dst.Type, opt => opt.MapFrom(src => src));
 
             CreateMap<ApiResourceSecret, Models.Secret>(MemberList.Destination)
-                .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
+                .ForMember(dst => dst.Type, opt => opt.Condition(src => src != null))
                 .ReverseMap();
+
+            CreateMap<ApiResourceScope, string>()
+                .ConstructUsing(src => src.Scope)
+                .ReverseMap()
+                    .ForMember(dst => dst.Scope, opt => opt.MapFrom(src => src));
+
+            CreateMap<ApiScopeClaim, string>()
+                .ConstructUsing(src => src.Type)
+                .ReverseMap()
+                    .ForMember(dst => dst.Type, opt => opt.MapFrom(src => src));
 
             CreateMap<ApiScope, Models.ApiScope>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiScope())
-                .ReverseMap()
-                    .ForMember(dest => dest.Properties, opt =>
-                    {
-                        opt.MapFrom(src => src.Properties);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.UserClaims, opt =>
-                    {
-                        opt.MapFrom(src => src.UserClaims);
-                        opt.UseDestinationValue();
-                    });
-
-            CreateMap<ApiScopeClaim, string>()
-                .ConstructUsing(x => x.Type)
-                .ReverseMap()
-                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
+                .ForMember(dst => dst.Properties, opt => opt.MapFrom(src => src.Properties))
+                .ForMember(dst => dst.UserClaims, opt => opt.MapFrom(src => src.UserClaims))
+                .ReverseMap();
 
             CreateMap<IdentityResourceProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
@@ -85,9 +68,9 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                     });
 
             CreateMap<IdentityResourceClaim, string>()
-                .ConstructUsing(x => x.Type)
+                .ConstructUsing(src => src.Type)
                 .ReverseMap()
-                    .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
+                    .ForMember(dst => dst.Type, opt => opt.MapFrom(src => src));
         }
     }
 }

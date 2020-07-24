@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
