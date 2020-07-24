@@ -7,6 +7,7 @@ using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using IdentityServer4.Models;
 using FluentAssertions;
+using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -148,10 +149,16 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 session.Flush();
             }
 
+            var filter = new PersistedGrantFilter()
+            {
+                SubjectId = testGrant.SubjectId,
+                ClientId = testGrant.ClientId
+            };
+
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId).Wait();
+                store.RemoveAllAsync(filter).Wait();
             }
 
             using (var session = testDb.OpenSession())
@@ -176,10 +183,17 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 session.Flush();
             }
 
+            var filter = new PersistedGrantFilter()
+            {
+                SubjectId = testGrant.SubjectId,
+                ClientId = testGrant.ClientId,
+                Type = testGrant.Type
+            };
+
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId, testGrant.Type).Wait();
+                store.RemoveAllAsync(filter).Wait();
             }
 
             using (var session = testDb.OpenSession())
@@ -230,7 +244,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 session.Flush();
             }
 
-            var newExpirationDate = testGrant.Expiration.Value.AddHours(1);
+            var newExpirationDate = testGrant.Expiration?.AddHours(1);
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
@@ -241,7 +255,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             using (var session = testDb.OpenSession())
             {
                 var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
-                foundGrant.Expiration.Value.Should().Be(newExpirationDate);
+                foundGrant.Expiration.Value.Should().Be(newExpirationDate.Value);
             }
 
             CleanupTestData(testDb);

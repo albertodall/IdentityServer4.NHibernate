@@ -23,7 +23,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="entity">The entity.</param>
         public static Models.ApiResource ToModel(this Entities.ApiResource entity)
         {
-            return Mapper.Map<Models.ApiResource>(entity);
+            return entity == null ? null : Mapper.Map<Models.ApiResource>(entity);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="model">The model.</param>
         public static Entities.ApiResource ToEntity(this Models.ApiResource model)
         {
-            return Mapper.Map<Entities.ApiResource>(model);
+            return model == null ? null : Mapper.Map<Entities.ApiResource>(model);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="entity">The entity.</param>
         public static Models.IdentityResource ToModel(this Entities.IdentityResource entity)
         {
-            return Mapper.Map<Models.IdentityResource>(entity);
+            return entity == null ? null : Mapper.Map<Models.IdentityResource>(entity);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <returns></returns>
         public static Entities.IdentityResource ToEntity(this Models.IdentityResource model)
         {
-            return Mapper.Map<Entities.IdentityResource>(model);
+            return model == null ? null : Mapper.Map<Entities.IdentityResource>(model);
         }
 
         /// <summary>
@@ -60,7 +60,17 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="entity">The entity.</param>
         public static Models.ApiScope ToModel(this Entities.ApiScope entity)
         {
-            return Mapper.Map<Models.ApiScope>(entity);
+            return entity == null ? null : Mapper.Map<Models.ApiScope>(entity);
+        }
+
+         /// <summary>
+        /// Maps a model to an entity.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public static Entities.ApiScope ToEntity(this Models.ApiScope model)
+        {
+            return model == null ? null : Mapper.Map<Entities.ApiScope>(model);
         }
     }
 }

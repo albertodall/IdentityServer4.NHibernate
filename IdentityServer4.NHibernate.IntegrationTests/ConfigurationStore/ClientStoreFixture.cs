@@ -314,9 +314,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
                 ClientName = "Test Client with Claims",
                 Claims =
                 {
-                    new Claim("type1", "value1"),
-                    new Claim("type2", "value2"),
-                    new Claim("type3", "value3")
+                    new ClientClaim("type1", "value1"),
+                    new ClientClaim("type2", "value2"),
+                    new ClientClaim("type3", "value3")
                 }
             };
 
