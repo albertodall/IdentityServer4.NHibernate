@@ -6,7 +6,7 @@ namespace IdentityServer4.NHibernate.Extensions
 {
     internal static class ConfigurationStoreModelMapperExtensions
     {
-        public static ConfigurationStoreModelMapper AddClientContextMappings(this ConfigurationStoreModelMapper mapper)
+        internal static ConfigurationStoreModelMapper AddClientContextMappings(this ConfigurationStoreModelMapper mapper)
         {
             mapper.AddMapping<ClientMap>();
             mapper.AddMapping<ClientGrantTypeMap>();
@@ -22,7 +22,7 @@ namespace IdentityServer4.NHibernate.Extensions
             return mapper;
         }
 
-        public static ConfigurationStoreModelMapper AddResourceContextMappings(this ConfigurationStoreModelMapper mapper)
+        internal static ConfigurationStoreModelMapper AddResourceContextMappings(this ConfigurationStoreModelMapper mapper)
         {
             mapper.AddMapping<IdentityResourceMap>();
             mapper.AddMapping<IdentityClaimMap>();
@@ -31,13 +31,14 @@ namespace IdentityServer4.NHibernate.Extensions
             mapper.AddMapping<ApiResourcePropertyMap>();
             mapper.AddMapping<ApiResourceSecretMap>();
             mapper.AddMapping<ApiResourceClaimMap>();
+            mapper.AddMapping<ApiResourceScopeMap>();
             mapper.AddMapping<ApiScopeMap>();
             mapper.AddMapping<ApiScopeClaimMap>();
 
             return mapper;
         }
 
-        public static OperationalStoreModelMapper AddPersistedGrantContextMappings(this OperationalStoreModelMapper mapper)
+        internal static OperationalStoreModelMapper AddPersistedGrantContextMappings(this OperationalStoreModelMapper mapper)
         {
             mapper.AddMapping<PersistedGrantMap>();
             mapper.AddMapping<DeviceFlowCodesMap>();

@@ -8,7 +8,7 @@ namespace IdentityServer4.NHibernate.Extensions
     /// </summary>
     public static class ClientStoreMappingExtensions
     {
-        private static IMapper Mapper;
+        private static readonly IMapper Mapper;
 
         static ClientStoreMappingExtensions()
         {
@@ -22,7 +22,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="entity">The entity.</param>
         public static Models.Client ToModel(this Entities.Client entity)
         {
-            return Mapper.Map<Models.Client>(entity);
+            return entity == null ? null : Mapper.Map<Models.Client>(entity);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace IdentityServer4.NHibernate.Extensions
         /// <param name="model">The model.</param>
         public static Entities.Client ToEntity(this Models.Client model)
         {
-            return Mapper.Map<Entities.Client>(model);
+            return model == null ? null : Mapper.Map<Entities.Client>(model);
         }
     }
 }

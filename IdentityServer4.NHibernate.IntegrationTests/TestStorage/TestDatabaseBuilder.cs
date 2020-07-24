@@ -33,7 +33,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             catch (System.Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb.Drop();
+                testDb?.Drop();
             }
 
             return testDb;

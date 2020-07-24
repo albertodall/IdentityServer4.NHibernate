@@ -44,7 +44,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
                 });
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
-                r => r.OneToMany(m => m.Class(typeof(ApiScope)))
+                r => r.OneToMany(m => m.Class(typeof(ApiResourceScope)))
             );
 
             Set(p => p.UserClaims, map =>

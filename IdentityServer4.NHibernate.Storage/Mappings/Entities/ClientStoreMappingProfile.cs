@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using AutoMapper;
+using IdentityServer4.Models;
 
 namespace IdentityServer4.NHibernate.Mappings.Entities
 {
@@ -16,52 +17,13 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
 
             CreateMap<NHibernate.Entities.Client, Models.Client>()
                 .ForMember(dest => dest.ProtocolType, opt => opt.Condition(srs => srs != null))
+                .ForMember(
+                    dest => dest.AllowedIdentityTokenSigningAlgorithms, 
+                    opts => opts.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedIdentityTokenSigningAlgorithms))
                 .ReverseMap()
-                    .ForMember(dest => dest.AllowedGrantTypes, opt => 
-                    {
-                        opt.MapFrom(src => src.AllowedGrantTypes);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.ClientSecrets, opt =>
-                    {
-                        opt.MapFrom(src => src.ClientSecrets);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.RedirectUris, opt =>
-                    {
-                        opt.MapFrom(src => src.RedirectUris);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.PostLogoutRedirectUris, opt =>
-                    {
-                        opt.MapFrom(src => src.PostLogoutRedirectUris);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.AllowedScopes, opt =>
-                    {
-                        opt.MapFrom(src => src.AllowedScopes);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.IdentityProviderRestrictions, opt =>
-                    {
-                        opt.MapFrom(src => src.IdentityProviderRestrictions);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.Claims, opt =>
-                    {
-                        opt.MapFrom(src => src.Claims);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.AllowedCorsOrigins, opt => 
-                    {
-                        opt.MapFrom(src => src.AllowedCorsOrigins);
-                        opt.UseDestinationValue();
-                    })
-                    .ForMember(dest => dest.Properties, opt =>
-                    {
-                        opt.MapFrom(src => src.Properties);
-                        opt.UseDestinationValue();
-                    });
+                    .ForMember(
+                        dest => dest.AllowedIdentityTokenSigningAlgorithms, 
+                        opts => opts.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedIdentityTokenSigningAlgorithms));
 
             CreateMap<NHibernate.Entities.ClientGrantType, string>()
                 .ConstructUsing(src => src.GrantType)
@@ -83,7 +45,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ReverseMap()
                     .ForMember(dest => dest.Scope, opt => opt.MapFrom(src => src));
 
-            CreateMap<NHibernate.Entities.ClientSecret, Models.Secret>(MemberList.Destination)
+            CreateMap<NHibernate.Entities.ClientSecret, Secret>(MemberList.Destination)
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
@@ -92,8 +54,8 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ReverseMap()
                     .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src));
 
-            CreateMap<NHibernate.Entities.ClientClaim, Claim>(MemberList.None)
-                .ConstructUsing(src => new Claim(src.Type, src.Value))
+            CreateMap<NHibernate.Entities.ClientClaim, ClientClaim>(MemberList.None)
+                .ConstructUsing(src => new ClientClaim(src.Type, src.Value, ClaimValueTypes.String))
                 .ReverseMap();
 
             CreateMap<NHibernate.Entities.ClientCorsOrigin, string>()

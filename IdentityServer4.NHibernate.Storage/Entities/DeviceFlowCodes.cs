@@ -41,7 +41,7 @@ namespace IdentityServer4.NHibernate.Entities
         /// <value>
         /// The session identifier.
         /// </value>
-        public string SessionId { get; set; }
+        public virtual string SessionId { get; set; }
 
         /// <summary>
         /// Gets or sets the client identifier.
