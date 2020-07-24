@@ -27,6 +27,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
             {
                 tableDef = GetTableDefinition(type.Name, _options);
             }
+
             if (tableDef != null)
             {
                 classCustomizer.MapToTable(tableDef, _options);

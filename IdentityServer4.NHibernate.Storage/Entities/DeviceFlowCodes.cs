@@ -19,6 +19,15 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual string DeviceCode { get; set; }
 
         /// <summary>
+        /// Gets or sets the user code.
+        /// </summary>
+        /// <value>
+        /// The user code.
+        /// </value>
+        public virtual string UserCode { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the subject identifier.
         /// </summary>
         /// <value>
@@ -27,12 +36,28 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual string SubjectId { get; set; }
 
         /// <summary>
+        /// Gets or sets the session identifier.
+        /// </summary>
+        /// <value>
+        /// The session identifier.
+        /// </value>
+        public string SessionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the client identifier.
         /// </summary>
         /// <value>
         /// The client identifier.
         /// </value>
         public virtual string ClientId { get; set; }
+
+        /// <summary>
+        /// Gets the description the user assigned to the device being authorized.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public virtual string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the creation time.

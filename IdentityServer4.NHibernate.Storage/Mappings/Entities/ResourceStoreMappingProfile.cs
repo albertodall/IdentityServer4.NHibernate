@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Entities;
 using System.Collections.Generic;
 
@@ -15,7 +14,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
             CreateMap<ApiResourceProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
 
-            CreateMap<NHibernate.Entities.ApiResource, Models.ApiResource>(MemberList.Destination)
+            CreateMap<ApiResource, Models.ApiResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.ApiResource())
                 .ForMember(dest => dest.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
                 .ReverseMap()
@@ -45,13 +44,18 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ReverseMap()
                     .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));
 
-            CreateMap<ApiSecret, Models.Secret>(MemberList.Destination)
+            CreateMap<ApiResourceSecret, Models.Secret>(MemberList.Destination)
                 .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null))
                 .ReverseMap();
 
-            CreateMap<ApiScope, Scope>(MemberList.Destination)
-                .ConstructUsing(src => new Scope())
+            CreateMap<ApiScope, Models.ApiScope>(MemberList.Destination)
+                .ConstructUsing(src => new Models.ApiScope())
                 .ReverseMap()
+                    .ForMember(dest => dest.Properties, opt =>
+                    {
+                        opt.MapFrom(src => src.Properties);
+                        opt.UseDestinationValue();
+                    })
                     .ForMember(dest => dest.UserClaims, opt =>
                     {
                         opt.MapFrom(src => src.UserClaims);
@@ -66,7 +70,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
             CreateMap<IdentityResourceProperty, KeyValuePair<string, string>>()
                 .ReverseMap();
 
-            CreateMap<NHibernate.Entities.IdentityResource, Models.IdentityResource>(MemberList.Destination)
+            CreateMap<IdentityResource, Models.IdentityResource>(MemberList.Destination)
                 .ConstructUsing(src => new Models.IdentityResource())
                 .ReverseMap()
                     .ForMember(dest => dest.UserClaims, opt => 
@@ -80,7 +84,7 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                         opt.UseDestinationValue();
                     });
 
-            CreateMap<IdentityClaim, string>()
+            CreateMap<IdentityResourceClaim, string>()
                 .ConstructUsing(x => x.Type)
                 .ReverseMap()
                     .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src));

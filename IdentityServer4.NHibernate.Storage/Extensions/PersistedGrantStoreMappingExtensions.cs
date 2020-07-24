@@ -8,7 +8,7 @@ namespace IdentityServer4.NHibernate.Extensions
     /// </summary>
     public static class PersistedGrantStoreMappingExtensions
     {
-        private static IMapper Mapper;
+        private static readonly IMapper Mapper;
 
         static PersistedGrantStoreMappingExtensions()
         {

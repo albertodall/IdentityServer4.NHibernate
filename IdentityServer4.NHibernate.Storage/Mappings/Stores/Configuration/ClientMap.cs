@@ -31,7 +31,9 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
             Property(p => p.FrontChannelLogoutUri, map => map.Length(2000));
             Property(p => p.BackChannelLogoutUri, map => map.Length(2000));
             Property(p => p.ClientClaimsPrefix, map => map.Length(200));
+            Property(p => p.UserCodeType, map => map.Length(100));
             Property(p => p.PairWiseSubjectSalt, map => map.Length(200));
+            Property(p => p.AllowedIdentityTokenSigningAlgorithms, map => map.Length(100));
             Property(p => p.RequireClientSecret, map => map.NotNullable(true));
             Property(p => p.RequireConsent, map => map.NotNullable(true));
             Property(p => p.AllowRememberConsent, map => map.NotNullable(true));

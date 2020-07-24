@@ -10,6 +10,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
         {
             Id(p => p.ID);
 
+            Property(p => p.Enabled);
             Property(p => p.Name, map => 
             {
                 map.Length(200);

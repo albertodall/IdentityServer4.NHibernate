@@ -35,7 +35,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
                 map.Fetch(CollectionFetchMode.Join);
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
-                r => r.OneToMany(m => m.Class(typeof(IdentityClaim)))
+                r => r.OneToMany(m => m.Class(typeof(IdentityResourceClaim)))
             );
 
             Set(p => p.Properties, map =>

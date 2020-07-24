@@ -2,7 +2,7 @@
 {
     #pragma warning disable 1591
 
-    public class IdentityClaim : UserClaim
+    public class IdentityResourceClaim : UserClaim
     {
     }
 }

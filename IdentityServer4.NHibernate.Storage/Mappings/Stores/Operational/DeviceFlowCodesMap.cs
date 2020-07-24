@@ -24,12 +24,15 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
 
             Property(p => p.SubjectId, map => map.Length(200));
 
+            Property(p => p.SessionId, map => map.Length(100));
+
             Property(p => p.ClientId, map =>
             {
                 map.Length(200);
                 map.NotNullable(true);
             });
 
+            Property(p => p.Description, map => map.Length(200));
             Property(p => p.CreationTime, map => map.NotNullable(true));
             Property(p => p.Expiration, map => map.NotNullable(true));
             Property(p => p.Data, map => 

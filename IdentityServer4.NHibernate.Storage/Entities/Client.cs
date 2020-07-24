@@ -23,6 +23,7 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual ISet<ClientGrantType> AllowedGrantTypes { get; set; } = new HashSet<ClientGrantType>();
         public virtual bool RequirePkce { get; set; }
         public virtual bool AllowPlainTextPkce { get; set; }
+        public virtual bool RequireRequestObject { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }
         public virtual ISet<ClientRedirectUri> RedirectUris { get; set; } = new HashSet<ClientRedirectUri>();
         public virtual ISet<ClientPostLogoutRedirectUri> PostLogoutRedirectUris { get; set; } = new HashSet<ClientPostLogoutRedirectUri>();
@@ -33,6 +34,7 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual bool AllowOfflineAccess { get; set; }
         public virtual ISet<ClientScope> AllowedScopes { get; set; } = new HashSet<ClientScope>();
         public virtual int IdentityTokenLifetime { get; set; } = 300;
+        public virtual string AllowedIdentityTokenSigningAlgorithms { get; set; }
         public virtual int AccessTokenLifetime { get; set; } = 3600;
         public virtual int AuthorizationCodeLifetime { get; set; } = 300;
         public virtual int? ConsentLifetime { get; set; } = null;

@@ -9,7 +9,7 @@ namespace IdentityServer4.NHibernate.Extensions
     /// </summary>
     public static class ResourceStoreMappingExtensions
     {
-        private static IMapper Mapper;
+        private static readonly IMapper Mapper;
 
         static ResourceStoreMappingExtensions()
         {
@@ -52,6 +52,15 @@ namespace IdentityServer4.NHibernate.Extensions
         public static Entities.IdentityResource ToEntity(this Models.IdentityResource model)
         {
             return Mapper.Map<Entities.IdentityResource>(model);
+        }
+
+        /// <summary>
+        /// Maps a "ApiScope" entity to a "ApiScope" model.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        public static Models.ApiScope ToModel(this Entities.ApiScope entity)
+        {
+            return Mapper.Map<Models.ApiScope>(entity);
         }
     }
 }

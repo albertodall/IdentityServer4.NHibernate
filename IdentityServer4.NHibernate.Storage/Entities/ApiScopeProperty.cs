@@ -2,7 +2,7 @@
 {
     #pragma warning disable 1591
 
-    public class ApiSecret : Secret
+    public class ApiScopeProperty : Property
     {
     }
 }

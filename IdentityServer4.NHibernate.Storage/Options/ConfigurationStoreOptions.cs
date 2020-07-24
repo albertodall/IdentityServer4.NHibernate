@@ -24,6 +24,22 @@
         /// <value>
         /// The identity claim.
         /// </value>
+        public TableDefinition IdentityResourceClaim { get; set; } = new TableDefinition("IdentityResourceClaims");
+
+        /// <summary>
+        /// Gets or sets the identity resource property table configuration.
+        /// </summary>
+        /// <value>
+        /// The client property.
+        /// </value>
+        public TableDefinition IdentityResourceProperty { get; set; } = new TableDefinition("IdentityResourceProperties");
+
+        /// <summary>
+        /// Gets or sets the identity claim table configuration.
+        /// </summary>
+        /// <value>
+        /// The identity claim.
+        /// </value>
         public TableDefinition IdentityClaim { get; set; } = new TableDefinition("IdentityClaims");
 
 
@@ -41,7 +57,7 @@
         /// <value>
         /// The API secret.
         /// </value>
-        public TableDefinition ApiSecret { get; set; } = new TableDefinition("ApiSecrets");
+        public TableDefinition ApiResourceSecret { get; set; } = new TableDefinition("ApiResourceSecrets");
 
         /// <summary>
         /// Gets or sets the API scope table configuration.
@@ -49,7 +65,7 @@
         /// <value>
         /// The API scope.
         /// </value>
-        public TableDefinition ApiScope { get; set; } = new TableDefinition("ApiScopes");
+        public TableDefinition ApiResourceScope { get; set; } = new TableDefinition("ApiResourceScopes");
 
         /// <summary>
         /// Gets or sets the API claim table configuration.
@@ -57,15 +73,15 @@
         /// <value>
         /// The API claim.
         /// </value>
-        public TableDefinition ApiClaim { get; set; } = new TableDefinition("ApiClaims");
+        public TableDefinition ApiResourceClaim { get; set; } = new TableDefinition("ApiResourceClaims");
 
         /// <summary>
-        /// Gets or sets the API scope claim table configuration.
+        /// Gets or sets the API resource property table configuration.
         /// </summary>
         /// <value>
-        /// The API scope claim.
+        /// The client property.
         /// </value>
-        public TableDefinition ApiScopeClaim { get; set; } = new TableDefinition("ApiScopeClaims");
+        public TableDefinition ApiResourceProperty { get; set; } = new TableDefinition("ApiResourceProperties");
 
         /// <summary>
         /// Gets or sets the client table configuration.
@@ -82,7 +98,7 @@
         /// The type of the client grant.
         /// </value>
         public TableDefinition ClientGrantType { get; set; } = new TableDefinition("ClientGrantTypes");
-
+        
         /// <summary>
         /// Gets or sets the client redirect URI table configuration.
         /// </summary>
@@ -90,7 +106,7 @@
         /// The client redirect URI.
         /// </value>
         public TableDefinition ClientRedirectUri { get; set; } = new TableDefinition("ClientRedirectUris");
-
+        
         /// <summary>
         /// Gets or sets the client post logout redirect URI table configuration.
         /// </summary>
@@ -98,7 +114,7 @@
         /// The client post logout redirect URI.
         /// </value>
         public TableDefinition ClientPostLogoutRedirectUri { get; set; } = new TableDefinition("ClientPostLogoutRedirectUris");
-
+        
         /// <summary>
         /// Gets or sets the client scopes table configuration.
         /// </summary>
@@ -106,7 +122,7 @@
         /// The client scopes.
         /// </value>
         public TableDefinition ClientScopes { get; set; } = new TableDefinition("ClientScopes");
-
+        
         /// <summary>
         /// Gets or sets the client secret table configuration.
         /// </summary>
@@ -114,7 +130,7 @@
         /// The client secret.
         /// </value>
         public TableDefinition ClientSecret { get; set; } = new TableDefinition("ClientSecrets");
-
+        
         /// <summary>
         /// Gets or sets the client claim table configuration.
         /// </summary>
@@ -122,7 +138,7 @@
         /// The client claim.
         /// </value>
         public TableDefinition ClientClaim { get; set; } = new TableDefinition("ClientClaims");
-
+        
         /// <summary>
         /// Gets or sets the client IdP restriction table configuration.
         /// </summary>
@@ -130,7 +146,7 @@
         /// The client IdP restriction.
         /// </value>
         public TableDefinition ClientIdPRestriction { get; set; } = new TableDefinition("ClientIdPRestrictions");
-
+        
         /// <summary>
         /// Gets or sets the client cors origin table configuration.
         /// </summary>
@@ -138,7 +154,7 @@
         /// The client cors origin.
         /// </value>
         public TableDefinition ClientCorsOrigin { get; set; } = new TableDefinition("ClientCorsOrigins");
-
+        
         /// <summary>
         /// Gets or sets the client property table configuration.
         /// </summary>
@@ -148,19 +164,27 @@
         public TableDefinition ClientProperty { get; set; } = new TableDefinition("ClientProperties");
 
         /// <summary>
+        /// Gets or sets the scope table configuration.
+        /// </summary>
+        /// <value>
+        /// The API resource.
+        /// </value>
+        public TableDefinition ApiScope { get; set; } = new TableDefinition("ApiScopes");
+        
+        /// <summary>
+        /// Gets or sets the scope claim table configuration.
+        /// </summary>
+        /// <value>
+        /// The API scope claim.
+        /// </value>
+        public TableDefinition ApiScopeClaim { get; set; } = new TableDefinition("ApiScopeClaims");
+        
+        /// <summary>
         /// Gets or sets the API resource property table configuration.
         /// </summary>
         /// <value>
-        /// The Api Resource property.
+        /// The client property.
         /// </value>
-        public TableDefinition ApiResourceProperty { get; set; } = new TableDefinition("ApiProperties");
-
-        /// <summary>
-        /// Gets or sets the identity resource property table configuration.
-        /// </summary>
-        /// <value>
-        /// The Identity Resource property.
-        /// </value>
-        public TableDefinition IdentityResourceProperty { get; set; } = new TableDefinition("IdentityProperties");
+        public TableDefinition ApiScopeProperty { get; set; } = new TableDefinition("ApiScopeProperties");
     }
 }
