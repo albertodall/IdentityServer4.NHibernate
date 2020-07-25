@@ -4,6 +4,7 @@ using IdentityServer4.NHibernate.Options;
 using IdentityServer4.NHibernate.TokenCleanup;
 using Microsoft.Extensions.Hosting;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     internal class TokenCleanupHost : IHostedService

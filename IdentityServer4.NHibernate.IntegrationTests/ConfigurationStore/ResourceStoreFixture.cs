@@ -10,13 +10,8 @@ using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
-using IdentityServer4.NHibernate.Entities;
 using Moq;
 using Xunit;
-using ApiResource = IdentityServer4.Models.ApiResource;
-using ApiScope = IdentityServer4.Models.ApiScope;
-using IdentityResource = IdentityServer4.Models.IdentityResource;
-using Secret = IdentityServer4.Models.Secret;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {

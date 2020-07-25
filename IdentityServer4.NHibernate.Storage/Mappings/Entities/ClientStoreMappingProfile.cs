@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using AutoMapper;
 using IdentityServer4.Models;
+using NHibernate.Loader.Custom;
 
 namespace IdentityServer4.NHibernate.Mappings.Entities
 {

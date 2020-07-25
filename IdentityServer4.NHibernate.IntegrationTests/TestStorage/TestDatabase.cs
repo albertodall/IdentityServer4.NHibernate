@@ -8,20 +8,20 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     public abstract class TestDatabase
     {
-        public TestDatabase(global::NHibernate.Cfg.Configuration config)
+        protected TestDatabase(global::NHibernate.Cfg.Configuration config)
         {
-            DBConfig = config ?? throw new ArgumentNullException(nameof(config));
+            DbConfig = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public ISessionFactory SessionFactory { get; protected set; }
+        public ISessionFactory SessionFactory { get; private set; }
 
-        protected global::NHibernate.Cfg.Configuration DBConfig { get; private set; }
+        private global::NHibernate.Cfg.Configuration DbConfig { get; }
 
         public virtual ISession OpenSession()
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.OpenSession();
         }
@@ -30,14 +30,14 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.OpenStatelessSession();
         }
 
         public virtual void Create()
         {
-            SessionFactory = DBConfig.BuildSessionFactory();
+            SessionFactory = DbConfig.BuildSessionFactory();
         }
 
         public virtual void Drop() { }
