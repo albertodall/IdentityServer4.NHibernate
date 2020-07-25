@@ -10,8 +10,13 @@ using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using IdentityServer4.NHibernate.Entities;
 using Moq;
 using Xunit;
+using ApiResource = IdentityServer4.Models.ApiResource;
+using ApiScope = IdentityServer4.Models.ApiScope;
+using IdentityResource = IdentityServer4.Models.IdentityResource;
+using Secret = IdentityServer4.Models.Secret;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
@@ -181,6 +186,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
         {
             var testApiResource = CreateTestApiResource("test_api_resource4", new[] { "ar4_user_claim1" });
             var testApiScope = CreateTestApiScopeForResource("ar4_scope", new[] { "ar4scope_user_claim" });
+            testApiResource.Scopes.Add(testApiScope.Name);
 
             using (var session = testDb.OpenSession())
             {
@@ -249,49 +255,68 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             resource.Should().BeNull();
         }
 
-        //[Theory]
-        //[MemberData(nameof(TestDatabases))]
-        //public void Should_Retrieve_All_Resources_Included_Hidden_Ones(TestDatabase testDb)
-        //{
-        //    var visibleIdentityResource = CreateTestIdentityResource("identity_visible");
-        //    var visibleApiResource = CreateTestApiResource("api_visible", new[] { "api_visible_scope1", "api_visible_scope_2" });
-        //    var hiddenIdentityResource = new IdentityResource()
-        //    {
-        //        Name = "identity_hidden",
-        //        ShowInDiscoveryDocument = false
-        //    };
-        //    var hiddenApiResource = new ApiResource()
-        //    {
-        //        Name = "api_hidden",
-        //        Scopes = { "scope_hidden_1" }
-        //    };
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Retrieve_All_Resources_Including_Hidden_Ones(TestDatabase testDb)
+        {
+            var visibleIdentityResource = CreateTestIdentityResource("identity_visible");
+            var visibleApiResource = CreateTestApiResource("api_visible", new[] { Guid.NewGuid().ToString() });
+            var visibleApiScope = CreateTestApiScopeForResource("api_visible_scope", new[] { Guid.NewGuid().ToString() });
+            visibleApiResource.Scopes.Add(visibleApiScope.Name);
+            var hiddenIdentityResource = new IdentityResource()
+            {
+                Name = "identity_hidden",
+                ShowInDiscoveryDocument = false
+            };
+            var hiddenApiResource = new ApiResource()
+            {
+                Name = "api_hidden",
+                Scopes = { Guid.NewGuid().ToString() },
+                ShowInDiscoveryDocument = false
+            };
+            var hiddenApiScope = new ApiScope()
+            {
+                Name = "api_scope_hidden",
+                ShowInDiscoveryDocument = false
+            };
 
-        //    using (var session = testDb.OpenSession())
-        //    {
-        //        session.Save(visibleIdentityResource.ToEntity());
-        //        session.Save(visibleApiResource.ToEntity());
-        //        session.Save(hiddenIdentityResource.ToEntity());
-        //        session.Save(hiddenApiResource.ToEntity());
-        //        session.Flush();
-        //    }
+            using (var session = testDb.OpenSession())
+            {
+                await session.SaveAsync(visibleIdentityResource.ToEntity());
+                await session.SaveAsync(visibleApiResource.ToEntity());
+                await session.SaveAsync(visibleApiScope.ToEntity());
 
-        //    var loggerMock = new Mock<ILogger<ResourceStore>>();
-        //    Resources resources;
-        //    using (var session = testDb.OpenSession())
-        //    {
-        //        var store = new ResourceStore(session, loggerMock.Object);
-        //        resources = store.GetAllResourcesAsync().Result;
-        //    }
+                await session.SaveAsync(hiddenIdentityResource.ToEntity());
+                await session.SaveAsync(hiddenApiResource.ToEntity());
+                await session.SaveAsync(hiddenApiScope.ToEntity());
 
-        //    resources.Should().NotBeNull();
-        //    resources.IdentityResources.Should().NotBeEmpty();
-        //    resources.ApiResources.Should().NotBeEmpty();
+                await session.FlushAsync();
+            }
 
-        //    Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
-        //    Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            Resources resources;
+            using (var session = testDb.OpenSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = await store.GetAllResourcesAsync();
+            }
 
-        //    CleanupTestData(testDb);
-        //}
+            resources.Should().NotBeNull();
+            resources.IdentityResources.Should().NotBeEmpty();
+            resources.ApiResources.Should().NotBeEmpty();
+            resources.ApiScopes.Should().NotBeEmpty();
+
+            resources.IdentityResources.Any(ir => ir.Name == visibleIdentityResource.Name).Should().BeTrue();
+            resources.IdentityResources.Any(ir => ir.Name == hiddenIdentityResource.Name).Should().BeTrue();
+
+            resources.ApiResources.Any(ar => ar.Name == visibleApiResource.Name).Should().BeTrue();
+            resources.ApiResources.Any(ar => ar.Name == hiddenApiResource.Name).Should().BeTrue();
+
+            resources.ApiScopes.Any(s => s.Name == visibleApiScope.Name).Should().BeTrue();
+            resources.ApiScopes.Any(s => s.Name == hiddenApiScope.Name).Should().BeTrue();
+
+            await CleanupTestDataAsync(testDb);
+        }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
