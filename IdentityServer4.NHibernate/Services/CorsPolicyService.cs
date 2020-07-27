@@ -41,18 +41,11 @@ namespace IdentityServer4.NHibernate.Services
 
             using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
             {
-                ClientCorsOrigin corsOriginAlias = null;
-                var corsOriginsQuery = session.QueryOver<Client>()
-                    .JoinQueryOver(c => c.AllowedCorsOrigins, () => corsOriginAlias)
-                    .Where(() => corsOriginAlias.Origin == origin.ToLowerInvariant())
-                    .Select(Projections.Distinct(
-                        Projections.ProjectionList()
-                            .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))
-                    ));
+                var originsQuery = session.QueryOver<ClientCorsOrigin>()
+                    .Where(o => o.Origin == origin.ToLowerInvariant())
+                    .Select(o => o.ID);
 
-                var origins = await corsOriginsQuery.ListAsync<string>();
-
-                isAllowed = origins.Any();
+                isAllowed = (await originsQuery.ListAsync()).Any();
             }
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);

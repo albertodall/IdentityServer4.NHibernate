@@ -1,9 +1,9 @@
 ﻿using System;
+using IdentityServer4.NHibernate;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
 using IdentityServer4.NHibernate.Services;
 using IdentityServer4.NHibernate.Stores;
-using IdentityServer4.NHibernate.TokenCleanup;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Hosting;
@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Configures NHibernate-based database support for IdentityServer.
         /// - Adds NHibernate implementation of IClientStore, IResourceStore, and ICorsPolicyService (configuration store)
-        /// - Adds NHibernate implementation of IPersistedGrantStore, IDeviceFlowStore and TokenCleanup (operational store).
+        /// - Adds NHibernate implementation of IPersistedGrantStore, IDeviceFlowStore and TokenCleanupService (operational store).
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="databaseConfiguration">The NHibernate configuration to access the underlying database.</param>
@@ -171,7 +171,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddOperationalStore(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddSingleton<TokenCleanup>();
+            builder.Services.AddSingleton<TokenCleanupService>();
             builder.Services.AddSingleton<IHostedService, TokenCleanupHost>();
             builder.Services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
             builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
