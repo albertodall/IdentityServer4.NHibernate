@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IdentityServer4.NHibernate.Storage\IdentityServer4.NHibernate.Storage.csproj" />
+    <ProjectReference Include="..\IdentityServer4.NHibernate\IdentityServer4.NHibernate.csproj" />
   </ItemGroup>
 
   <ItemGroup>

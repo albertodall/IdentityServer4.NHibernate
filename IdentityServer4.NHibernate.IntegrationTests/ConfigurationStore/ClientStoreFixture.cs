@@ -359,8 +359,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             using (var session = testDb.OpenSession())
             {
-                var entityToSave = testClient.ToEntity();
-                await session.SaveAsync(entityToSave);
+                await session.SaveAsync(testClient.ToEntity());
                 await session.FlushAsync();
             }
 
@@ -396,8 +395,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             using (var session = testDb.OpenSession())
             {
-                var entityToSave = testClient.ToEntity();
-                await session.SaveAsync(entityToSave);
+                await session.SaveAsync(testClient.ToEntity());
                 await session.FlushAsync();
             }
 

@@ -44,7 +44,7 @@ namespace IdentityServer4.NHibernate.Services
                 ClientCorsOrigin corsOriginAlias = null;
                 var corsOriginsQuery = session.QueryOver<Client>()
                     .JoinQueryOver(c => c.AllowedCorsOrigins, () => corsOriginAlias)
-                    .Where(() => corsOriginAlias.Origin == origin)
+                    .Where(() => corsOriginAlias.Origin == origin.ToLowerInvariant())
                     .Select(Projections.Distinct(
                         Projections.ProjectionList()
                             .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))

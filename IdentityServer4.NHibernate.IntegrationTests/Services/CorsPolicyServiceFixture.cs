@@ -3,12 +3,12 @@ using System.Linq;
 using System.Reflection;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Services;
 using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using IdentityServer4.NHibernate.Services;
 using Moq;
 using Xunit;
 
