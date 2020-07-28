@@ -35,15 +35,6 @@
         public TableDefinition IdentityResourceProperty { get; set; } = new TableDefinition("IdentityResourceProperties");
 
         /// <summary>
-        /// Gets or sets the identity claim table configuration.
-        /// </summary>
-        /// <value>
-        /// The identity claim.
-        /// </value>
-        public TableDefinition IdentityClaim { get; set; } = new TableDefinition("IdentityClaims");
-
-
-        /// <summary>
         /// Gets or sets the API resource table configuration.
         /// </summary>
         /// <value>

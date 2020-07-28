@@ -138,7 +138,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds the stores for managing IdentityServer configuration.
+        /// Adds the NHibernate based stores for managing IdentityServer configuration.
         /// </summary>
         /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddConfigurationStore(this IIdentityServerBuilder builder)

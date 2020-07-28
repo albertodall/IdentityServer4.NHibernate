@@ -59,7 +59,7 @@ namespace IdentityServer4.NHibernate
         /// </summary>
         protected virtual async Task RemoveGrantsAsync()
         {
-            const string deleteExpiredGrantsHql = "delete PersistedGrants pg where pg.ID in (:expiredGrantsIDs)";
+            const string deleteExpiredGrantsHql = "delete PersistedGrant pg where pg.ID in (:expiredGrantsIDs)";
 
             var found = int.MaxValue;
 
@@ -68,12 +68,12 @@ namespace IdentityServer4.NHibernate
                 using (var tx = _session.BeginTransaction())
                 {
                     var expiredGrantsQuery = _session.QueryOver<PersistedGrant>()
-                        .Where(g => g.CreationTime < DateTimeOffset.UtcNow)
+                        .Where(g => g.CreationTime < DateTime.UtcNow)
                         .OrderBy(g => g.ID).Asc
-                        .Select(g => g.ID)
                         .Take(_options.TokenCleanupBatchSize);
 
-                    var expiredGrantsIDs = (await expiredGrantsQuery.ListAsync()).ToArray();
+                    var expiredGrants = await expiredGrantsQuery.ListAsync();
+                    var expiredGrantsIDs = expiredGrants.Select(pg => pg.ID).ToArray();
                     found = expiredGrantsIDs.Length;
 
                     if (found > 0)
@@ -88,7 +88,7 @@ namespace IdentityServer4.NHibernate
 
                         if (_operationalStoreNotification != null)
                         {
-                            await _operationalStoreNotification.PersistedGrantsRemovedAsync(expiredGrantsIDs);
+                            await _operationalStoreNotification.PersistedGrantsRemovedAsync(expiredGrants);
                         }
                     }
                 }
@@ -100,7 +100,7 @@ namespace IdentityServer4.NHibernate
         /// </summary>
         protected virtual async Task RemoveDeviceCodesAsync()
         {
-            const string deleteExpiredCodesHql = "delete DeviceCodes c where c.ID in (:expiredCodesIDs)";
+            const string deleteExpiredCodesHql = "delete DeviceFlowCodes c where c.ID in (:expiredCodesIDs)";
 
             var found = int.MaxValue;
 
@@ -109,12 +109,12 @@ namespace IdentityServer4.NHibernate
                 using (var tx = _session.BeginTransaction())
                 {
                     var expiredCodesQuery = _session.QueryOver<DeviceFlowCodes>()
-                        .Where(c => c.CreationTime < DateTimeOffset.UtcNow)
+                        .Where(c => c.CreationTime < DateTime.UtcNow)
                         .OrderBy(c => c.ID).Asc
-                        .Select(c => c.ID)
                         .Take(_options.TokenCleanupBatchSize);
 
-                    var expiredCodesIDs = (await expiredCodesQuery.ListAsync()).ToArray();
+                    var expiredCodes = await expiredCodesQuery.ListAsync();
+                    var expiredCodesIDs = expiredCodes.Select(c => c.ID).ToArray();
                     found = expiredCodesIDs.Length;
 
                     if (found > 0)
@@ -122,14 +122,14 @@ namespace IdentityServer4.NHibernate
                         _logger.LogInformation("Removing {deviceCodeCount} device flow codes", found);
 
                         await _session.CreateQuery(deleteExpiredCodesHql)
-                            .SetParameterList("expiredGrantsIDs", expiredCodesIDs)
+                            .SetParameterList("expiredCodesIDs", expiredCodesIDs)
                             .ExecuteUpdateAsync();
 
                         await tx.CommitAsync();
 
                         if (_operationalStoreNotification != null)
                         {
-                            await _operationalStoreNotification.DeviceCodesRemovedAsync(expiredCodesIDs);
+                            await _operationalStoreNotification.DeviceCodesRemovedAsync(expiredCodes);
                         }
                     }
                 }
