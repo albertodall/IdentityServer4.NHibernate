@@ -61,24 +61,24 @@ namespace IdentityServer4.NHibernate
         {
             const string deleteExpiredGrantsHql = "delete PersistedGrant pg where pg.ID in (:expiredGrantsIDs)";
 
-            var found = int.MaxValue;
+            var expiredTokenFound = int.MaxValue;
 
-            while (found >= _options.TokenCleanupBatchSize)
+            while (expiredTokenFound >= _options.TokenCleanupBatchSize)
             {
                 using (var tx = _session.BeginTransaction())
                 {
                     var expiredGrantsQuery = _session.QueryOver<PersistedGrant>()
-                        .Where(g => g.CreationTime < DateTime.UtcNow)
+                        .Where(g => g.Expiration < DateTime.UtcNow)
                         .OrderBy(g => g.ID).Asc
                         .Take(_options.TokenCleanupBatchSize);
 
                     var expiredGrants = await expiredGrantsQuery.ListAsync();
                     var expiredGrantsIDs = expiredGrants.Select(pg => pg.ID).ToArray();
-                    found = expiredGrantsIDs.Length;
+                    expiredTokenFound = expiredGrantsIDs.Length;
 
-                    if (found > 0)
+                    if (expiredTokenFound > 0)
                     {
-                        _logger.LogInformation($"Removing {found} expired grants");
+                        _logger.LogInformation($"Removing {expiredTokenFound} expired grants");
 
                         await _session.CreateQuery(deleteExpiredGrantsHql)
                             .SetParameterList("expiredGrantsIDs", expiredGrantsIDs)
@@ -102,24 +102,24 @@ namespace IdentityServer4.NHibernate
         {
             const string deleteExpiredCodesHql = "delete DeviceFlowCodes c where c.ID in (:expiredCodesIDs)";
 
-            var found = int.MaxValue;
+            var expiredDeviceCodesFound = int.MaxValue;
 
-            while (found >= _options.TokenCleanupBatchSize)
+            while (expiredDeviceCodesFound >= _options.TokenCleanupBatchSize)
             {
                 using (var tx = _session.BeginTransaction())
                 {
                     var expiredCodesQuery = _session.QueryOver<DeviceFlowCodes>()
-                        .Where(c => c.CreationTime < DateTime.UtcNow)
+                        .Where(c => c.Expiration < DateTime.UtcNow)
                         .OrderBy(c => c.ID).Asc
                         .Take(_options.TokenCleanupBatchSize);
 
                     var expiredCodes = await expiredCodesQuery.ListAsync();
                     var expiredCodesIDs = expiredCodes.Select(c => c.ID).ToArray();
-                    found = expiredCodesIDs.Length;
+                    expiredDeviceCodesFound = expiredCodesIDs.Length;
 
-                    if (found > 0)
+                    if (expiredDeviceCodesFound > 0)
                     {
-                        _logger.LogInformation("Removing {deviceCodeCount} device flow codes", found);
+                        _logger.LogInformation("Removing {deviceCodeCount} device flow codes", expiredDeviceCodesFound);
 
                         await _session.CreateQuery(deleteExpiredCodesHql)
                             .SetParameterList("expiredCodesIDs", expiredCodesIDs)

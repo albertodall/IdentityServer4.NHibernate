@@ -19,15 +19,6 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual string DeviceCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the user code.
-        /// </summary>
-        /// <value>
-        /// The user code.
-        /// </value>
-        public virtual string UserCode { get; set; }
-
-
-        /// <summary>
         /// Gets or sets the subject identifier.
         /// </summary>
         /// <value>

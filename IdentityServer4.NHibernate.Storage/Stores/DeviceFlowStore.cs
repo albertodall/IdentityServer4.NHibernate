@@ -131,22 +131,22 @@ namespace IdentityServer4.NHibernate.Stores
         {
             using (var tx = _session.BeginTransaction())
             {
-                var codeToUpdate = _session.Get<DeviceFlowCodes>(userCode);
-                if (codeToUpdate == null)
+                var deviceCodeToUpdate = _session.Get<DeviceFlowCodes>(userCode);
+                if (deviceCodeToUpdate == null)
                 {
                     _logger.LogError("{userCode} not found in database", userCode);
                     throw new InvalidOperationException("Could not update device code");
                 }
 
-                var entity = ToEntity(data, codeToUpdate.DeviceCode, userCode);
+                var entity = ToEntity(data, deviceCodeToUpdate.DeviceCode, userCode);
                 _logger.LogDebug("{userCode} found in database", userCode);
 
-                codeToUpdate.SubjectId = data.Subject?.FindFirst(JwtClaimTypes.Subject).Value;
-                codeToUpdate.Data = entity.Data;
+                deviceCodeToUpdate.SubjectId = data.Subject?.FindFirst(JwtClaimTypes.Subject).Value;
+                deviceCodeToUpdate.Data = entity.Data;
 
                 try
                 {
-                    await _session.SaveAsync(codeToUpdate);
+                    await _session.UpdateAsync(deviceCodeToUpdate);
                     await tx.CommitAsync();
                 }
                 catch (HibernateException ex)
