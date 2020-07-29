@@ -21,17 +21,13 @@ namespace IdentityServer4.NHibernate.Mappings.Stores
         /// </summary>
         /// <remarks>
         /// Exceptions to the rule:
-        ///     - "ApiResourceClaim" class has to be mapped to the "ApiClaims" table.
         ///     - "ClientScope" class has to be mapped to the "ClientScopes" table.
         /// </remarks>
         private void BeforeMapConfigurationStoreClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             TableDefinition tableDef = null;
-            if (type == typeof(ApiResourceClaim))
-            {
-                tableDef = GetTableDefinition(nameof(_options.ApiClaim), _options);
-            }
-            else if (type == typeof(ClientScope))
+
+            if (type == typeof(ClientScope))
             {
                 tableDef = GetTableDefinition(nameof(_options.ClientScopes), _options);
             }

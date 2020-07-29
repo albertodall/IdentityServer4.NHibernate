@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NHibernate;
-using NHibernate.Criterion;
 
 namespace IdentityServer4.NHibernate.Services
 {
@@ -37,22 +36,16 @@ namespace IdentityServer4.NHibernate.Services
         /// <param name="origin">The origin.</param>
         public async Task<bool> IsOriginAllowedAsync(string origin)
         {
-            bool isAllowed;
+            origin = origin.ToLowerInvariant();
 
+            bool isAllowed;
             using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
             {
-                ClientCorsOrigin corsOriginAlias = null;
-                var corsOriginsQuery = session.QueryOver<Client>()
-                    .JoinQueryOver(c => c.AllowedCorsOrigins, () => corsOriginAlias)
-                    .Where(() => corsOriginAlias.Origin == origin)
-                    .Select(Projections.Distinct(
-                        Projections.ProjectionList()
-                            .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))
-                    ));
+                var originsQuery = session.QueryOver<ClientCorsOrigin>()
+                    .Where(o => o.Origin == origin)
+                    .ToRowCountQuery();
 
-                var origins = await corsOriginsQuery.ListAsync<string>();
-
-                isAllowed = origins.Any();
+                isAllowed = await originsQuery.RowCountAsync() > 0;
             }
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);

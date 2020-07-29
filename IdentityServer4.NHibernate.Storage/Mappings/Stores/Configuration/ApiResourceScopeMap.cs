@@ -3,16 +3,16 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
 {
-    internal class IdentityClaimMap : ClassMapping<IdentityResourceClaim>
+    internal class ApiResourceScopeMap : ClassMapping<ApiResourceScope>
     {
-        public IdentityClaimMap()
+        public ApiResourceScopeMap()
         {
             Id(p => p.ID);
 
-            Property(p => p.Type, map => 
+            Property(p => p.Scope, map =>
             {
-                map.Length(200);
                 map.NotNullable(true);
+                map.Length(200);
             });
         }
     }

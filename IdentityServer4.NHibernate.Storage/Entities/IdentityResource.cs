@@ -14,7 +14,7 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual bool Required { get; set; }
         public virtual bool Emphasize { get; set; }
         public virtual bool ShowInDiscoveryDocument { get; set; } = true;
-        public virtual ISet<IdentityClaim> UserClaims { get; set; } = new HashSet<IdentityClaim>();
+        public virtual ISet<IdentityResourceClaim> UserClaims { get; set; } = new HashSet<IdentityResourceClaim>();
         public virtual ISet<IdentityResourceProperty> Properties { get; set; } = new HashSet<IdentityResourceProperty>();
         public virtual DateTime Created { get; set; } = DateTime.UtcNow;
         public virtual DateTime? Updated { get; set; }

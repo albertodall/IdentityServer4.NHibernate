@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using NHibernate.Linq;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 {
@@ -25,8 +25,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             TestDatabases = new TheoryData<TestDatabase>()
             {
-                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
                 TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
             };
         }
@@ -39,171 +39,212 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Existing_Api_Resources_By_Scope_Names(TestDatabase testDb)
+        public async Task Should_Retrieve_Existing_Api_Resources_By_Scope_Names(TestDatabase testDb)
         {
-            string testScope1 = "ar1_scope1";
-            string testScope2 = "ar1_scope2";
-
-            var testApiResource1 = CreateTestApiResource("test_api_resource1", new[] { testScope1, testScope2 });
+            var testApiResource1 = CreateTestApiResource("test_api_resource1", new [] { "ar1_userclaim1", "ar1_userclaim2" });
+            var testApiScope1 = CreateTestApiScopeForResource("test_api_scope1", new[] { "as_user_scope1" });
+            testApiResource1.Scopes.Add(testApiScope1.Name);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testApiResource1.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testApiResource1.ToEntity());
+                await session.SaveAsync(testApiScope1.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2 }).Result;
+                resources = (await store.FindApiResourcesByScopeNameAsync(new[] { testApiScope1.Name })).ToList();
             }
 
             resources.Count().Should().Be(1);
-            resources.FirstOrDefault(x => x.Name == testApiResource1.Name).Should().NotBeNull();
-            resources.First().Scopes.Count().Should().Be(2);
-            resources.First().Scopes.First().UserClaims.Count().Should().Be(1);
-            resources.First().UserClaims.Count().Should().Be(2);
+            resources.First().Name.Should().Be("test_api_resource1");
+            resources.First().Scopes.Count.Should().Be(1);
+            resources.First().Scopes.First().Should().Be("test_api_scope1");
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Requested_Api_Resources_By_Scope_Names(TestDatabase testDb)
+        public async Task Should_Retrieve_Requested_Api_Resources_By_Scope_Names(TestDatabase testDb)
         {
-            string testScope1 = "ar2_scope1";
-            string testScope2 = "ar2_scope2";
+            const string testScope1 = "ar2_scope1";
+            const string testScope2 = "ar2_scope2";
+            const string testScope3 = "ar2_scope3";
 
             var testApiResource1 = CreateTestApiResource("test_api_resource2", new[] { testScope1, testScope2 });
-            var testApiResource2 = CreateTestApiResource("test_api_resource3", new[] { "ar3_scope3" });
+            var testApiScope1 = CreateTestApiScopeForResource(testScope1, new[] { "u_scope3", "u_scope4" });
+            var testApiScope2 = CreateTestApiScopeForResource(testScope2, new[] { "u_scope5", "u_scope6" });
+            testApiResource1.Scopes.Add(testApiScope1.Name);
+            testApiResource1.Scopes.Add(testApiScope2.Name);
+
+            var testApiResource2 = CreateTestApiResource("test_api_resource3", new[] { testScope3 });
+            var testApiScope3 = CreateTestApiScopeForResource(testScope3, new[] { "u_scope7", "u_scope8" });
+            testApiResource2.Scopes.Add(testApiScope3.Name);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testApiResource1.ToEntity());
-                session.Save(testApiResource2.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testApiResource1.ToEntity());
+                await session.SaveAsync(testApiResource2.ToEntity());
+                await session.SaveAsync(testApiScope1.ToEntity());
+                await session.SaveAsync(testApiScope2.ToEntity());
+                await session.SaveAsync(testApiScope3.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2 }).Result;
+                resources = (await store.FindApiResourcesByScopeNameAsync(new[] { testScope1, testScope2 })).ToList();
             }
 
             resources.Count().Should().Be(1);
-            resources.FirstOrDefault(x => x.Name == testApiResource1.Name).Should().NotBeNull();
-            resources.First().Scopes.Count().Should().Be(2);
-            resources.First().Scopes.First().UserClaims.Count().Should().Be(1);
-            resources.First().UserClaims.Count().Should().Be(2);
+            resources.First().Scopes.Count.Should().Be(2);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_All_Api_Resources_By_Scope_Names(TestDatabase testDb)
+        public async Task Should_Retrieve_All_Api_Resources_By_Scope_Names(TestDatabase testDb)
         {
-            string testScope1 = Guid.NewGuid().ToString();
-            string testScope2 = Guid.NewGuid().ToString();
-            string testScope3 = Guid.NewGuid().ToString();
+            var testScope1 = Guid.NewGuid().ToString();
+            var testScope2 = Guid.NewGuid().ToString();
+            var testScope3 = Guid.NewGuid().ToString();
 
-            var testApiResource1 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope1, testScope2 });
-            var testApiResource2 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { testScope3 });
+            var testApiResource1 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { "user_claim1", "user_claim2" });
+            var testApiScope1 = CreateTestApiScopeForResource(testScope1, new[] { "as1_user_claim1" });
+            var testApiScope2 = CreateTestApiScopeForResource(testScope2, new[] { "as2_user_claim1" });
+            testApiResource1.Scopes.Add(testApiScope1.Name);
+            testApiResource1.Scopes.Add(testApiScope2.Name);
+            var testApiResource2 = CreateTestApiResource(Guid.NewGuid().ToString(), new[] { "user_claim3" });
+            var testApiScope3 = CreateTestApiScopeForResource(testScope3, new[] { "as3_user_claim1" });
+            testApiResource2.Scopes.Add(testApiScope3.Name);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testApiResource1.ToEntity());
-                session.Save(testApiResource2.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testApiResource1.ToEntity());
+                await session.SaveAsync(testApiResource2.ToEntity());
+                await session.SaveAsync(testApiScope1.ToEntity());
+                await session.SaveAsync(testApiScope2.ToEntity());
+                await session.SaveAsync(testApiScope3.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindApiResourcesByScopeAsync(new string[] { testScope1, testScope2, testScope3 }).Result;
+                resources = await store.FindApiResourcesByScopeNameAsync(new[] { testScope1, testScope2, testScope3 });
             }
 
-            resources.Count().Should().Be(2);
+            resources.ToList().Count.Should().Be(2);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Not_Retrieve_Api_Resources_With_Unexisting_Scope_Name(TestDatabase testDb)
+        public async Task Should_Not_Retrieve_Api_Resources_With_Unexisting_Scope_Name(TestDatabase testDb)
         {
-            string testScope1 = "test_api_resource_scope1";
-            string testScope2 = "test_api_resource_scope2";
-
-            var testApiResource = CreateTestApiResource("test_api_resource", new[] { testScope1, testScope2 });
+            var testApiResource = CreateTestApiResource("test_api_resource", new[] { "ar_userclaim" });
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testApiResource.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testApiResource.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<ApiResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindApiResourcesByScopeAsync(new string[] { "non_existing_scope" }).Result;
+                resources = await store.FindApiResourcesByScopeNameAsync(new[] {"non_existing_scope"});
             }
 
-            resources.Should().BeEmpty();
+            resources.ToList().Should().BeEmpty();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Existing_Api_Resource_By_Name(TestDatabase testDb)
+        public async Task Should_Retrieve_Existing_Api_Resource_By_Name(TestDatabase testDb)
         {
-            string testScope1 = "ar4_scope1";
-            var testApiResource = CreateTestApiResource("test_api_resource4", new[] { testScope1 });
+            var testApiResource = CreateTestApiResource("test_api_resource4", new[] { "ar4_user_claim1" });
+            var testApiScope = CreateTestApiScopeForResource("ar4_scope", new[] { "ar4scope_user_claim" });
+            testApiResource.Scopes.Add(testApiScope.Name);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testApiResource.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testApiResource.ToEntity());
+                await session.SaveAsync(testApiScope.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             ApiResource resource;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resource = store.FindApiResourceAsync(testApiResource.Name).Result;
+                resource = (await store.FindApiResourcesByNameAsync(new[] { testApiResource.Name })).SingleOrDefault();
             }
 
             resource.Should().NotBeNull();
-            resource.ApiSecrets.Should().NotBeEmpty();
-            resource.Scopes.Should().NotBeEmpty();
-            resource.Scopes.Count().Should().Be(1);
-            resource.Scopes.First().UserClaims.Should().NotBeEmpty();
-            resource.Scopes.First().UserClaims.Count().Should().Be(1);
-            resource.UserClaims.Count().Should().Be(2);
+            resource?.Name.Should().Be("test_api_resource4");
+            resource?.ApiSecrets.Should().NotBeEmpty();
+            resource?.Scopes.Should().NotBeEmpty();
+            resource?.Scopes.Count.Should().Be(1);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Not_Retrieve_Non_Existing_Api_Resource(TestDatabase testDb)
+        public async Task Should_Retrieve_Requested_Api_Resource_By_Name(TestDatabase testDb)
+        {
+            var testApiResource1 = CreateTestApiResource("test_api_resource5", new[] { "ar5_user_scope1" });
+            var testApiResource2 = CreateTestApiResource("test_api_resource6", new[] { "ar6_user_scope1" });
+
+            using (var session = testDb.OpenSession())
+            {
+                await session.SaveAsync(testApiResource1.ToEntity());
+                await session.SaveAsync(testApiResource2.ToEntity());
+                await session.FlushAsync();
+            }
+
+            var loggerMock = new Mock<ILogger<ResourceStore>>();
+            IEnumerable<ApiResource> resources;
+            using (var session = testDb.OpenStatelessSession())
+            {
+                var store = new ResourceStore(session, loggerMock.Object);
+                resources = (await store.FindApiResourcesByNameAsync(new[] { testApiResource1.Name })).ToList();
+            }
+
+            resources.Count().Should().Be(1);
+            resources.First().Name.Should().Be("test_api_resource5");
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Not_Retrieve_Non_Existing_Api_Resource(TestDatabase testDb)
         {
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             ApiResource resource;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resource = store.FindApiResourceAsync("non_existing_api_resource").Result;
+                resource = (await store.FindApiResourcesByNameAsync(new [] { "non_existing_api_resource" })).SingleOrDefault();
             }
 
             resource.Should().BeNull();
@@ -211,10 +252,12 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_All_Resources_Included_Hidden_Ones(TestDatabase testDb)
+        public async Task Should_Retrieve_All_Resources_Including_Hidden_Ones(TestDatabase testDb)
         {
             var visibleIdentityResource = CreateTestIdentityResource("identity_visible");
-            var visibleApiResource = CreateTestApiResource("api_visible", new[] { "api_visible_scope1", "api_visible_scope_2" });
+            var visibleApiResource = CreateTestApiResource("api_visible", new[] { Guid.NewGuid().ToString() });
+            var visibleApiScope = CreateTestApiScopeForResource("api_visible_scope", new[] { Guid.NewGuid().ToString() });
+            visibleApiResource.Scopes.Add(visibleApiScope.Name);
             var hiddenIdentityResource = new IdentityResource()
             {
                 Name = "identity_hidden",
@@ -223,148 +266,150 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             var hiddenApiResource = new ApiResource()
             {
                 Name = "api_hidden",
-                Scopes = { new Scope("scope_hidden_1") { ShowInDiscoveryDocument = false } }
+                Scopes = { Guid.NewGuid().ToString() },
+                ShowInDiscoveryDocument = false
+            };
+            var hiddenApiScope = new ApiScope()
+            {
+                Name = "api_scope_hidden",
+                ShowInDiscoveryDocument = false
             };
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(visibleIdentityResource.ToEntity());
-                session.Save(visibleApiResource.ToEntity());
-                session.Save(hiddenIdentityResource.ToEntity());
-                session.Save(hiddenApiResource.ToEntity());
-                session.Flush();
+                await session.SaveAsync(visibleIdentityResource.ToEntity());
+                await session.SaveAsync(visibleApiResource.ToEntity());
+                await session.SaveAsync(visibleApiScope.ToEntity());
+
+                await session.SaveAsync(hiddenIdentityResource.ToEntity());
+                await session.SaveAsync(hiddenApiResource.ToEntity());
+                await session.SaveAsync(hiddenApiScope.ToEntity());
+
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             Resources resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.GetAllResourcesAsync().Result;
+                resources = await store.GetAllResourcesAsync();
             }
 
             resources.Should().NotBeNull();
             resources.IdentityResources.Should().NotBeEmpty();
+            resources.IdentityResources.Count.Should().Be(2);
             resources.ApiResources.Should().NotBeEmpty();
+            resources.ApiResources.Count.Should().Be(2);
+            resources.ApiScopes.Should().NotBeEmpty();
+            resources.ApiScopes.Count.Should().Be(2);
 
-            Assert.Contains(resources.IdentityResources, x => !x.ShowInDiscoveryDocument);
-            Assert.Contains(resources.ApiResources, x => !x.Scopes.Any(y => y.ShowInDiscoveryDocument));
+            resources.IdentityResources.Any(ir => ir.Name == visibleIdentityResource.Name).Should().BeTrue();
+            resources.IdentityResources.Any(ir => ir.Name == hiddenIdentityResource.Name).Should().BeTrue();
 
-            CleanupTestData(testDb);
+            resources.ApiResources.Any(ar => ar.Name == visibleApiResource.Name).Should().BeTrue();
+            resources.ApiResources.Any(ar => ar.Name == hiddenApiResource.Name).Should().BeTrue();
+
+            resources.ApiScopes.Any(s => s.Name == visibleApiScope.Name).Should().BeTrue();
+            resources.ApiScopes.Any(s => s.Name == hiddenApiScope.Name).Should().BeTrue();
+
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_All_Resource_With_More_Than_One_Api_Scope(TestDatabase testDb)
+        public async Task Should_Retrieve_All_Resources_With_More_Than_One_Api_Scope(TestDatabase testDb)
         {
             var testIdentityResource = CreateTestIdentityResource("identity_resource_1");
-            var testApiResource = new ApiResource()
-            {
-                Name = "test_api_resource_1",
-                ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
-                Scopes = new List<Scope>(),
-                UserClaims =
-                {
-                    "user_claim_1",
-                    "user_claim_2"
-                }
-            };
-
-            testApiResource.Scopes.Add(
-                new Scope()
-                {
-                    Name = "user",
-                    UserClaims =
-                    {
-                        "test_api_resource_1_user_claim_1",
-                        "test_api_resource_1_user_claim_2"
-                    }
-                });
+            var testApiResource = CreateTestApiResource("test_api_resource_1", new[] {"user_claim1", "user_claim2"});
+            var testApiScope1 = CreateTestApiScopeForResource("user_scope1", new[] { "user_scope1_claim1", "user_scope1_claim2" });
+            var testApiScope2 = CreateTestApiScopeForResource("user_scope2", new[] { "user_scope2_claim1" });
+            testApiResource.Scopes.Add(testApiScope1.Name);
+            testApiResource.Scopes.Add(testApiScope2.Name);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testIdentityResource.ToEntity());
-                session.Save(testApiResource.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testIdentityResource.ToEntity());
+                await session.SaveAsync(testApiResource.ToEntity());
+                await session.SaveAsync(testApiScope1.ToEntity());
+                await session.SaveAsync(testApiScope2.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             Resources resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.GetAllResourcesAsync().Result;
+                resources = await store.GetAllResourcesAsync();
             }
 
             resources.Should().NotBeNull();
             resources.IdentityResources.Should().NotBeEmpty();
-            resources.ApiResources.Count().Should().Be(1);
+            resources.IdentityResources.Count.Should().Be(1);
+            resources.ApiResources.Should().NotBeEmpty();
+            resources.ApiResources.Count.Should().Be(1);
+            resources.ApiResources.First().Scopes.Count.Should().Be(2);
 
-            var ar = resources.ApiResources.First();
-            ar.Scopes.Count().Should().Be(1);
-            ar.Scopes.First().UserClaims.Count().Should().Be(2);
-
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Identity_Resource_And_Its_Claims_By_Scope(TestDatabase testDb)
+        public async Task Should_Retrieve_Identity_Resource_And_Its_Claims_By_Scope(TestDatabase testDb)
         {
-            var testIdentityResourceName = "idres1";
+            const string testIdentityResourceName = "idres1";
             var testIdentityResource = CreateTestIdentityResource(testIdentityResourceName);
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testIdentityResource.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testIdentityResource.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<IdentityResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindIdentityResourcesByScopeAsync(
-                    new[] { testIdentityResourceName})
-                    .Result;
+                resources = (await store.FindIdentityResourcesByScopeNameAsync(new[] { testIdentityResourceName })).ToList();
             }
 
             resources.Should().NotBeEmpty();
+            resources.Count().Should().Be(1);
             resources.First().Name.Should().Be(testIdentityResourceName);
-            resources.First().UserClaims.Count().Should().Be(2);
+            resources.First().UserClaims.Count.Should().Be(2);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Only_Requested_Identity_Resources(TestDatabase testDb)
+        public async Task Should_Retrieve_Only_Requested_Identity_Resources(TestDatabase testDb)
         {
             var testIdentityResource1 = CreateTestIdentityResource(Guid.NewGuid().ToString());
             var testIdentityResource2 = CreateTestIdentityResource(Guid.NewGuid().ToString());
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testIdentityResource1.ToEntity());
-                session.Save(testIdentityResource2.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testIdentityResource1.ToEntity());
+                await session.SaveAsync(testIdentityResource2.ToEntity());
+                await session.FlushAsync();
             }
 
             var loggerMock = new Mock<ILogger<ResourceStore>>();
             IEnumerable<IdentityResource> resources;
-            using (var session = testDb.OpenSession())
+            using (var session = testDb.OpenStatelessSession())
             {
                 var store = new ResourceStore(session, loggerMock.Object);
-                resources = store.FindIdentityResourcesByScopeAsync(
-                    new[] { testIdentityResource1.Name })
-                    .Result;
+                resources = (await store.FindIdentityResourcesByScopeNameAsync(new[] { testIdentityResource1.Name }))
+                    .ToList();
             }
 
             resources.Should().NotBeEmpty();
             resources.Count().Should().Be(1);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
 
@@ -384,42 +429,37 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             };
         }
 
-        private static ApiResource CreateTestApiResource(string name, string[] scopes)
+        private static ApiResource CreateTestApiResource(string name, ICollection<string> userClaims)
         {
             var testApiResource = new ApiResource()
             {
                 Name = name,
                 ApiSecrets = new List<Secret> { new Secret("secret".ToSha256()) },
-                Scopes = new List<Scope>(),
-                UserClaims =
-                {
-                    "user_claim_1",
-                    "user_claim_2"
-                }
+                UserClaims = userClaims
             };
-
-            foreach (var scopeToAdd in scopes)
-            {
-                testApiResource.Scopes.Add(
-                    new Scope()
-                    {
-                        Name = scopeToAdd,
-                        UserClaims = { "test_user_claim" }
-                    });
-            }
 
             return testApiResource;
         }
 
-        private static void CleanupTestData(TestDatabase db)
+        private static ApiScope CreateTestApiScopeForResource(string apiScopeName, ICollection<string> userClaims)
+        {
+            return new ApiScope()
+            {
+                Name = apiScopeName,
+                UserClaims = userClaims
+            };
+        }
+
+        private static async Task CleanupTestDataAsync(TestDatabase db)
         {
             using (var session = db.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.Delete("from IdentityResource ir");
-                    session.Delete("from ApiResource ar");
-                    tx.Commit();
+                    await session.DeleteAsync("from IdentityResource ir");
+                    await session.DeleteAsync("from ApiResource ar");
+                    await session.DeleteAsync("from ApiScope s");
+                    await tx.CommitAsync();
                 }
             }
         }

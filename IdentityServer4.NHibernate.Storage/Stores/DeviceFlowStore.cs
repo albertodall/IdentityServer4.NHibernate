@@ -38,7 +38,7 @@ namespace IdentityServer4.NHibernate.Stores
         /// <param name="deviceCode">The device code.</param>
         public async Task<DeviceCode> FindByDeviceCodeAsync(string deviceCode)
         {
-            DeviceCode model = null;
+            DeviceCode model;
             using (var tx = _session.BeginTransaction())
             {
                 var query = _session.QueryOver<DeviceFlowCodes>()
@@ -46,6 +46,8 @@ namespace IdentityServer4.NHibernate.Stores
 
                 var result = await query.SingleOrDefaultAsync();
                 model = ToModel(result?.Data);
+
+                await tx.CommitAsync();
             }
 
             _logger.LogDebug("{deviceCode} found in database: {deviceCodeFound}", deviceCode, model != null);
@@ -59,11 +61,12 @@ namespace IdentityServer4.NHibernate.Stores
         /// <param name="userCode">The user code.</param>
         public async Task<DeviceCode> FindByUserCodeAsync(string userCode)
         {
-            DeviceCode model = null;
+            DeviceCode model;
             using (var tx = _session.BeginTransaction())
             {
                 var result = await _session.GetAsync<DeviceFlowCodes>(userCode);
                 model = ToModel(result?.Data);
+                await tx.CommitAsync();
             }
 
             _logger.LogDebug("{userCode} found in database: {userCodeFound}", userCode, model != null);
@@ -128,22 +131,22 @@ namespace IdentityServer4.NHibernate.Stores
         {
             using (var tx = _session.BeginTransaction())
             {
-                var codeToUpdate = _session.Get<DeviceFlowCodes>(userCode);
-                if (codeToUpdate == null)
+                var deviceCodeToUpdate = _session.Get<DeviceFlowCodes>(userCode);
+                if (deviceCodeToUpdate == null)
                 {
                     _logger.LogError("{userCode} not found in database", userCode);
                     throw new InvalidOperationException("Could not update device code");
                 }
 
-                var entity = ToEntity(data, codeToUpdate.DeviceCode, userCode);
+                var entity = ToEntity(data, deviceCodeToUpdate.DeviceCode, userCode);
                 _logger.LogDebug("{userCode} found in database", userCode);
 
-                codeToUpdate.SubjectId = data.Subject?.FindFirst(JwtClaimTypes.Subject).Value;
-                codeToUpdate.Data = entity.Data;
+                deviceCodeToUpdate.SubjectId = data.Subject?.FindFirst(JwtClaimTypes.Subject).Value;
+                deviceCodeToUpdate.Data = entity.Data;
 
                 try
                 {
-                    await _session.SaveAsync(codeToUpdate);
+                    await _session.UpdateAsync(deviceCodeToUpdate);
                     await tx.CommitAsync();
                 }
                 catch (HibernateException ex)

@@ -33,11 +33,11 @@ namespace IdentityServer4.NHibernate.Options
         /// <summary>
         /// Gets the table name.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the table's schema name.
         /// </summary>
-        public string Schema { get; private set; }
+        public string Schema { get; }
     }
 }

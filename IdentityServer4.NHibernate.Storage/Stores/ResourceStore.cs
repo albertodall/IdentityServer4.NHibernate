@@ -16,9 +16,10 @@ namespace IdentityServer4.NHibernate.Stores
     /// <summary>
     /// Implementation of the NHibernate-based IResourceStore.
     /// </summary>
+    /// <seealso cref="IdentityServer4.Stores.IResourceStore" />
     public class ResourceStore : IResourceStore
     {
-        private readonly ISession _session;
+        private readonly IStatelessSession _session;
         private readonly ILogger<ResourceStore> _logger;
 
         /// <summary>
@@ -26,70 +27,79 @@ namespace IdentityServer4.NHibernate.Stores
         /// </summary>
         /// <param name="session">The NHibernate session used to retrieve the data.</param>
         /// <param name="logger">The logger.</param>
-        public ResourceStore(ISession session, ILogger<ResourceStore> logger)
+        public ResourceStore(IStatelessSession session, ILogger<ResourceStore> logger)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _logger = logger;
         }
 
         /// <summary>
-        /// Finds the API resource by name.
+        /// Finds the API resources by name.
         /// </summary>
-        public async Task<Models.ApiResource> FindApiResourceAsync(string name)
+        /// <param name="apiResourceNames">The names.</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)
         {
-            var apiResource = await _session.QueryOver<Entities.ApiResource>()
-                .Where(r => r.Name == name)
-                .Fetch(SelectMode.Fetch, r => r.Secrets)
-                .Fetch(SelectMode.Fetch, r => r.Scopes)
-                .Fetch(SelectMode.Fetch, r => r.UserClaims)
-                .SingleOrDefaultAsync();
+            var resourcesQuery = _session.QueryOver<Entities.ApiResource>()
+                .Fetch(SelectMode.Fetch, api => api.Secrets)
+                .Fetch(SelectMode.Fetch, api => api.Scopes)
+                .Fetch(SelectMode.Fetch, api => api.UserClaims)
+                .Fetch(SelectMode.Fetch, api => api.Properties)
+                .Where(r => r.Name.IsIn(apiResourceNames.ToList()))
+                .TransformUsing(Transformers.DistinctRootEntity);
 
-            if (apiResource != null)
+            var result = await resourcesQuery.ListAsync();
+
+            var models = result.Select(x => x.ToModel()).ToArray();
+
+            if (result.Any())
             {
-                _logger.LogDebug("Found {api} API resource in database", name);
+                _logger.LogDebug("Found {apis} API resource in database", result.Select(x => x.Name));
             }
             else
             {
-                _logger.LogDebug("Did not find {api} API resource in database", name);
+                _logger.LogDebug("Did not find {apis} API resource in database", apiResourceNames);
             }
 
-            return apiResource.ToModel();
+            return models;
         }
 
         /// <summary>
-        /// Gets API resources by scope names.
+        /// Gets API resources by scope name.
         /// </summary>
         /// <param name="scopeNames">Scope name/names.</param>
-        public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        /// <returns></returns>
+        public async Task<IEnumerable<Models.ApiResource>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
-            ApiScopeClaim apiScopeClaimAlias = null;
             var resourcesQuery = _session.QueryOver<Entities.ApiResource>()
                 .Fetch(SelectMode.Fetch, api => api.Secrets)
+                .Fetch(SelectMode.Fetch, api => api.Scopes)
                 .Fetch(SelectMode.Fetch, api => api.UserClaims)
                 .Fetch(SelectMode.Fetch, api => api.Properties)
                 // Left specification is mandatory for NHibernate to eagerly fetch the associations
-                .Left.JoinQueryOver<ApiScope>(api => api.Scopes) 
-                    .Left.JoinAlias(scope => scope.UserClaims, () => apiScopeClaimAlias)
-                    .Where(scope => scope.Name.IsIn(scopeNames.ToArray()))
+                .Left.JoinQueryOver<ApiResourceScope>(api => api.Scopes)
+                    .Where(s => s.Scope.IsIn(scopeNames.ToList()))
                 .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
 
             var models = results.Select(x => x.ToModel()).ToArray();
 
-            _logger.LogDebug("Found {scopes} API scopes in database", models.SelectMany(x => x.Scopes).Select(x => x.Name));
+            _logger.LogDebug("Found {apis} API scopes in database", models.Select(x => x.Name));
 
             return models;
         }
-
+        
         /// <summary>
         /// Gets identity resources by scope names.
         /// </summary>
         /// <param name="scopeNames">Scope name/names.</param>
-        public async Task<IEnumerable<Models.IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+        public async Task<IEnumerable<Models.IdentityResource>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
         {
             var resourcesQuery = _session.QueryOver<Entities.IdentityResource>()
-                .Where(r => r.Name.IsIn(scopeNames.ToArray()))
+                .Fetch(SelectMode.Fetch, ir => ir.UserClaims)
+                .Fetch(SelectMode.Fetch, ir => ir.Properties)
+                .Where(r => r.Name.IsIn(scopeNames.ToList()))
                 .TransformUsing(Transformers.DistinctRootEntity);
 
             var results = await resourcesQuery.ListAsync();
@@ -100,26 +110,48 @@ namespace IdentityServer4.NHibernate.Stores
         }
 
         /// <summary>
+        /// Gets scopes by scope name.
+        /// </summary>
+        /// <param name="scopeNames">Scope name/names.</param>
+        public async Task<IEnumerable<Models.ApiScope>> FindApiScopesByNameAsync(IEnumerable<string> scopeNames)
+        {
+            var apiScopesQuery = _session.QueryOver<Entities.ApiScope>()
+                .Fetch(SelectMode.Fetch, scope => scope.UserClaims)
+                .Fetch(SelectMode.Fetch, scope => scope.Properties)
+                .Where(scope => scope.Name.IsIn(scopeNames.ToList()));
+
+            var results = await apiScopesQuery.ListAsync();
+
+            _logger.LogDebug("Found {scopes} scopes in database", results.Select(x => x.Name));
+
+            return results.Select(x => x.ToModel()).ToArray();
+        }
+
+        /// <summary>
         /// Gets all resources.
         /// </summary>
         public async Task<Resources> GetAllResourcesAsync()
         {
-            Resources result = null;
+            Resources result;
             using (var tx = _session.BeginTransaction())
             {
                 var identityResources = _session.QueryOver<Entities.IdentityResource>()
                     .Fetch(SelectMode.Fetch, ir => ir.UserClaims)
                     .Fetch(SelectMode.Fetch, ir => ir.Properties)
+                    .TransformUsing(Transformers.DistinctRootEntity)
                     .Future();
 
-                ApiScopeClaim apiScopeClaimAlias = null;
                 var apiResources = _session.QueryOver<Entities.ApiResource>()
                     .Fetch(SelectMode.Fetch, ar => ar.Secrets)
                     .Fetch(SelectMode.Fetch, ar => ar.Scopes)
+                    .Fetch(SelectMode.Fetch, ar => ar.UserClaims)
                     .Fetch(SelectMode.Fetch, ar => ar.Properties)
-                    .Left.JoinQueryOver<ApiScope>(api => api.Scopes)
-                        .Left.JoinAlias(scope => scope.UserClaims, () => apiScopeClaimAlias)
                     .TransformUsing(Transformers.DistinctRootEntity)
+                    .Future();
+
+                var apiScopes = _session.QueryOver<Entities.ApiScope>()
+                    .Fetch(SelectMode.Fetch, scope => scope.UserClaims)
+                    .Fetch(SelectMode.Fetch, scope => scope.Properties)
                     .Future();
 
                 result = new Resources(
@@ -128,18 +160,21 @@ namespace IdentityServer4.NHibernate.Stores
                         .ToArray(),
                     (await apiResources.GetEnumerableAsync())
                         .Select(api => api.ToModel())
+                        .ToArray(),
+                    (await apiScopes.GetEnumerableAsync())
+                        .Select(scope => scope.ToModel())
                         .ToArray()
                 );
 
                 await tx.CommitAsync();
             }
 
-            _logger.LogDebug("Found {scopes} as all scopes in database", 
+            _logger.LogDebug("Found {scopes} as all scopes, and {apis} as API resources",
                 result.IdentityResources.Select(identity => identity.Name)
-                    .Union(result.ApiResources.SelectMany(api => api.Scopes)
-                .Select(scope => scope.Name)));
+                    .Union(result.ApiScopes.Select(scope => scope.Name)),
+                result.ApiResources.Select(r => r.Name));
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

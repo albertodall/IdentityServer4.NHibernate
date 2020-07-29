@@ -19,6 +19,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
 
             Property(p => p.DisplayName, map => map.Length(200));
             Property(p => p.Description, map => map.Length(1000));
+            Property(p => p.AllowedAccessTokenSigningAlgorithms, map => map.Length(100));
 
             Set(p => p.Secrets, map =>
             {
@@ -30,7 +31,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
                 });
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
-                r => r.OneToMany(m => m.Class(typeof(ApiSecret)))
+                r => r.OneToMany(m => m.Class(typeof(ApiResourceSecret)))
             );
 
             Set(p => p.Scopes, map =>
@@ -43,7 +44,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
                 });
                 map.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
             },
-                r => r.OneToMany(m => m.Class(typeof(ApiScope)))
+                r => r.OneToMany(m => m.Class(typeof(ApiResourceScope)))
             );
 
             Set(p => p.UserClaims, map =>

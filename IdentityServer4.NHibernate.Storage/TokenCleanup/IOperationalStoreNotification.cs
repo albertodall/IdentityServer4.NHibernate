@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Entities;
 
-namespace IdentityServer4.NHibernate.TokenCleanup
+namespace IdentityServer4.NHibernate
 {
     /// <summary>
     /// Interface to model notifications from the TokenCleanup feature.
@@ -13,6 +13,14 @@ namespace IdentityServer4.NHibernate.TokenCleanup
         /// Notification for persisted grants being removed.
         /// </summary>
         /// <param name="persistedGrants"></param>
+        /// <returns></returns>
         Task PersistedGrantsRemovedAsync(IEnumerable<PersistedGrant> persistedGrants);
+
+        /// <summary>
+        /// Notification for device codes being removed.
+        /// </summary>
+        /// <param name="deviceCodes"></param>
+        /// <returns></returns>
+        Task DeviceCodesRemovedAsync(IEnumerable<DeviceFlowCodes> deviceCodes);
     }
 }

@@ -24,7 +24,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
         public override void Create()
         {
             base.Create();
-            ActiveConnection = ((SessionFactory as ISessionFactoryImplementor).ConnectionProvider).GetConnection();
+            ActiveConnection = (SessionFactory as ISessionFactoryImplementor)?.ConnectionProvider.GetConnection();
         }
 
         public override ISession OpenSession()

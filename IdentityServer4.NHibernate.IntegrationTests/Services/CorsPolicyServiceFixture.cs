@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.NHibernate.Extensions;
-using IdentityServer4.NHibernate.Services;
 using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
+using IdentityServer4.NHibernate.Services;
 using Moq;
 using Xunit;
 
@@ -24,8 +25,8 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
             TestDatabases = new TheoryData<TestDatabase>()
             {
-                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
                 TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
             };
         }
@@ -38,13 +39,13 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Check_For_Allowed_Origin(TestDatabase testDb)
+        public async Task Should_Check_For_Allowed_Origin(TestDatabase testDb)
         {
             const string testCorsOrigin = "https://www.site1.it/";
 
             using (var session = testDb.SessionFactory.OpenSession())
             {
-                session.Save(
+                await session.SaveAsync(
                     new Client()
                     {
                         ClientId = Guid.NewGuid().ToString(),
@@ -53,7 +54,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                     }.ToEntity()
                 );
                 
-                session.Save(
+                await session.SaveAsync(
                     new Client
                     {
                         ClientId = Guid.NewGuid().ToString(),
@@ -61,35 +62,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                         AllowedCorsOrigins = new[] { "https://www.site2.com", testCorsOrigin }
                     }.ToEntity()
                 );
-                session.Flush();
+                await session.FlushAsync();
             }
 
-            var ctx = new DefaultHttpContext();
-            var svcs = new ServiceCollection();
-            svcs.AddScoped(provider => testDb.OpenStatelessSession());
-            ctx.RequestServices = svcs.BuildServiceProvider();
-
-            var ctxAccessor = new HttpContextAccessor()
-            {
-                HttpContext = ctx
-            };
+            var ctx = CreateHttpContextAccessor(testDb);
 
             var loggerMock = new Mock<ILogger<CorsPolicyService>>();
-            var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
-            var result = service.IsOriginAllowedAsync(testCorsOrigin).Result;
+            var service = new CorsPolicyService(ctx, loggerMock.Object);
+            var result = await service.IsOriginAllowedAsync(testCorsOrigin);
 
             result.Should().BeTrue();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Check_For_Not_Allowed_Origin(TestDatabase testDb)
+        public async Task Should_Check_For_Not_Allowed_Origin(TestDatabase testDb)
         {
             using (var session = testDb.OpenSession())
             {
-                session.Save(
+                await session.SaveAsync(
                     new Client()
                     {
                         ClientId = Guid.NewGuid().ToString(),
@@ -97,9 +90,22 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                         AllowedCorsOrigins = new[] { "https://allowed.site.it" }
                     }.ToEntity()
                 );
-                session.Flush();
+                await session.FlushAsync();
             }
 
+            var ctx = CreateHttpContextAccessor(testDb);
+
+            var loggerMock = new Mock<ILogger<CorsPolicyService>>();
+            var service = new CorsPolicyService(ctx, loggerMock.Object);
+            var result = await service.IsOriginAllowedAsync("https://not.allowed.site.it");
+
+            result.Should().BeFalse();
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        private static HttpContextAccessor CreateHttpContextAccessor(TestDatabase testDb)
+        {
             var ctx = new DefaultHttpContext();
             var svcs = new ServiceCollection();
             svcs.AddScoped(provider => testDb.OpenStatelessSession());
@@ -110,23 +116,17 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 HttpContext = ctx
             };
 
-            var loggerMock = new Mock<ILogger<CorsPolicyService>>();
-            var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
-            var result = service.IsOriginAllowedAsync("https://not.allowed.site.it").Result;
-
-            result.Should().BeFalse();
-
-            CleanupTestData(testDb);
+            return ctxAccessor;
         }
 
-        private static void CleanupTestData(TestDatabase db)
+        private static async Task CleanupTestDataAsync(TestDatabase db)
         {
             using (var session = db.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.Delete("from Client c");
-                    tx.Commit();
+                    await session.DeleteAsync("from Client c");
+                    await tx.CommitAsync();
                 }
             }
         }

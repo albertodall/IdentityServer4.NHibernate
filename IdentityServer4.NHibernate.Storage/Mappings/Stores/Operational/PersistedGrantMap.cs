@@ -19,6 +19,13 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
             {
                 map.Length(200);
                 map.Index("IX_Subject_Client_Type");
+                map.Index("IX_Subject_Session_Type");
+            });
+
+            Property(p => p.SessionId, map =>
+            {
+                map.Length(100);
+                map.Index("IX_Subject_Session_Type");
             });
 
             Property(p => p.ClientId, map =>
@@ -33,10 +40,14 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
                 map.Length(50);
                 map.NotNullable(true);
                 map.Index("IX_Subject_Client_Type");
+                map.Index("IX_Subject_Session_Type");
             });
 
             Property(p => p.CreationTime, map => map.NotNullable(true));
-            Property(p => p.Expiration);
+            Property(p => p.Expiration, map =>
+            {
+                map.Index("IX_PersistedGrant_Expiration");
+            });
             Property(p => p.Data, map => 
             {
                 map.Length(50000);
