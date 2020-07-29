@@ -58,7 +58,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
-            await CreateTokenCleanupServiceSut(testDb).RemoveExpiredGrantsAsync();
+            await CreateTokenCleanupServiceSut(testDb, TestOperationalStoreOptions).RemoveExpiredGrantsAsync();
 
             using (var session = testDb.OpenSession())
             {
@@ -88,7 +88,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
-            await CreateTokenCleanupServiceSut(testDb).RemoveExpiredGrantsAsync();
+            await CreateTokenCleanupServiceSut(testDb, TestOperationalStoreOptions).RemoveExpiredGrantsAsync();
 
             using (var session = testDb.OpenSession())
             {
@@ -119,7 +119,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
-            await CreateTokenCleanupServiceSut(testDb).RemoveExpiredGrantsAsync();
+            await CreateTokenCleanupServiceSut(testDb, TestOperationalStoreOptions).RemoveExpiredGrantsAsync();
 
             using (var session = testDb.OpenSession())
             {
@@ -150,7 +150,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
-            await CreateTokenCleanupServiceSut(testDb).RemoveExpiredGrantsAsync();
+            await CreateTokenCleanupServiceSut(testDb, TestOperationalStoreOptions).RemoveExpiredGrantsAsync();
 
             using (var session = testDb.OpenSession())
             {
@@ -160,7 +160,168 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
             await CleanupTestDataAsync(testDb);
         }
 
-        private static TokenCleanupService CreateTokenCleanupServiceSut(TestDatabase testDb)
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Remove_Expired_Grants_In_Batches(TestDatabase testDb)
+        {
+            using (var session = testDb.OpenSession())
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    await session.SaveAsync(new Models.PersistedGrant
+                    {
+                        Key = Guid.NewGuid().ToString(),
+                        ClientId = "test-app",
+                        Type = "reference",
+                        SubjectId = (42 + i).ToString(),
+                        Expiration = DateTime.UtcNow.AddDays(-3),
+                        Data = $"testdata {i}"
+                    }.ToEntity());
+                }
+                await session.FlushAsync();
+            }
+
+            var options = new OperationalStoreOptions()
+            {
+                TokenCleanupBatchSize = 2
+            };
+            await CreateTokenCleanupServiceSut(testDb, options).RemoveExpiredGrantsAsync();
+
+            using (var session = testDb.OpenSession())
+            {
+                (await session.QueryOver<PersistedGrant>().RowCountAsync()).Should().Be(0);
+            }
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Remove_Expired_Grants_In_Batches_Skipping_Still_Valid_Grants(TestDatabase testDb)
+        {
+            using (var session = testDb.OpenSession())
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    await session.SaveAsync(new Models.PersistedGrant
+                    {
+                        Key = Guid.NewGuid().ToString(),
+                        ClientId = "test-app",
+                        Type = "reference",
+                        SubjectId = (42 + i).ToString(),
+                        Expiration = DateTime.UtcNow.AddDays(-3),
+                        Data = $"testdata {i}"
+                    }.ToEntity());
+                }
+                await session.SaveAsync(new Models.PersistedGrant
+                {
+                    Key = Guid.NewGuid().ToString(),
+                    ClientId = "test-app",
+                    Type = "reference",
+                    SubjectId = "99",
+                    Expiration = DateTime.UtcNow.AddDays(3),
+                    Data = "testdata 99"
+                }.ToEntity());
+                await session.FlushAsync();
+            }
+
+            var options = new OperationalStoreOptions()
+            {
+                TokenCleanupBatchSize = 3
+            };
+            await CreateTokenCleanupServiceSut(testDb, options).RemoveExpiredGrantsAsync();
+
+            using (var session = testDb.OpenSession())
+            {
+                (await session.QueryOver<PersistedGrant>().RowCountAsync()).Should().Be(1);
+            }
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Remove_Expired_Device_Codes_In_Batches(TestDatabase testDb)
+        {
+            using (var session = testDb.OpenSession())
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    await session.SaveAsync(new DeviceFlowCodes
+                    {
+                        DeviceCode = Guid.NewGuid().ToString(),
+                        ID = $"1234{i}",
+                        ClientId = "test-app",
+                        SubjectId = (42 + i).ToString(),
+                        CreationTime = DateTime.UtcNow.AddDays(-4),
+                        Expiration = DateTime.UtcNow.AddDays(-3),
+                        Data = $"testdata {i}"
+                    });
+                }
+                await session.FlushAsync();
+            }
+
+            var options = new OperationalStoreOptions()
+            {
+                TokenCleanupBatchSize = 2
+            };
+            await CreateTokenCleanupServiceSut(testDb, options).RemoveExpiredGrantsAsync();
+
+            using (var session = testDb.OpenSession())
+            {
+                (await session.QueryOver<DeviceFlowCodes>().RowCountAsync()).Should().Be(0);
+            }
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Remove_Expired_Device_Codes_In_Batches_Keeping_Still_Valid_Codes(TestDatabase testDb)
+        {
+            using (var session = testDb.OpenSession())
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    await session.SaveAsync(new DeviceFlowCodes
+                    {
+                        DeviceCode = Guid.NewGuid().ToString(),
+                        ID = $"1234{i}",
+                        ClientId = "test-app",
+                        SubjectId = (42 + i).ToString(),
+                        CreationTime = DateTime.UtcNow.AddDays(-4),
+                        Expiration = DateTime.UtcNow.AddDays(-3),
+                        Data = $"testdata {i}"
+                    });
+                }
+                await session.SaveAsync(new DeviceFlowCodes
+                {
+                    DeviceCode = Guid.NewGuid().ToString(),
+                    ID = "123499",
+                    ClientId = "test-app",
+                    SubjectId = "99",
+                    CreationTime = DateTime.UtcNow.AddDays(-4),
+                    Expiration = DateTime.UtcNow.AddDays(3),
+                    Data = "testdata 99"
+                });
+                await session.FlushAsync();
+            }
+
+            var options = new OperationalStoreOptions()
+            {
+                TokenCleanupBatchSize = 2
+            };
+            await CreateTokenCleanupServiceSut(testDb, options).RemoveExpiredGrantsAsync();
+
+            using (var session = testDb.OpenSession())
+            {
+                (await session.QueryOver<DeviceFlowCodes>().RowCountAsync()).Should().Be(1);
+            }
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        private static TokenCleanupService CreateTokenCleanupServiceSut(TestDatabase testDb, OperationalStoreOptions options)
         {
             IServiceCollection services = new ServiceCollection();
             services.AddIdentityServer()
@@ -174,7 +335,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
 
             services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
             services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
-            services.AddSingleton(new OperationalStoreOptions());
+            services.AddSingleton(options);
             services.AddTransient<TokenCleanupService>();
 
             return services.BuildServiceProvider().GetRequiredService<TokenCleanupService>();

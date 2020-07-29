@@ -52,8 +52,39 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
            
             using (var session = testDb.OpenSession())
             {
+                (await session.GetAsync<Entities.PersistedGrant>(testGrant.Key)).Should().NotBeNull();
+            }
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDatabases))]
+        public async Task Should_Update_Grant(TestDatabase testDb)
+        {
+            var testGrant = CreateTestGrant();
+            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
+
+            using (var session = testDb.OpenSession())
+            {
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
+            }
+
+            var newExpirationDate = testGrant.Expiration?.AddHours(1);
+            using (var session = testDb.OpenSession())
+            {
+                var store = new PersistedGrantStore(session, loggerMock.Object);
+                testGrant.Expiration = newExpirationDate;
+                await store.StoreAsync(testGrant);
+            }
+
+            using (var session = testDb.OpenSession())
+            {
                 var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
-                foundGrant.Should().NotBeNull();
+                Assert.NotNull(foundGrant.Expiration);
+                Assert.NotNull(newExpirationDate);
+                foundGrant.Expiration.Value.Should().Be(newExpirationDate.Value);
             }
 
             await CleanupTestDataAsync(testDb);
@@ -72,14 +103,11 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 await session.FlushAsync();
             }
 
-            PersistedGrant foundGrant;
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                foundGrant = await store.GetAsync(testGrant.Key);
+                (await store.GetAsync(testGrant.Key)).Should().NotBeNull();
             }
-
-            foundGrant.Should().NotBeNull();
 
             await CleanupTestDataAsync(testDb);
         }
@@ -206,63 +234,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             await CleanupTestDataAsync(testDb);
         }
 
-        [Theory]
-        [MemberData(nameof(TestDatabases))]
-        public async Task Should_Create_New_Grant_If_Key_Does_Not_Exist(TestDatabase testDb)
-        {
-            var testGrant = CreateTestGrant();
-            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
-
-            using (var session = testDb.OpenSession())
-            {
-                (await session.GetAsync<Entities.PersistedGrant>(testGrant.Key)).Should().BeNull();
-            }
-
-            using (var session = testDb.OpenSession())
-            {
-                var store = new PersistedGrantStore(session, loggerMock.Object);
-                await store.StoreAsync(testGrant);
-            }
-
-            using (var session = testDb.OpenSession())
-            {
-                (await session.GetAsync<Entities.PersistedGrant>(testGrant.Key)).Should().NotBeNull();
-            }
-
-            await CleanupTestDataAsync(testDb);
-        }
-
-        [Theory]
-        [MemberData(nameof(TestDatabases))]
-        public async Task Should_Update_Grant_If_Key_Exists(TestDatabase testDb)
-        {
-            var testGrant = CreateTestGrant();
-            var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
-
-            using (var session = testDb.OpenSession())
-            {
-                await session.SaveAsync(testGrant.ToEntity());
-                await session.FlushAsync();
-            }
-
-            var newExpirationDate = testGrant.Expiration?.AddHours(1);
-            using (var session = testDb.OpenSession())
-            {
-                var store = new PersistedGrantStore(session, loggerMock.Object);
-                testGrant.Expiration = newExpirationDate;
-                await store.StoreAsync(testGrant);
-            }
-
-            using (var session = testDb.OpenSession())
-            {
-                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
-                Assert.NotNull(foundGrant.Expiration);
-                Assert.NotNull(newExpirationDate);
-                foundGrant.Expiration.Value.Should().Be(newExpirationDate.Value);
-            }
-
-            await CleanupTestDataAsync(testDb);
-        }
+        
 
         private static PersistedGrant CreateTestGrant()
         {

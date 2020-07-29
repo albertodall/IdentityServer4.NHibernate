@@ -19,7 +19,7 @@ namespace IdentityServer4.NHibernate.Stores
     /// <seealso cref="IdentityServer4.Stores.IResourceStore" />
     public class ResourceStore : IResourceStore
     {
-        private readonly ISession _session;
+        private readonly IStatelessSession _session;
         private readonly ILogger<ResourceStore> _logger;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace IdentityServer4.NHibernate.Stores
         /// </summary>
         /// <param name="session">The NHibernate session used to retrieve the data.</param>
         /// <param name="logger">The logger.</param>
-        public ResourceStore(ISession session, ILogger<ResourceStore> logger)
+        public ResourceStore(IStatelessSession session, ILogger<ResourceStore> logger)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _logger = logger;
@@ -138,6 +138,7 @@ namespace IdentityServer4.NHibernate.Stores
                 var identityResources = _session.QueryOver<Entities.IdentityResource>()
                     .Fetch(SelectMode.Fetch, ir => ir.UserClaims)
                     .Fetch(SelectMode.Fetch, ir => ir.Properties)
+                    .TransformUsing(Transformers.DistinctRootEntity)
                     .Future();
 
                 var apiResources = _session.QueryOver<Entities.ApiResource>()

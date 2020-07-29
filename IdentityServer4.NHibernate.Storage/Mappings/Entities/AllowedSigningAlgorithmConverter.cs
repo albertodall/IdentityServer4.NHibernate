@@ -9,6 +9,8 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
         IValueConverter<ICollection<string>, string>, 
         IValueConverter<string, ICollection<string>>
     {
+        public static readonly AllowedSigningAlgorithmsConverter Instance = new AllowedSigningAlgorithmsConverter();
+
         public string Convert(ICollection<string> sourceMember, ResolutionContext context)
         {
             if (sourceMember == null || !sourceMember.Any())

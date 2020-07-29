@@ -212,22 +212,22 @@ namespace IdentityServer4.NHibernate.Stores
 
             if (!string.IsNullOrWhiteSpace(filter.SubjectId))
             {
-                hqlStringBuilder.Append(" and SubjectId = :subjectId");
+                hqlStringBuilder.Append(" and SubjectId=:subjectId");
             }
 
             if (!string.IsNullOrWhiteSpace(filter.SessionId))
             {
-                hqlStringBuilder.Append(" and SessionId = :sessionId");
+                hqlStringBuilder.Append(" and SessionId=:sessionId");
             }
 
             if (!string.IsNullOrWhiteSpace(filter.ClientId))
             {
-                hqlStringBuilder.Append(" and ClientId = :clientId");
+                hqlStringBuilder.Append(" and ClientId=:clientId");
             }
 
             if (!string.IsNullOrWhiteSpace(filter.Type))
             {
-                hqlStringBuilder.Append(" and Type = :type");
+                hqlStringBuilder.Append(" and Type=:type");
             }
 
             return hqlStringBuilder.ToString();

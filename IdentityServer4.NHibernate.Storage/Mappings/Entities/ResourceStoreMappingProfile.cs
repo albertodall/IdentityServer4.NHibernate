@@ -19,11 +19,11 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ForMember(dst => dst.ApiSecrets, opt => opt.MapFrom(src => src.Secrets))
                 .ForMember(
                     dst => dst.AllowedAccessTokenSigningAlgorithms, 
-                    opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedAccessTokenSigningAlgorithms))
+                    opt => opt.ConvertUsing(AllowedSigningAlgorithmsConverter.Instance, src => src.AllowedAccessTokenSigningAlgorithms))
                 .ReverseMap()
                     .ForMember(
                         dst => dst.AllowedAccessTokenSigningAlgorithms, 
-                        opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedAccessTokenSigningAlgorithms));
+                        opt => opt.ConvertUsing(AllowedSigningAlgorithmsConverter.Instance, src => src.AllowedAccessTokenSigningAlgorithms));
 
             CreateMap<ApiResourceClaim, string>()
                 .ConstructUsing(x => x.Type)

@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using AutoMapper;
 using IdentityServer4.Models;
-using NHibernate.Loader.Custom;
 
 namespace IdentityServer4.NHibernate.Mappings.Entities
 {
@@ -20,11 +19,11 @@ namespace IdentityServer4.NHibernate.Mappings.Entities
                 .ForMember(dst => dst.ProtocolType, opt => opt.Condition(src => src != null))
                 .ForMember(
                     dst => dst.AllowedIdentityTokenSigningAlgorithms, 
-                    opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedIdentityTokenSigningAlgorithms))
+                    opt => opt.ConvertUsing(AllowedSigningAlgorithmsConverter.Instance, src => src.AllowedIdentityTokenSigningAlgorithms))
                 .ReverseMap()
                     .ForMember(
                         dst => dst.AllowedIdentityTokenSigningAlgorithms, 
-                        opt => opt.ConvertUsing(new AllowedSigningAlgorithmsConverter(), src => src.AllowedIdentityTokenSigningAlgorithms));
+                        opt => opt.ConvertUsing(AllowedSigningAlgorithmsConverter.Instance, src => src.AllowedIdentityTokenSigningAlgorithms));
 
             CreateMap<NHibernate.Entities.ClientGrantType, string>()
                 .ConstructUsing(src => src.GrantType)

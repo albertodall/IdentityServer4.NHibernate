@@ -65,18 +65,10 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
-            var ctx = new DefaultHttpContext();
-            var svcs = new ServiceCollection();
-            svcs.AddScoped(provider => testDb.OpenStatelessSession());
-            ctx.RequestServices = svcs.BuildServiceProvider();
-
-            var ctxAccessor = new HttpContextAccessor()
-            {
-                HttpContext = ctx
-            };
+            var ctx = CreateHttpContextAccessor(testDb);
 
             var loggerMock = new Mock<ILogger<CorsPolicyService>>();
-            var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
+            var service = new CorsPolicyService(ctx, loggerMock.Object);
             var result = await service.IsOriginAllowedAsync(testCorsOrigin);
 
             result.Should().BeTrue();
@@ -101,6 +93,19 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 await session.FlushAsync();
             }
 
+            var ctx = CreateHttpContextAccessor(testDb);
+
+            var loggerMock = new Mock<ILogger<CorsPolicyService>>();
+            var service = new CorsPolicyService(ctx, loggerMock.Object);
+            var result = await service.IsOriginAllowedAsync("https://not.allowed.site.it");
+
+            result.Should().BeFalse();
+
+            await CleanupTestDataAsync(testDb);
+        }
+
+        private static HttpContextAccessor CreateHttpContextAccessor(TestDatabase testDb)
+        {
             var ctx = new DefaultHttpContext();
             var svcs = new ServiceCollection();
             svcs.AddScoped(provider => testDb.OpenStatelessSession());
@@ -111,13 +116,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.Services
                 HttpContext = ctx
             };
 
-            var loggerMock = new Mock<ILogger<CorsPolicyService>>();
-            var service = new CorsPolicyService(ctxAccessor, loggerMock.Object);
-            var result = await service.IsOriginAllowedAsync("https://not.allowed.site.it");
-
-            result.Should().BeFalse();
-
-            await CleanupTestDataAsync(testDb);
+            return ctxAccessor;
         }
 
         private static async Task CleanupTestDataAsync(TestDatabase db)
