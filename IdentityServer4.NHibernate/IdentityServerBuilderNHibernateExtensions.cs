@@ -171,10 +171,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The builder.</param>
         private static IIdentityServerBuilder AddOperationalStore(this IIdentityServerBuilder builder)
         {
-            builder.Services.AddSingleton<TokenCleanupService>();
+            builder.Services.AddScoped<TokenCleanupService>();
             builder.Services.AddSingleton<IHostedService, TokenCleanupHost>();
-            builder.Services.AddTransient<IDeviceFlowStore, DeviceFlowStore>();
-            builder.Services.AddTransient<IPersistedGrantStore, PersistedGrantStore>();
+            builder.Services.AddScoped<IDeviceFlowStore, DeviceFlowStore>();
+            builder.Services.AddScoped<IPersistedGrantStore, PersistedGrantStore>();
 
             return builder;
         }
