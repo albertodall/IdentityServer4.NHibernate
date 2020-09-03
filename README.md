@@ -76,6 +76,11 @@ The `ConfigurationStoreOptions` class has an additional `EnableConfigurationStor
 2. SQLite in-memory databases are "_per-connection_", so different NHibernate sessions use different databases.
 That's why it's not recommended to use this provider in production with an in-memory SQLite backing store.
 
+# Contributors
+I wish to thank all the contributors to this project:
+
+- [Ivan](https://github.com/mtivan)
+
 # Acknowledgements
 This package has been built using these awesome Open Source projects:
 
