@@ -1,3 +1,11 @@
+## Build 1.1.5
+_Release notes - IdentityServer4.NHibernate - Version 1.1.5_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#8](https://github.com/albertodall/IdentityServer4.NHibernate/issues/8) - Invalid DI configuration ([@mtivan](https://github.com/mtivan)) 
 ## Build 1.1.4
 _Release notes - IdentityServer4.NHibernate - Version 1.1.4_
 
@@ -5,7 +13,7 @@ __New features__
 - No new features
 
 __Resolved issues__
-- #5 - Automapper 8 - 9 version mismatch.
+- [#4](https://github.com/albertodall/IdentityServer4.NHibernate/issues/4) - Automapper 8 - 9 version mismatch.
 ## Build 1.1.2
 _Release notes - IdentityServer4.NHibernate - Version 1.1.2_
 

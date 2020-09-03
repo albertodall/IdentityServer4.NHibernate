@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
