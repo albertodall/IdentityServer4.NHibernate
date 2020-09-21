@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Entities;
 using IdentityServer4.Services;
@@ -39,14 +38,18 @@ namespace IdentityServer4.NHibernate.Services
             origin = origin.ToLowerInvariant();
 
             bool isAllowed;
-            using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
+            var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>();
+
+            using (var tx = session.BeginTransaction())
             {
                 var originsQuery = session.QueryOver<ClientCorsOrigin>()
                     .Where(o => o.Origin == origin)
                     .ToRowCountQuery();
 
                 isAllowed = await originsQuery.RowCountAsync() > 0;
+                await tx.CommitAsync();
             }
+            
 
             _logger.LogDebug("Origin {origin} is allowed: {originAllowed}", origin, isAllowed);
 
