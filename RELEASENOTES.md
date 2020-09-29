@@ -1,5 +1,14 @@
+## Build 2.0.2
+_Release notes - IdentityServer4.NHibernate - Version 2.0.2_
+
+__New features__
+- None
+
+__Resolved issues__
+- [#11](https://github.com/albertodall/IdentityServer4.NHibernate/issues/11) - Session is closed exception ([@lcetinapta](https://github.com/lcetinapta))
+
 ## Build 2.0.1
-_Release notes - IdentityServer4.NHibernate - Version 2.0.0_
+_Release notes - IdentityServer4.NHibernate - Version 2.0.1_
 
 __New features__
 - None
