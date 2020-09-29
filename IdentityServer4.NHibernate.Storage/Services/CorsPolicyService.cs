@@ -39,7 +39,8 @@ namespace IdentityServer4.NHibernate.Services
         {
             bool isAllowed;
 
-            using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
+            var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>();
+            using (var tx = session.BeginTransaction())
             {
                 ClientCorsOrigin corsOriginAlias = null;
                 var corsOriginsQuery = session.QueryOver<Client>()
@@ -51,6 +52,7 @@ namespace IdentityServer4.NHibernate.Services
                     ));
 
                 var origins = await corsOriginsQuery.ListAsync<string>();
+                await tx.CommitAsync();
 
                 isAllowed = origins.Any();
             }
