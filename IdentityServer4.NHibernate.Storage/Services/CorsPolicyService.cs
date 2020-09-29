@@ -37,9 +37,10 @@ namespace IdentityServer4.NHibernate.Services
         /// <param name="origin">The origin.</param>
         public async Task<bool> IsOriginAllowedAsync(string origin)
         {
-            bool isAllowed = false;
+            bool isAllowed;
 
-            using (var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>())
+            var session = _context.HttpContext.RequestServices.GetRequiredService<IStatelessSession>();
+            using (var tx = session.BeginTransaction())
             {
                 ClientCorsOrigin corsOriginAlias = null;
                 var corsOriginsQuery = session.QueryOver<Client>()
@@ -49,8 +50,8 @@ namespace IdentityServer4.NHibernate.Services
                         Projections.ProjectionList()
                             .Add(Projections.Property<ClientCorsOrigin>(o => corsOriginAlias.Origin))
                     ));
-
                 var origins = await corsOriginsQuery.ListAsync<string>();
+                await tx.CommitAsync();
 
                 isAllowed = origins.Any();
             }
