@@ -1,6 +1,7 @@
 ﻿using System;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
+using NHibernate.Dialect;
 
 namespace IdentityServer4.NHibernate.Database.Schema
 {
@@ -41,6 +42,7 @@ namespace IdentityServer4.NHibernate.Database.Schema
             configuration.AddConfigurationStoreMappings(configurationStoreOptions);
             configuration.AddOperationalStoreMappings(operationalStoreOptions);
 
+            SchemaMetadataUpdater.QuoteTableAndColumns(configuration, Dialect.GetDialect(configuration.Properties));
             new SchemaExport(configuration)
                 .SetOutputFile(scriptFileName)
                 .Execute(true, false, false);

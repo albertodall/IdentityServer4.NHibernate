@@ -3,6 +3,7 @@ using IdentityServer4.NHibernate.Database;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
@@ -12,7 +13,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     internal static class TestDatabaseBuilder
     {
-        public static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        internal static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
             var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.IntegrationTests";
 
@@ -60,7 +61,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             catch (System.Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb.Drop();
+                testDb?.Drop();
             }
 
             return testDb;
@@ -83,6 +84,32 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             catch (System.Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+            }
+
+            return testDb;
+        }
+
+        internal static PostgreSQL83TestDatabase Postgres83TestDatabase(string serverName, string databaseName, string userName, string password, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        {
+            var connString = $"Server={serverName};Port=5432;User Id={userName};Password={password}";
+
+            PostgreSQL83TestDatabase testDb = null;
+            try
+            {
+                var dbConfig = Databases.PostgreSQL83()
+                    .UsingConnectionString(connString)
+                    .EnableSqlStatementsLogging()
+                    .AddConfigurationStoreMappings(configurationStoreOptions)
+                    .AddOperationalStoreMappings(operationalStoreOptions);
+
+                testDb = new PostgreSQL83TestDatabase(connString, databaseName, dbConfig);
+                testDb.Create();
+                new SchemaExport(dbConfig).Execute(false, true, false);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                testDb?.Drop();
             }
 
             return testDb;

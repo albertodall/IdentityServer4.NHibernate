@@ -1,5 +1,7 @@
 ﻿using System;
 using NHibernate;
+using NHibernate.Dialect;
+using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
@@ -37,6 +39,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
         public virtual void Create()
         {
+            SchemaMetadataUpdater.QuoteTableAndColumns(DbConfig, Dialect.GetDialect(DbConfig.Properties));
             SessionFactory = DbConfig.BuildSessionFactory();
         }
 

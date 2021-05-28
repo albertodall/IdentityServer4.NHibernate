@@ -1,3 +1,4 @@
 {
-  "SQLServer": "(localdb)\\MSSQLLocalDB"
+    "SQLServer": "(localdb)\\MSSQLLocalDB",
+    "PostgreSQL": "localhost"
 }
