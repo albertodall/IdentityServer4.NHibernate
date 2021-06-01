@@ -10,7 +10,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Operational
         {
             Id(p => p.ID, map =>
             {
-                map.Column("[UserCode]");
+                map.Column("UserCode");
                 map.Generator(Generators.Assigned);
                 map.Length(200);
             });

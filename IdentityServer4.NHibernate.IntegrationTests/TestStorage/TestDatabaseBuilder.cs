@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using IdentityServer4.NHibernate.Database;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
-using NHibernate.Cfg;
-using NHibernate.Dialect;
+using MySql.Data.MySqlClient;
 using NHibernate.Tool.hbm2ddl;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
@@ -13,25 +15,23 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     internal static class TestDatabaseBuilder
     {
-        internal static SQLServerTestDatabase SQLServer2012TestDatabase(string serverName, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        internal static SQLServerTestDatabase SQLServer2012TestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            var connString = $"Data Source={serverName}; Initial Catalog={databaseName}; Integrated Security=SSPI; Application Name=IdentityServer4.NHibernate.IntegrationTests";
-
             SQLServerTestDatabase testDb = null;
             try
             {
                 var dbConfig = Databases.SqlServer2012()
-                    .UsingConnectionString(connString)
+                    .UsingConnectionString($"{connectionString};Initial Catalog={databaseName}")
                     .EnableSqlStatementsLogging()
                     .AddConfigurationStoreMappings(configurationStoreOptions)
                     .AddOperationalStoreMappings(operationalStoreOptions)
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
-                testDb = new SQLServerTestDatabase(serverName, databaseName, dbConfig);
+                testDb = new SQLServerTestDatabase(connectionString, databaseName, dbConfig);
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
@@ -58,7 +58,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
@@ -79,9 +79,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
                 testDb = new SQLiteInMemoryTestDatabase(dbConfig);
                 testDb.Create();
-                new SchemaExport(dbConfig).Execute(false, true, false, testDb.ActiveConnection, null);
+                new SchemaExport(dbConfig).Execute(false, true, false, testDb.ActiveConnection, TextWriter.Null);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }
@@ -89,24 +89,48 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             return testDb;
         }
 
-        internal static PostgreSQL83TestDatabase Postgres83TestDatabase(string serverName, string databaseName, string userName, string password, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        internal static PostgreSQLTestDatabase PostgreSQLTestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            var connString = $"Server={serverName};Port=5432;User Id={userName};Password={password}";
-
-            PostgreSQL83TestDatabase testDb = null;
+            PostgreSQLTestDatabase testDb = null;
             try
             {
-                var dbConfig = Databases.PostgreSQL83()
-                    .UsingConnectionString(connString)
+                var dbConfig = Databases.PostgreSQL()
+                    .UsingConnectionString($"{connectionString};Database={databaseName}")
                     .EnableSqlStatementsLogging()
                     .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions);
+                    .AddOperationalStoreMappings(operationalStoreOptions)
+                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
-                testDb = new PostgreSQL83TestDatabase(connString, databaseName, dbConfig);
+                testDb = new PostgreSQLTestDatabase(connectionString, databaseName, dbConfig);
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                testDb?.Drop();
+            }
+
+            return testDb;
+        }
+
+        internal static MySqlTestDatabase MySQLTestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
+        {
+            MySqlTestDatabase testDb = null;
+            try
+            {
+                var dbConfig = Databases.MySql()
+                    .UsingConnectionString($"{connectionString};Database={databaseName}")
+                    .EnableSqlStatementsLogging()
+                    .AddConfigurationStoreMappings(configurationStoreOptions)
+                    .AddOperationalStoreMappings(operationalStoreOptions)
+                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+
+                testDb = new MySqlTestDatabase(connectionString, databaseName, dbConfig);
+                testDb.Create();
+                new SchemaExport(dbConfig).Execute(false, true, false);
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();

@@ -18,7 +18,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     internal class SQLiteInMemoryTestDatabase : TestDatabase
     {
         public SQLiteInMemoryTestDatabase(global::NHibernate.Cfg.Configuration config)
-            : base(config)
+            : base(string.Empty, string.Empty, config)
         { }
 
         public override void Create()
@@ -27,11 +27,15 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             ActiveConnection = (SessionFactory as ISessionFactoryImplementor)?.ConnectionProvider.GetConnection();
         }
 
+        public override void Drop() { }
+
+        public override void CreateEmptyDatabase() { }
+
         public override ISession OpenSession()
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.WithOptions().Connection(ActiveConnection).OpenSession();
         }
@@ -40,7 +44,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.OpenStatelessSession(ActiveConnection);
         }

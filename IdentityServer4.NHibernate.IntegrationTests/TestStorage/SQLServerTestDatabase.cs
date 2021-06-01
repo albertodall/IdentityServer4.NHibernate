@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.SqlServer.Management.Common;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
@@ -9,33 +10,32 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     internal class SQLServerTestDatabase : TestDatabase
     {
-        private readonly string _serverName;
-        private readonly string _databaseName;
+        public SQLServerTestDatabase(string connectionString, string databaseName, global::NHibernate.Cfg.Configuration config)
+            : base(connectionString, databaseName, config)
+        {  }
 
-        public SQLServerTestDatabase(string serverName, string databaseName, global::NHibernate.Cfg.Configuration config)
-            : base(config)
+        public override void CreateEmptyDatabase()
         {
-            _serverName = serverName ?? throw new ArgumentNullException(nameof(serverName));
-            _databaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
-        }
-
-        public override void Create()
-        {
-            var dbServer = new Server(_serverName);
-            if (!dbServer.Databases.Contains(_databaseName))
+            using (var conn = new SqlConnection(ConnectionString))
             {
-                new Database(dbServer, _databaseName).Create();
+                var dbServer = new Server(new ServerConnection(conn));
+                if (!dbServer.Databases.Contains(DatabaseName))
+                {
+                    new Database(dbServer, DatabaseName).Create();
+                }
             }
-            base.Create();
         }
 
         public override void Drop()
         {
-            var dbServer = new Server(_serverName);
-            if (dbServer.Databases.Contains(_databaseName))
+            using (var conn = new SqlConnection(ConnectionString))
             {
-                // Kill all connections and then drop the database.
-                dbServer.KillDatabase(_databaseName);
+                var dbServer = new Server(new ServerConnection(conn));
+                if (dbServer.Databases.Contains(DatabaseName))
+                {
+                    // Kill all connections and then drop the database.
+                    dbServer.KillDatabase(DatabaseName);
+                }
             }
         }
     }

@@ -2,7 +2,6 @@
 using NHibernate.Bytecode;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.Database
 {
@@ -78,16 +77,34 @@ namespace IdentityServer4.NHibernate.Database
         }
 
         /// <summary>
-        /// Database configuration for PostgreSQL 8.3 as backing storage.
+        /// Database configuration for PostgreSQL as backing storage.
         /// </summary>
-        public static Configuration PostgreSQL83()
+        public static Configuration PostgreSQL()
         {
             var cfg = new Configuration();
             cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
             cfg.DataBaseIntegration(db =>
             {
-                db.Dialect<PostgreSQL83Dialect>();
+                db.Dialect<PostgreSQLDialect>();
                 db.Driver<NpgsqlDriver>();
+                db.BatchSize = 100;
+                db.PrepareCommands = true;
+            });
+
+            return cfg;
+        }
+
+        /// <summary>
+        /// Database configuration for MySql as backing storage.
+        /// </summary>
+        public static Configuration MySql()
+        {
+            var cfg = new Configuration();
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
+            cfg.DataBaseIntegration(db =>
+            {
+                db.Dialect<MySQLDialect>();
+                db.Driver<MySqlDataDriver>();
                 db.BatchSize = 100;
                 db.PrepareCommands = true;
             });

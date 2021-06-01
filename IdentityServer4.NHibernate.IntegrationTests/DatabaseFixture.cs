@@ -15,7 +15,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                 foreach (var db in TestDatabases)
                 {
                     // Database objects are dropped after dispose of the Session Factory
-                    db.SessionFactory.Dispose();
+                    db.SessionFactory?.Dispose();
                     // Drops the physical database
                     db.Drop();
                 }
