@@ -1,5 +1,4 @@
-﻿using System;
-using IdentityServer4.NHibernate.Options;
+﻿using IdentityServer4.NHibernate.Options;
 using Microsoft.Extensions.Configuration;
 
 namespace IdentityServer4.NHibernate.IntegrationTests

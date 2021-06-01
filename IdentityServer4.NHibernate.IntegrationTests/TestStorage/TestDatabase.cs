@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;

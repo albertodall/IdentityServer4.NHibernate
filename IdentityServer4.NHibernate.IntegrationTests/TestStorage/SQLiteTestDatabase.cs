@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Data.SQLite;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage

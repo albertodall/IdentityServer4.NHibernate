@@ -4,7 +4,6 @@ using System.IO;
 using IdentityServer4.NHibernate.Database;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.Options;
-using MySql.Data.MySqlClient;
 using NHibernate.Tool.hbm2ddl;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -28,6 +27,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new SQLServerTestDatabase(connectionString, databaseName, dbConfig);
+                testDb.Drop();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
@@ -35,6 +35,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
+                throw;
             }
 
             return testDb;
@@ -55,6 +56,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new SQLiteTestDatabase(fileName, dbConfig);
+                testDb.Drop();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
@@ -62,6 +64,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
+                throw;
             }
 
             return testDb;
@@ -84,6 +87,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                throw;
             }
 
             return testDb;
@@ -102,6 +106,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new PostgreSQLTestDatabase(connectionString, databaseName, dbConfig);
+                testDb.Drop();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
@@ -109,6 +114,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
+                throw;
             }
 
             return testDb;
@@ -127,6 +133,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
                     .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
 
                 testDb = new MySqlTestDatabase(connectionString, databaseName, dbConfig);
+                testDb.Drop();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
@@ -134,6 +141,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             {
                 Debug.WriteLine(ex.Message);
                 testDb?.Drop();
+                throw;
             }
 
             return testDb;
