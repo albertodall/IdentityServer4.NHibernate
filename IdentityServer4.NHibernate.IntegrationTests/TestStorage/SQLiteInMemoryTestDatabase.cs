@@ -27,7 +27,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             ActiveConnection = (SessionFactory as ISessionFactoryImplementor)?.ConnectionProvider.GetConnection();
         }
 
-        public override void Drop() { }
+        public override void DropIfExists() { }
 
         public override void CreateEmptyDatabase() { }
 

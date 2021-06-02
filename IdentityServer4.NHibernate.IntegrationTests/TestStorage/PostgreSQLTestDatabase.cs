@@ -22,7 +22,7 @@ CREATE DATABASE ""{DatabaseName}"" WITH OWNER=""postgres"" ENCODING='UTF8' CONNE
             }
         }
 
-        public override void Drop()
+        public override void DropIfExists()
         {
             using (var conn = new NpgsqlConnection(ConnectionString))
             {

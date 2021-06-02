@@ -21,6 +21,6 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             SQLiteConnection.CreateFile(_databaseFileName);
         }
 
-        public override void Drop() { }
+        public override void DropIfExists() { }
     }
 }

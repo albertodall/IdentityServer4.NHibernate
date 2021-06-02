@@ -52,6 +52,6 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             SessionFactory = DbConfig.BuildSessionFactory();
         }
 
-        public abstract void Drop();
+        public abstract void DropIfExists();
     }
 }

@@ -16,25 +16,24 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     {
         internal static SQLServerTestDatabase SQLServer2012TestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            SQLServerTestDatabase testDb = null;
+            var dbConfig = Databases.SqlServer2012()
+                .UsingConnectionString($"{connectionString};Initial Catalog={databaseName}")
+                .EnableSqlStatementsLogging()
+                .AddConfigurationStoreMappings(configurationStoreOptions)
+                .AddOperationalStoreMappings(operationalStoreOptions)
+                .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+            var testDb = new SQLServerTestDatabase(connectionString, databaseName, dbConfig);
+
             try
             {
-                var dbConfig = Databases.SqlServer2012()
-                    .UsingConnectionString($"{connectionString};Initial Catalog={databaseName}")
-                    .EnableSqlStatementsLogging()
-                    .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
-
-                testDb = new SQLServerTestDatabase(connectionString, databaseName, dbConfig);
-                testDb.Drop();
+                testDb.DropIfExists();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb?.Drop();
+                testDb.DropIfExists();
                 throw;
             }
 
@@ -44,26 +43,24 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
         internal static SQLiteTestDatabase SQLiteTestDatabase(string fileName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
             var connString = $"Data Source={fileName};Version=3;Pooling=True;Synchronous=Full;";
+            var dbConfig = Databases.SQLite()
+                .UsingConnectionString(connString)
+                .EnableSqlStatementsLogging()
+                .AddConfigurationStoreMappings(configurationStoreOptions)
+                .AddOperationalStoreMappings(operationalStoreOptions)
+                .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+            var testDb = new SQLiteTestDatabase(fileName, dbConfig);
 
-            SQLiteTestDatabase testDb = null;
             try
             {
-                var dbConfig = Databases.SQLite()
-                    .UsingConnectionString(connString)
-                    .EnableSqlStatementsLogging()
-                    .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
-
-                testDb = new SQLiteTestDatabase(fileName, dbConfig);
-                testDb.Drop();
+                testDb.DropIfExists();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb?.Drop();
+                testDb.DropIfExists();
                 throw;
             }
 
@@ -72,15 +69,14 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
         internal static SQLiteInMemoryTestDatabase SQLiteInMemoryTestDatabase(ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            SQLiteInMemoryTestDatabase testDb = null;
+            var dbConfig = Databases.SQLiteInMemory()
+                .EnableSqlStatementsLogging()
+                .AddConfigurationStoreMappings(configurationStoreOptions)
+                .AddOperationalStoreMappings(operationalStoreOptions);
+            var testDb = new SQLiteInMemoryTestDatabase(dbConfig);
+
             try
             {
-                var dbConfig = Databases.SQLiteInMemory()
-                    .EnableSqlStatementsLogging()
-                    .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions);
-
-                testDb = new SQLiteInMemoryTestDatabase(dbConfig);
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false, testDb.ActiveConnection, TextWriter.Null);
             }
@@ -95,25 +91,24 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
         internal static PostgreSQLTestDatabase PostgreSQLTestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            PostgreSQLTestDatabase testDb = null;
+            var dbConfig = Databases.PostgreSQL()
+                .UsingConnectionString($"{connectionString};Database={databaseName}")
+                .EnableSqlStatementsLogging()
+                .AddConfigurationStoreMappings(configurationStoreOptions)
+                .AddOperationalStoreMappings(operationalStoreOptions)
+                .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+            var testDb = new PostgreSQLTestDatabase(connectionString, databaseName, dbConfig);
+            
             try
             {
-                var dbConfig = Databases.PostgreSQL()
-                    .UsingConnectionString($"{connectionString};Database={databaseName}")
-                    .EnableSqlStatementsLogging()
-                    .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
-
-                testDb = new PostgreSQLTestDatabase(connectionString, databaseName, dbConfig);
-                testDb.Drop();
+                testDb.DropIfExists();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb?.Drop();
+                testDb.DropIfExists();
                 throw;
             }
 
@@ -122,25 +117,24 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 
         internal static MySqlTestDatabase MySQLTestDatabase(string connectionString, string databaseName, ConfigurationStoreOptions configurationStoreOptions, OperationalStoreOptions operationalStoreOptions)
         {
-            MySqlTestDatabase testDb = null;
+            var dbConfig = Databases.MySql()
+                .UsingConnectionString($"{connectionString};Database={databaseName}")
+                .EnableSqlStatementsLogging()
+                .AddConfigurationStoreMappings(configurationStoreOptions)
+                .AddOperationalStoreMappings(operationalStoreOptions)
+                .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
+            var testDb = new MySqlTestDatabase(connectionString, databaseName, dbConfig);
+
             try
             {
-                var dbConfig = Databases.MySql()
-                    .UsingConnectionString($"{connectionString};Database={databaseName}")
-                    .EnableSqlStatementsLogging()
-                    .AddConfigurationStoreMappings(configurationStoreOptions)
-                    .AddOperationalStoreMappings(operationalStoreOptions)
-                    .SetProperty(Environment.Hbm2ddlAuto, "create-drop");
-
-                testDb = new MySqlTestDatabase(connectionString, databaseName, dbConfig);
-                testDb.Drop();
+                testDb.DropIfExists();
                 testDb.Create();
                 new SchemaExport(dbConfig).Execute(false, true, false);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                testDb?.Drop();
+                testDb.DropIfExists();
                 throw;
             }
 

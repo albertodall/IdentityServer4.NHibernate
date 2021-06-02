@@ -26,7 +26,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
             }
         }
 
-        public override void Drop()
+        public override void DropIfExists()
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
