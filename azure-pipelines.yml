@@ -12,8 +12,31 @@ trigger:
       - README.md
       - RELEASENOTES.md
 
+resources:
+  containers:
+  - container: ids4nh-sql2019
+    image: mcr.microsoft.com/mssql/server
+    env:
+      SA_PASSWORD: $(TestDatabasePassword)
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+    - 1433:1433
+  - container: ids4nh-postgresql
+    image: postgres:alpine
+    env:
+      POSTGRES_PASSWORD: $(TestDatabasePassword)
+    ports:
+    - 5432:5432
+  - container: ids4nh-mysql
+    image: mysql
+    env:
+      MYSQL_ROOT_PASSWORD: $(TestDatabasePassword)
+    ports:
+    - 3306:3306
+
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
@@ -26,21 +49,30 @@ stages:
     jobs:
       - job: BuildLib
         displayName: 'Build solution, version package and run tests'
+        services:
+          sql2019: ids4nh-sql2019
+          postgresql: ids4nh-postgresql
+          mysql: ids4nh-mysql
         steps:
           - task: UseDotNet@2
             displayName: 'Install .NET Core SDK 3.1.x'
             inputs:
               version: 3.1.x
-
-          - task: NuGetCommand@2
-            displayName: 'Install GitVersion CommandLine'
+         
+          - task: DotNetCoreCLI@2
+            displayName: 'Install GitVersion'
             inputs:
-              command: custom
-              arguments: install GitVersion.CommandLine -OutputDirectory $(Build.BinariesDirectory) -ExcludeVersion
-    
-          - script: $(Build.BinariesDirectory)/GitVersion.CommandLine/tools/GitVersion.exe /output buildserver /updateassemblyinfo /nofetch
-            displayName: 'Apply Semantic Versioning'
+              command: 'custom'
+              custom: 'tool'
+              arguments: 'install gitversion.tool --global'
 
+          - task: DotNetCoreCLI@2
+            displayName: 'Calculate Semantic Version'
+            inputs:
+              command: 'custom'
+              custom: 'gitversion'
+              arguments: '/output buildserver /updateassemblyinfo /nofetch'
+    
           - script: echo %Action%%BuildVersion%
             displayName: 'Set build version'
             env:
@@ -75,10 +107,6 @@ stages:
               projects: '**/IdentityServer4.NHibernate.csproj'
               arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(GitVersion.SemVer)'
     
-          - script: 'sqllocaldb start MSSQLLocalDB'
-            displayName: 'Start MSSQLLocalDB instance for integration testing'
-            condition: succeeded()
-
           - task: DotNetCoreCLI@2
             displayName: 'Run integration tests'
             inputs:
@@ -86,10 +114,6 @@ stages:
               projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
               arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
               testRunTitle: 'Integration tests'
-
-          - script: 'sqllocaldb stop MSSQLLocalDB -i'
-            displayName: 'Stop MSSQLLocalDB instance'
-            condition: always()
 
           - task: DotNetCoreCLI@2
             displayName: 'Publish Storage project to allow schema scripts creation'
