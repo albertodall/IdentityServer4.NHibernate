@@ -48,6 +48,8 @@ Currently, the provider directly supports the following databases:
 - SQL Server 2012 or later.
 - [SQLite](https://www.sqlite.org).
 - [SQLite](https://www.sqlite.org) in-memory (not suitable for production).
+- PostgreSQL
+- MySQL
 
 It's obviously possible to use every database supported by NHibernate.
 
@@ -55,6 +57,8 @@ Remember to add the required libraries to your IdentityServer project, in order 
 
 - For [SQL Server](https://www.nuget.org/packages/System.Data.SqlClient): `Install-Package System.Data.SqlClient`
 - For [SQLite](https://www.nuget.org/packages/System.Data.SQLite.Core): `Install-Package System.Data.SQLite.Core`
+- For [PostgreSQL](https://www.nuget.org/packages/Npgsql): `Install-Package Npgsql`
+- For [MySQL](https://www.nuget.org/packages/MySql.Data): `Install-Package MySql.Data`
 
 # Database Schema Creation
 In the package's _Scripts_ folder you will find the schema creation scripts for every supported database.
