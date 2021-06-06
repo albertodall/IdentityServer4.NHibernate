@@ -110,9 +110,9 @@ stages:
           - task: DotNetCoreCLI@2
             displayName: 'Run integration tests'
             inputs:
-              command: test
+              command: 'test'
               projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
-              arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+              arguments: '--configuration $(buildConfiguration)'
               testRunTitle: 'Integration tests'
 
           - task: DotNetCoreCLI@2
