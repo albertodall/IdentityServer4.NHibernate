@@ -42,9 +42,11 @@ namespace IdentityServer4.NHibernate.Database.Schema
             configuration.AddConfigurationStoreMappings(configurationStoreOptions);
             configuration.AddOperationalStoreMappings(operationalStoreOptions);
 
-            SchemaMetadataUpdater.QuoteTableAndColumns(configuration, Dialect.GetDialect(configuration.Properties));
+            var dialect = Dialect.GetDialect(configuration.Properties);
+            SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
             new SchemaExport(configuration)
                 .SetOutputFile(scriptFileName)
+                .SetDelimiter(";")
                 .Execute(true, false, false);
         }
     }
