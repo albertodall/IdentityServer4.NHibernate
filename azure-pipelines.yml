@@ -41,7 +41,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
-  gitHubConnection: 'albertodall_on_github'
+  gitHubConnection: 'GitHub - albertodall'
 
 stages:
   - stage: Build_Test_Publish
@@ -226,7 +226,7 @@ stages:
     jobs:
       - deployment:
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         environment: 'NuGet Feed'
         variables:
           PackageVersion: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.PackageVersion'] ]
