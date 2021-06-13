@@ -1,3 +1,12 @@
+## Build 3.0.3
+_Release notes - IdentityServer4.NHibernate - Version 3.0.3_
+
+__New features__
+- Native support for [PostgreSQL](https://www.postgresql.org) and [MySQL](https://dev.mysql.com) databases.
+
+__Resolved issues__
+- [#13](https://github.com/albertodall/IdentityServer4.NHibernate/issues/13) - MySql support ([@pigsi](https://github.com/pigsi)) 
+
 ## Build 3.0.2
 _Release notes - IdentityServer4.NHibernate - Version 3.0.2_
 

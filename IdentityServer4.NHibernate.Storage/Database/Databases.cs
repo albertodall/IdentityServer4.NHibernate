@@ -75,5 +75,41 @@ namespace IdentityServer4.NHibernate.Database
                 .UsingConnectionString("FullUri=file:memorydb.db?mode=memory&cache=shared")
                 .SetProperty("connection.release_mode", "on_close");
         }
+
+        /// <summary>
+        /// Database configuration for PostgreSQL as backing storage.
+        /// </summary>
+        public static Configuration PostgreSQL()
+        {
+            var cfg = new Configuration();
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
+            cfg.DataBaseIntegration(db =>
+            {
+                db.Dialect<PostgreSQLDialect>();
+                db.Driver<NpgsqlDriver>();
+                db.BatchSize = 100;
+                db.PrepareCommands = true;
+            });
+
+            return cfg;
+        }
+
+        /// <summary>
+        /// Database configuration for MySql as backing storage.
+        /// </summary>
+        public static Configuration MySql()
+        {
+            var cfg = new Configuration();
+            cfg.Proxy(p => p.ProxyFactoryFactory<StaticProxyFactoryFactory>());
+            cfg.DataBaseIntegration(db =>
+            {
+                db.Dialect<MySQLDialect>();
+                db.Driver<MySqlDataDriver>();
+                db.BatchSize = 100;
+                db.PrepareCommands = true;
+            });
+
+            return cfg;
+        }
     }
 }
