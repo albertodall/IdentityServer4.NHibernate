@@ -24,6 +24,7 @@ $opStoreOptions = New-Object IdentityServer4.NHibernate.Options.OperationalStore
 $bindingFlags= [Reflection.BindingFlags] "Public,Static"
 $exportableConfigurations = [IdentityServer4.NHibernate.Database.Databases].GetMethods($bindingFlags) `
     | Where-Object { ($_.Name -inotlike '*equals*') -and ($_.Name -inotlike '*memory*')}
+
 if ($exportableConfigurations -eq $null) {
     Write-Host "No database configurations found in assembly $PublishPath\IdentityServer4.NHibernate.Storage.dll"
 } else {
@@ -38,7 +39,7 @@ if ($exportableConfigurations -eq $null) {
         $fileName = $_.Name
         $currentConfiguration = $_.Invoke($null, $null)
         Write-Host "Creating script $fileName.sql in $OutputPath..."
-        [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase("$OutputPath\$fileName.sql", $currentConfiguration, $configStoreOptions, $opStoreOptions)
+        [IdentityServer4.NHibernate.Database.Schema.ScriptCreator]::CreateSchemaScriptForDatabase($(Join-Path $OutputPath "$fileName.sql"), $currentConfiguration, $configStoreOptions, $opStoreOptions)
     }
 }
 
