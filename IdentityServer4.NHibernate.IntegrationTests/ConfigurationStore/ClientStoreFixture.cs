@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
@@ -20,13 +21,13 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         static ClientStoreFixture()
         {
-            var sqlServerDataSource = TestSettings["SQLServer"];
-
             TestDatabases = new TheoryData<TestDatabase>()
             {
-                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+                TestDatabaseBuilder.SQLServer2012TestDatabase(SQLServerConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.PostgreSQLTestDatabase(PostgreSQLConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.MySQLTestDatabase(MySQLConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions)
             };
         }
 
@@ -38,7 +39,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_If_It_Exists(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_If_It_Exists(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -48,43 +49,43 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testClient.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testClient.ToEntity());
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Not_Retrieve_Non_Existing_Client(TestDatabase testDb)
+        public async Task Should_Not_Retrieve_Non_Existing_Client(TestDatabase testDb)
         {
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync("not_existing_client").Result;
+                requestedClient = await store.FindClientByIdAsync("not_existing_client");
             }
 
             requestedClient.Should().BeNull();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Grant_Types(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Grant_Types(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -101,27 +102,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedGrantTypes.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Client_Secrets(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Client_Secrets(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -138,27 +139,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.ClientSecrets.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Redirect_Uris(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Redirect_Uris(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -175,27 +176,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.RedirectUris.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_PostLogout_Redirect_Uris(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_PostLogout_Redirect_Uris(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -212,27 +213,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.PostLogoutRedirectUris.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Allowed_Scopes(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Allowed_Scopes(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -249,27 +250,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedScopes.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Provider_Restrictions(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Provider_Restrictions(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -286,27 +287,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.IdentityProviderRestrictions.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Claims(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Claims(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -323,27 +324,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.Claims.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Allowed_Cors_Origins(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Allowed_Cors_Origins(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -360,27 +361,27 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.AllowedCorsOrigins.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Client_With_Properties(TestDatabase testDb)
+        public async Task Should_Retrieve_Client_With_Properties(TestDatabase testDb)
         {
             var testClient = new Client()
             {
@@ -397,32 +398,32 @@ namespace IdentityServer4.NHibernate.IntegrationTests.ConfigurationStore
             using (var session = testDb.OpenSession())
             {
                 var entityToSave = testClient.ToEntity();
-                session.Save(entityToSave);
-                session.Flush();
+                await session.SaveAsync(entityToSave);
+                await session.FlushAsync();
             }
 
-            Client requestedClient = null;
+            Client requestedClient;
             var loggerMock = new Mock<ILogger<ClientStore>>();
             using (var session = testDb.OpenSession())
             {
                 var store = new ClientStore(session, loggerMock.Object);
-                requestedClient = store.FindClientByIdAsync(testClient.ClientId).Result;
+                requestedClient = await store.FindClientByIdAsync(testClient.ClientId);
             }
 
             requestedClient.Should().NotBeNull();
             requestedClient.Properties.Count.Should().Be(3);
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
-        private static void CleanupTestData(TestDatabase db)
+        private static async Task CleanupTestDataAsync(TestDatabase db)
         {
             using (var session = db.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.Delete("from Client c");
-                    tx.Commit();
+                    await session.DeleteAsync("from Client c");
+                    await tx.CommitAsync();
                 }
             }
         }

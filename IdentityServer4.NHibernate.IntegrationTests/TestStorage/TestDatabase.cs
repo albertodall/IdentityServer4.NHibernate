@@ -1,5 +1,7 @@
 ﻿using System;
 using NHibernate;
+using NHibernate.Dialect;
+using NHibernate.Tool.hbm2ddl;
 
 namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
 {
@@ -8,20 +10,28 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
     /// </summary>
     public abstract class TestDatabase
     {
-        public TestDatabase(global::NHibernate.Cfg.Configuration config)
+        protected TestDatabase(string connectionString, string databaseName, global::NHibernate.Cfg.Configuration config)
         {
-            DBConfig = config ?? throw new ArgumentNullException(nameof(config));
+            ConnectionString = connectionString ?? throw new ArgumentException(nameof(connectionString));
+            DatabaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
+            DbConfig = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public ISessionFactory SessionFactory { get; protected set; }
 
-        protected global::NHibernate.Cfg.Configuration DBConfig { get; private set; }
+        protected string ConnectionString { get; }
+
+        protected string DatabaseName { get; }
+
+        protected global::NHibernate.Cfg.Configuration DbConfig { get; }
+
+        public abstract void CreateEmptyDatabase();
 
         public virtual ISession OpenSession()
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.OpenSession();
         }
@@ -30,16 +40,18 @@ namespace IdentityServer4.NHibernate.IntegrationTests.TestStorage
         {
             if (SessionFactory == null)
             {
-                throw new InvalidOperationException("Session factory still not created.");
+                throw new InvalidOperationException("Session factory not yet created.");
             }
             return SessionFactory.OpenStatelessSession();
         }
 
         public virtual void Create()
         {
-            SessionFactory = DBConfig.BuildSessionFactory();
+            CreateEmptyDatabase();
+            SchemaMetadataUpdater.QuoteTableAndColumns(DbConfig, Dialect.GetDialect(DbConfig.Properties));
+            SessionFactory = DbConfig.BuildSessionFactory();
         }
 
-        public virtual void Drop() { }
+        public abstract void DropIfExists();
     }
 }

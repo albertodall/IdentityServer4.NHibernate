@@ -12,13 +12,36 @@ trigger:
       - README.md
       - RELEASENOTES.md
 
+resources:
+  containers:
+  - container: ids4nh-sql2019
+    image: mcr.microsoft.com/mssql/server
+    env:
+      SA_PASSWORD: $(TestDatabasePassword)
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+    - 1433:1433
+  - container: ids4nh-postgresql
+    image: postgres:alpine
+    env:
+      POSTGRES_PASSWORD: $(TestDatabasePassword)
+    ports:
+    - 5432:5432
+  - container: ids4nh-mysql
+    image: mysql
+    env:
+      MYSQL_ROOT_PASSWORD: $(TestDatabasePassword)
+    ports:
+    - 3306:3306
+
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
   nuGetSourceFeed: 'https://api.nuget.org/v3/index.json'
-  gitHubConnection: 'albertodall_on_github'
+  gitHubConnection: 'GitHub - albertodall'
 
 stages:
   - stage: Build_Test_Publish
@@ -26,21 +49,25 @@ stages:
     jobs:
       - job: BuildLib
         displayName: 'Build solution, version package and run tests'
-        steps:
-          - task: UseDotNet@2
-            displayName: 'Install .NET Core SDK 3.0.x'
+        services:
+          sql2019: ids4nh-sql2019
+          postgresql: ids4nh-postgresql
+          mysql: ids4nh-mysql
+        steps:        
+          - task: DotNetCoreCLI@2
+            displayName: 'Install GitVersion'
             inputs:
-              version: 3.0.x
+              command: 'custom'
+              custom: 'tool'
+              arguments: 'install gitversion.tool --global'
 
-          - task: NuGetCommand@2
-            displayName: 'Install GitVersion CommandLine'
+          - task: DotNetCoreCLI@2
+            displayName: 'Calculate Semantic Version'
             inputs:
-              command: custom
-              arguments: install GitVersion.CommandLine -OutputDirectory $(Build.BinariesDirectory) -ExcludeVersion
+              command: 'custom'
+              custom: 'gitversion'
+              arguments: '/output buildserver /updateassemblyinfo /nofetch'
     
-          - script: $(Build.BinariesDirectory)/GitVersion.CommandLine/tools/GitVersion.exe /output buildserver /updateassemblyinfo /nofetch
-            displayName: 'Apply Semantic Versioning'
-
           - script: echo %Action%%BuildVersion%
             displayName: 'Set build version'
             env:
@@ -68,6 +95,11 @@ stages:
               errorActionPreference: 'silentlyContinue'
               pwsh: true
 
+          - task: UseDotNet@2
+            displayName: 'Install .NET Core SDK 3.0.x'
+            inputs:
+              version: 3.0.x
+
           - task: DotNetCoreCLI@2
             displayName: 'Build library project'
             inputs:
@@ -75,21 +107,13 @@ stages:
               projects: '**/IdentityServer4.NHibernate.csproj'
               arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/lib /p:Version=$(GitVersion.SemVer)'
     
-          - script: 'sqllocaldb start MSSQLLocalDB'
-            displayName: 'Start MSSQLLocalDB instance for integration testing'
-            condition: succeeded()
-
           - task: DotNetCoreCLI@2
             displayName: 'Run integration tests'
             inputs:
-              command: test
+              command: 'test'
               projects: '**/IdentityServer4.NHibernate.IntegrationTests.csproj'
-              arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+              arguments: '--configuration $(buildConfiguration)'
               testRunTitle: 'Integration tests'
-
-          - script: 'sqllocaldb stop MSSQLLocalDB -i'
-            displayName: 'Stop MSSQLLocalDB instance'
-            condition: always()
 
           - task: DotNetCoreCLI@2
             displayName: 'Publish Storage project to allow schema scripts creation'
@@ -202,7 +226,7 @@ stages:
     jobs:
       - deployment:
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         environment: 'NuGet Feed'
         variables:
           PackageVersion: $[ stageDependencies.Build_Test_Publish.BuildLib.outputs['BuildContext.PackageVersion'] ]

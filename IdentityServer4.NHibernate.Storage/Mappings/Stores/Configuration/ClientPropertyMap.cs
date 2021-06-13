@@ -11,7 +11,7 @@ namespace IdentityServer4.NHibernate.Mappings.Stores.Configuration
 
             Property(p => p.Key, map => 
             {
-                map.Column("[Key]");
+                map.Column("Key");
                 map.Length(250);
                 map.NotNullable(true);
             });

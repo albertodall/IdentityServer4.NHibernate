@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using IdentityServer4.NHibernate.Extensions;
 using IdentityServer4.NHibernate.IntegrationTests.TestStorage;
 using IdentityServer4.NHibernate.Stores;
@@ -19,13 +20,13 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
         static PersistentGrantStoreFixture()
         {
-            var sqlServerDataSource = TestSettings["SQLServer"];
-
             TestDatabases = new TheoryData<TestDatabase>()
             {
-                TestDatabaseBuilder.SQLServer2012TestDatabase(sqlServerDataSource, $"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod().DeclaringType.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
-                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions)
+                TestDatabaseBuilder.SQLServer2012TestDatabase(SQLServerConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteTestDatabase($"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test.sqlite", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.SQLiteInMemoryTestDatabase(TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.PostgreSQLTestDatabase(PostgreSQLConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions),
+                TestDatabaseBuilder.MySQLTestDatabase(MySQLConnectionString, $"{MethodBase.GetCurrentMethod()?.DeclaringType?.Name}_NH_Test", TestConfigurationStoreOptions, TestOperationalStoreOptions)
             };
         }
 
@@ -37,7 +38,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Store_New_Grant(TestDatabase testDb)
+        public async Task Should_Store_New_Grant(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
@@ -45,189 +46,189 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.StoreAsync(testGrant).Wait();
+                await store.StoreAsync(testGrant);
             }
            
             using (var session = testDb.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().NotBeNull();
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Get_Stored_Grant(TestDatabase testDb)
+        public async Task Should_Get_Stored_Grant(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             PersistedGrant foundGrant;
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                foundGrant = store.GetAsync(testGrant.Key).Result;
+                foundGrant = await store.GetAsync(testGrant.Key);
             }
 
             foundGrant.Should().NotBeNull();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Retrieve_Grant_By_SubjectId(TestDatabase testDb)
+        public async Task Should_Retrieve_Grant_By_SubjectId(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             IList<PersistedGrant> foundGrants;
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                foundGrants = store.GetAllAsync(testGrant.SubjectId).Result.ToList();
+                foundGrants = (await store.GetAllAsync(testGrant.SubjectId)).ToList();
             }
 
             foundGrants.Should().NotBeEmpty();
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Remove_Persisted_Grant_By_Key(TestDatabase testDb)
+        public async Task Should_Remove_Persisted_Grant_By_Key(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.RemoveAsync(testGrant.Key).Wait();
+                await store.RemoveAsync(testGrant.Key);
             }
 
             using (var session = testDb.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Remove_All_Persisted_Grant_By_Subject_And_Client(TestDatabase testDb)
+        public async Task Should_Remove_All_Persisted_Grant_By_Subject_And_Client(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId).Wait();
+                await store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId);
             }
 
             using (var session = testDb.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Remove_All_Persisted_Grant_By_Subject_Client_Type(TestDatabase testDb)
+        public async Task Should_Remove_All_Persisted_Grant_By_Subject_Client_Type(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId, testGrant.Type).Wait();
+                await store.RemoveAllAsync(testGrant.SubjectId, testGrant.ClientId, testGrant.Type);
             }
 
             using (var session = testDb.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Should().BeNull();
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Create_New_Grant_If_Key_Does_Not_Exist(TestDatabase testDb)
+        public async Task Should_Create_New_Grant_If_Key_Does_Not_Exist(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().BeNull();
+                (await session.GetAsync<Entities.PersistedGrant>(testGrant.Key)).Should().BeNull();
             }
 
             using (var session = testDb.OpenSession())
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
-                store.StoreAsync(testGrant).Wait();
+                await store.StoreAsync(testGrant);
             }
 
             using (var session = testDb.OpenSession())
             {
-                session.Get<Entities.PersistedGrant>(testGrant.Key).Should().NotBeNull();
+                (await session.GetAsync<Entities.PersistedGrant>(testGrant.Key)).Should().NotBeNull();
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         [Theory]
         [MemberData(nameof(TestDatabases))]
-        public void Should_Update_Grant_If_Key_Exists(TestDatabase testDb)
+        public async Task Should_Update_Grant_If_Key_Exists(TestDatabase testDb)
         {
             var testGrant = CreateTestGrant();
             var loggerMock = new Mock<ILogger<PersistedGrantStore>>();
 
             using (var session = testDb.OpenSession())
             {
-                session.Save(testGrant.ToEntity());
-                session.Flush();
+                await session.SaveAsync(testGrant.ToEntity());
+                await session.FlushAsync();
             }
 
             var newExpirationDate = testGrant.Expiration.Value.AddHours(1);
@@ -235,16 +236,16 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             {
                 var store = new PersistedGrantStore(session, loggerMock.Object);
                 testGrant.Expiration = newExpirationDate;
-                store.StoreAsync(testGrant).Wait();
+                await store.StoreAsync(testGrant);
             }
 
             using (var session = testDb.OpenSession())
             {
-                var foundGrant = session.Get<Entities.PersistedGrant>(testGrant.Key);
+                var foundGrant = await session.GetAsync<Entities.PersistedGrant>(testGrant.Key);
                 foundGrant.Expiration.Value.Should().Be(newExpirationDate);
             }
 
-            CleanupTestData(testDb);
+            await CleanupTestDataAsync(testDb);
         }
 
         private static PersistedGrant CreateTestGrant()
@@ -261,14 +262,14 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
             };
         }
 
-        private static void CleanupTestData(TestDatabase db)
+        private static async Task CleanupTestDataAsync(TestDatabase db)
         {
             using (var session = db.OpenSession())
             {
                 using (var tx = session.BeginTransaction())
                 {
-                    session.Delete("from PersistedGrant pg");
-                    tx.Commit();
+                    await session.DeleteAsync("from PersistedGrant pg");
+                    await tx.CommitAsync();
                 }
             }
         }
