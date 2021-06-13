@@ -7,10 +7,10 @@ namespace IdentityServer4.NHibernate.IntegrationTests
     {
         private const string TestSettingsFile = "test-database-settings.json";
 
+        private static IConfigurationRoot TestSettings { get; }
+
         protected static readonly ConfigurationStoreOptions TestConfigurationStoreOptions = new ConfigurationStoreOptions();
         protected static readonly OperationalStoreOptions TestOperationalStoreOptions = new OperationalStoreOptions();
-
-        protected static IConfigurationRoot TestSettings { get; }
 
         static IntegrationTestFixture()
         {
@@ -18,5 +18,9 @@ namespace IdentityServer4.NHibernate.IntegrationTests
                 .AddJsonFile(TestSettingsFile)
                 .Build();
         }
+
+        protected static string SQLServerConnectionString => TestSettings["SQLServer"];
+        protected static string PostgreSQLConnectionString => TestSettings["PostgreSQL"];
+        protected static string MySQLConnectionString => TestSettings["MySQL"];
     }
 }

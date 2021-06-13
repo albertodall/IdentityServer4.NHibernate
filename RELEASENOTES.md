@@ -1,3 +1,12 @@
+## Build 3.0.3
+_Release notes - IdentityServer4.NHibernate - Version 3.0.3_
+
+__New features__
+- Native support for [PostgreSQL](https://www.postgresql.org) and [MySQL](https://dev.mysql.com) databases.
+
+__Resolved issues__
+- [#13](https://github.com/albertodall/IdentityServer4.NHibernate/issues/13) - MySql support ([@pigsi](https://github.com/pigsi)) 
+
 ## Build 3.0.2
 _Release notes - IdentityServer4.NHibernate - Version 3.0.2_
 
@@ -22,6 +31,16 @@ _Release notes - IdentityServer4.NHibernate - Version 3.0.0_
 
 __New features__
 - Support for IdentityServer4 version 4.0
+
+## Build 2.1.3
+_Release notes - IdentityServer4.NHibernate - Version 2.1.3_
+
+__New features__
+- Native support for [PostgreSQL](https://www.postgresql.org) and [MySQL](https://dev.mysql.com) databases.
+
+__Resolved issues__
+- [#13](https://github.com/albertodall/IdentityServer4.NHibernate/issues/13) - MySql support ([@pigsi](https://github.com/pigsi)) 
+
 
 ## Build 2.1.2
 _Release notes - IdentityServer4.NHibernate - Version 2.1.2_
@@ -56,6 +75,16 @@ This version supports **only** `netcoreapp31` targeted projects. If your project
 __Resolved issues__
 - No issues
 
+## Build 2.0.3
+_Release notes - IdentityServer4.NHibernate - Version 2.0.3_
+
+__New features__
+- Native support for [PostgreSQL](https://www.postgresql.org) and [MySQL](https://dev.mysql.com) databases.
+
+__Resolved issues__
+- [#13](https://github.com/albertodall/IdentityServer4.NHibernate/issues/13) - MySql support ([@pigsi](https://github.com/pigsi)) 
+
+
 ## Build 2.0.2
 _Release notes - IdentityServer4.NHibernate - Version 2.0.2_
 
@@ -85,6 +114,16 @@ This version supports **only** `netcoreapp3` targeted projects. If your project 
 
 __Resolved issues__
 - No issues
+
+## Build 1.1.7
+_Release notes - IdentityServer4.NHibernate - Version 1.1.7_
+
+__New features__
+- Native support for [PostgreSQL](https://www.postgresql.org) and [MySQL](https://dev.mysql.com) databases.
+
+__Resolved issues__
+- [#13](https://github.com/albertodall/IdentityServer4.NHibernate/issues/13) - MySql support ([@pigsi](https://github.com/pigsi)) 
+
 
 ## Build 1.1.6
 _Release notes - IdentityServer4.NHibernate - Version 1.1.6_
