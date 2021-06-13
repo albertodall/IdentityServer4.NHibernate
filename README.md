@@ -2,13 +2,10 @@
 IdentityServer4.NHibernate is a persistence layer for IdentityServer 4 configuration data that uses [NHibernate](https://github.com/nhibernate/nhibernate-core) to access the storage layer.
 It's heavily based on the [Entity Framework Provider](https://github.com/IdentityServer/IdentityServer4.EntityFramework), in order to implement all the features required by IdentityServer.
 
-I decided to not use [FluentNHibernate](https://github.com/FluentNHibernate/) for creating mappings, for having the fewest possible dependencies.
+I decided to not use [FluentNHibernate](https://github.com/nhibernate/fluent-nhibernate) for mappings, so to have the least number of dependencies.
 All mappings are defined using the integrated _Mapping By Code_ feature and the _Loquacious API_.
 
 # Current status
-### Build
-[![Build status](https://dev.azure.com/albertodall/IdentityServer4.NHibernate/_apis/build/status/IdentityServer4.NHibernate-CI)](https://dev.azure.com/albertodall/IdentityServer4.NHibernate/_build/latest?definitionId=3)
-
 ### NuGet
 [![NuGet](https://img.shields.io/nuget/v/IdentityServer4.Contrib.NHibernate.svg)](https://www.nuget.org/packages/IdentityServer4.Contrib.NHibernate/)
 
@@ -48,6 +45,8 @@ Currently, the provider directly supports the following databases:
 - SQL Server 2012 or later.
 - [SQLite](https://www.sqlite.org).
 - [SQLite](https://www.sqlite.org) in-memory (not suitable for production).
+- [PostgreSQL](https://www.postgresql.org)
+- [MySQL](https://dev.mysql.com)
 
 It's obviously possible to use every database supported by NHibernate.
 
@@ -55,6 +54,8 @@ Remember to add the required libraries to your IdentityServer project, in order 
 
 - For [SQL Server](https://www.nuget.org/packages/System.Data.SqlClient): `Install-Package System.Data.SqlClient`
 - For [SQLite](https://www.nuget.org/packages/System.Data.SQLite.Core): `Install-Package System.Data.SQLite.Core`
+- For [PostgreSQL](https://www.nuget.org/packages/Npgsql): `Install-Package Npgsql`
+- For [MySQL](https://www.nuget.org/packages/MySql.Data): `Install-Package MySql.Data`
 
 # Database Schema Creation
 In the package's _Scripts_ folder you will find the schema creation scripts for every supported database.
