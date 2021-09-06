@@ -81,6 +81,7 @@ That's why it's not recommended to use this provider in production with an in-me
 I wish to thank all the contributors to this project:
 
 - [Ivan](https://github.com/mtivan)
+- [Hiller](https://github.com/Hiller)
 
 # Acknowledgements
 This package has been built using these awesome Open Source projects:

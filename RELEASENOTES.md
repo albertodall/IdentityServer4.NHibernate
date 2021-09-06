@@ -1,4 +1,12 @@
-## Build 1.1.7
+## Build 1.1.8
+_Release notes - IdentityServer4.NHibernate - Version 1.1.8_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
+
 ## Build 1.1.7
 _Release notes - IdentityServer4.NHibernate - Version 1.1.7_
 
