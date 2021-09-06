@@ -1,3 +1,12 @@
+## Build 2.1.4
+_Release notes - IdentityServer4.NHibernate - Version 2.1.4_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
+
 ## Build 2.1.3
 _Release notes - IdentityServer4.NHibernate - Version 2.1.3_
 
