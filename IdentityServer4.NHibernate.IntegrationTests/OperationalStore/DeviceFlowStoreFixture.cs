@@ -106,7 +106,7 @@ namespace IdentityServer4.NHibernate.IntegrationTests.OperationalStore
                 foundDeviceFlowCodes.Should().NotBeNull();
                 var deserializedData = serializer.Deserialize<DeviceCode>(foundDeviceFlowCodes?.Data);
 
-                deserializedData.CreationTime.Should().BeCloseTo(data.CreationTime);
+                deserializedData.CreationTime.Should().Be(data.CreationTime);
                 deserializedData.ClientId.Should().Be(data.ClientId);
                 deserializedData.Lifetime.Should().Be(data.Lifetime);
             }
