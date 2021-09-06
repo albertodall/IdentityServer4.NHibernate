@@ -8,6 +8,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Hosting;
 using NHibernate;
+using NHibernate.Dialect;
 using NHibernate.Tool.hbm2ddl;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -123,6 +124,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // Adds NHibernate mappings
             databaseConfiguration.AddConfigurationStoreMappings(configurationStoreOptions);
             databaseConfiguration.AddOperationalStoreMappings(operationalStoreOptions);
+
+            //We need this to quote fields named with reserved keyword
+            SchemaMetadataUpdater.QuoteTableAndColumns(databaseConfiguration, Dialect.GetDialect(databaseConfiguration.Properties));
 
             // Registers NHibernate components
             builder.Services.AddSingleton(databaseConfiguration.BuildSessionFactory());
