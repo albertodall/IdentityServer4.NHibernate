@@ -1,3 +1,13 @@
+## Build 3.0.4
+_Release notes - IdentityServer4.NHibernate - Version 3.0.4_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
+
+
 ## Build 3.0.3
 _Release notes - IdentityServer4.NHibernate - Version 3.0.3_
 
@@ -31,6 +41,15 @@ _Release notes - IdentityServer4.NHibernate - Version 3.0.0_
 
 __New features__
 - Support for IdentityServer4 version 4.0
+
+## Build 2.1.4
+_Release notes - IdentityServer4.NHibernate - Version 2.1.4_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
 
 ## Build 2.1.3
 _Release notes - IdentityServer4.NHibernate - Version 2.1.3_
@@ -75,6 +94,15 @@ This version supports **only** `netcoreapp31` targeted projects. If your project
 __Resolved issues__
 - No issues
 
+## Build 2.0.4
+_Release notes - IdentityServer4.NHibernate - Version 2.0.4_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
+
 ## Build 2.0.3
 _Release notes - IdentityServer4.NHibernate - Version 2.0.3_
 
@@ -114,6 +142,15 @@ This version supports **only** `netcoreapp3` targeted projects. If your project 
 
 __Resolved issues__
 - No issues
+
+## Build 1.1.8
+_Release notes - IdentityServer4.NHibernate - Version 1.1.8_
+
+__New features__
+- No new features
+
+__Resolved issues__
+- [#15](https://github.com/albertodall/IdentityServer4.NHibernate/issues/15) - SqlException: Incorrect syntax near the keyword 'Key'. ([@Hiller](https://github.com/Hiller)) 
 
 ## Build 1.1.7
 _Release notes - IdentityServer4.NHibernate - Version 1.1.7_

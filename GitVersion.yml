@@ -1,6 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
-next-version: 2.1.0
+next-version: 3.0.4
 branches:
   master:
     mode: ContinuousDeployment
@@ -15,8 +15,4 @@ branches:
     source-branches:
     - master
     is-release-branch: true
-ignore:
-  sha:
-  - 9c90b8141a52f1dd3d65fcfa54b3a65b07ca2f21
-  - 0cbb52920632d157fbaaeff98d99f91721708929
 merge-message-formats: {}
