@@ -1,3 +1,12 @@
+## Build 3.1.0
+_Release notes - IdentityServer4.NHibernate - Version 3.1.1_
+
+__New features__
+- Support for IdentityServer4 version 4.1
+
+__Resolved issues__
+- No issues
+
 ## Build 3.0.4
 _Release notes - IdentityServer4.NHibernate - Version 3.0.4_
 

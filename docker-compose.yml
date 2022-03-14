@@ -4,7 +4,6 @@ services:
   sql2019-db:
     container_name: ids4nh-sql2019
     image: mcr.microsoft.com/mssql/server
-    restart: always
     environment:
       SA_PASSWORD: "Passw0rd1!"
       ACCEPT_EULA: "Y"
@@ -15,7 +14,6 @@ services:
   postgresql-db:
     container_name: ids4nh-postgresql
     image: postgres:alpine
-    restart: always
     environment:
       POSTGRES_PASSWORD: "Passw0rd1!"
     ports:
@@ -24,8 +22,9 @@ services:
   mysql-db:
     container_name: ids4nh-mysql
     image: mysql
+    cap_add:
+      - SYS_NICE
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "Passw0rd1!"
     ports:
@@ -34,6 +33,5 @@ services:
   adminer:
     container_name: ids4nh-adminer
     image: adminer
-    restart: always
     ports:
       - "8080:8080"

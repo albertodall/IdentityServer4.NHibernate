@@ -69,7 +69,7 @@ namespace IdentityServer4.NHibernate
                 {
                     var expiredGrantsQuery = _session.QueryOver<PersistedGrant>()
                         .Where(g => g.Expiration < DateTime.UtcNow)
-                        .OrderBy(g => g.ID).Asc
+                        .OrderBy(g => g.Expiration).Asc
                         .Take(_options.TokenCleanupBatchSize);
 
                     var expiredGrants = await expiredGrantsQuery.ListAsync();
@@ -110,7 +110,7 @@ namespace IdentityServer4.NHibernate
                 {
                     var expiredCodesQuery = _session.QueryOver<DeviceFlowCodes>()
                         .Where(c => c.Expiration < DateTime.UtcNow)
-                        .OrderBy(c => c.ID).Asc
+                        .OrderBy(c => c.Expiration).Asc
                         .Take(_options.TokenCleanupBatchSize);
 
                     var expiredCodes = await expiredCodesQuery.ListAsync();

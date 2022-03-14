@@ -17,11 +17,11 @@ namespace IdentityServer4.NHibernate.Entities
         public virtual string Description { get; set; }
         public virtual string ClientUri { get; set; }
         public virtual string LogoUri { get; set; }
-        public virtual bool RequireConsent { get; set; } = true;
+        public virtual bool RequireConsent { get; set; } = false;
         public virtual bool AllowRememberConsent { get; set; } = true;
         public virtual bool AlwaysIncludeUserClaimsInIdToken { get; set; }
         public virtual ISet<ClientGrantType> AllowedGrantTypes { get; set; } = new HashSet<ClientGrantType>();
-        public virtual bool RequirePkce { get; set; }
+        public virtual bool RequirePkce { get; set; } = true;
         public virtual bool AllowPlainTextPkce { get; set; }
         public virtual bool RequireRequestObject { get; set; }
         public virtual bool AllowAccessTokensViaBrowser { get; set; }

@@ -8,6 +8,7 @@ trigger:
   paths:
     exclude:
       - azure-pipelines.yml
+      - docker-compose.yml
       - GitVersion.yml
       - README.md
       - RELEASENOTES.md
